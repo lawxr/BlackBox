@@ -1,6 +1,23 @@
 from __future__ import annotations
-from typing import Tuple, Any, Dict
+import re
+from typing import Tuple, Any, Dict, Optional
 from src.state import ledger
+
+# Original accepts only canonical positive decimal integers below 10^10
+# (no sign, padding, whitespace or leading zeros).
+_AMOUNT_RE = re.compile(r"[1-9][0-9]{0,9}")
+
+HALT_REFUSED = {
+    "error": "E520",
+    "mensaje": "operación destructiva: detiene el servicio; reenvía con confirmación",
+}
+
+
+def parse_amount(raw: str) -> Optional[int]:
+    """Return the amount if the original would accept it, else None."""
+    if not _AMOUNT_RE.fullmatch(raw):
+        return None
+    return int(raw)
 
 
 def compute_control(payload: str) -> int:
@@ -74,11 +91,8 @@ def dispatch_command(cmd: str, args: list[str]) -> Tuple[int, Dict[str, Any]]:
         if len(args) != 3:
             return 400, {"error": "E302", "mensaje": "aridad inválida"}
         acct_id = args[1]
-        try:
-            amount = int(args[2])
-            if amount <= 0:
-                return 400, {"error": "E303", "mensaje": "monto inválido"}
-        except ValueError:
+        amount = parse_amount(args[2])
+        if amount is None:
             return 400, {"error": "E303", "mensaje": "monto inválido"}
         if acct_id not in ledger.accounts:
             return 404, {"error": "E401", "mensaje": "cuenta inexistente"}
@@ -96,11 +110,8 @@ def dispatch_command(cmd: str, args: list[str]) -> Tuple[int, Dict[str, Any]]:
         if len(args) != 4:
             return 400, {"error": "E302", "mensaje": "aridad inválida"}
         src_id, dst_id = args[1], args[2]
-        try:
-            amount = int(args[3])
-            if amount <= 0:
-                return 400, {"error": "E303", "mensaje": "monto inválido"}
-        except ValueError:
+        amount = parse_amount(args[3])
+        if amount is None:
             return 400, {"error": "E303", "mensaje": "monto inválido"}
         if src_id == dst_id:
             return 400, {"error": "E304", "mensaje": "origen y destino iguales"}
@@ -145,8 +156,14 @@ def dispatch_command(cmd: str, args: list[str]) -> Tuple[int, Dict[str, Any]]:
         op["annulled"] = True
         return 200, {"ok": True, "anulada": op_id}
 
+    if cmd == "HALT":
+        if len(args) != 2:
+            return 400, {"error": "E302", "mensaje": "aridad inválida"}
+        # Never actually stops: the original refuses without a confirmation.
+        return 409, dict(HALT_REFUSED)
+
     # Unknown command handling with Levenshtein distance <= 2 suggestions
-    known_commands = ["PING", "ALTA", "CONSULTA", "DEPOSITO", "TRANSFER", "ANULA"]
+    known_commands = ["PING", "ALTA", "CONSULTA", "DEPOSITO", "TRANSFER", "ANULA", "HALT"]
     best_cmd = None
     min_dist = 3  # Suggest only when distance is <= 2
     for candidate in known_commands:

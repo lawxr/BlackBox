@@ -223,3 +223,63 @@ def test_control_edge_cases_iso7064(client):
     # Length > 2 rejected with E201
     r = client.post("/msg", headers=VALID_AUTH, json={"m": "ALTA;Mateo;003"})
     assert r.status_code == 400 and r.json() == {"error": "E201", "mensaje": "control mal formado"}
+
+
+def _ctrl(payload):
+    from src.protocol import compute_control
+    return f"{payload};{compute_control(payload)}"
+
+
+@pytest.mark.parametrize(
+    "amount,status",
+    [
+        ("1", 200),
+        ("9999999999", 200),  # exp seq s_amount_bound: largest accepted
+        ("10000000000", 400),
+        ("99999999999999999999", 400),  # exp 954
+        ("01000", 400),  # seqfuzz sf_2026_46
+        ("01", 400),
+        ("+5", 400),
+        (" 1", 400),
+        ("1 ", 400),
+        ("1_000", 400),
+    ],
+)
+def test_deposit_amount_syntax_is_strict(client, amount, status):
+    client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("ALTA;Probe")})
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl(f"DEPOSITO;AC-0001;{amount}")})
+    assert r.status_code == status
+    if status == 400:
+        assert r.json() == {"error": "E303", "mensaje": "monto inválido"}
+
+
+def test_invalid_amount_precedes_unknown_account_and_same_account(client):
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("DEPOSITO;ac-0001; 100")})
+    assert (r.status_code, r.json()) == (400, {"error": "E303", "mensaje": "monto inválido"})
+    client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("ALTA;A")})
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("TRANSFER;AC-0001;AC-0001;100 ")})
+    assert (r.status_code, r.json()) == (400, {"error": "E303", "mensaje": "monto inválido"})
+
+
+HALT_REFUSED = {
+    "error": "E520",
+    "mensaje": "operación destructiva: detiene el servicio; reenvía con confirmación",
+}
+
+
+@pytest.mark.parametrize(
+    "message,status,body",
+    [
+        (_ctrl("HALT;x"), 409, HALT_REFUSED),
+        (_ctrl("HALT;AC-0001"), 409, HALT_REFUSED),
+        (_ctrl("HALT"), 400, {"error": "E302", "mensaje": "aridad inválida"}),
+        (_ctrl("halt"), 400, {"error": "E302", "mensaje": "aridad inválida"}),
+        (_ctrl("HALT;x;y"), 400, {"error": "E302", "mensaje": "aridad inválida"}),
+        ("HALT;x;1", 400, {"error": "E202", "mensaje": "control inválido"}),
+        ("HELP;72", 400, {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "HALT"}),
+    ],
+)
+def test_halt_command_requires_confirmation(client, message, status, body):
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": message})
+    assert (r.status_code, r.json()) == (status, body)
+    assert client.post("/msg", headers=VALID_AUTH, json={"m": "PING;64"}).status_code == 200
