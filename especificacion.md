@@ -54,31 +54,31 @@ Cada forma incluye el control como último campo. Los cuerpos de éxito siguient
 ### ALTA
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CMD-02 | `ALTA;<NOMBRE>;<CONTROL>` responde `201 {"cuentaId":"<ID>"}` para los nombres A, B, C, AA, AB, BA, I, J y 0. | exp 92, 154, 156, 184, 187, 281, 283, 285, 353 | confirmado |
-| CMD-02a | Una alta de Lucia seguida de CONSULTA devuelve saldo 0. | mañana 3, 5 | probable |
+| CMD-02 | `ALTA;<NOMBRE>;<CONTROL>` responde `201 {"cuentaId":"<ID>"}` para los nombres A, B, C, AA, AB, BA, I, J y 0. | exp 92, 154, 156, 184, 187, 281, 283, 285, 353, 356, 360 | confirmado |
+| CMD-02a | Una alta de Lucia seguida de CONSULTA devuelve saldo inicial 0 con ID `AC-0001`. | exp 356, 357; mañana 3, 5 | confirmado |
 | CMD-02b | Réplica guarda nombre sin normalizar, saldo 0 e ID correlativo. Permite nombres duplicados, sin límite propio de longitud; estos extremos no están probados. | Réplica: `src/protocol.py` | supuesto |
 
 ### DEPOSITO
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CMD-03 | `DEPOSITO;<CUENTA>;<MONTO>;<CONTROL>` acepta 250000 y 700, crea operación y responde `200 {"status":"recieved","operacionId":"<ID>"}`. El segundo depósito incrementa AC-0002 de 40000 a 40700. | mañana 6, 8, 18, 19 | probable |
+| CMD-03 | `DEPOSITO;<CUENTA>;<MONTO>;<CONTROL>` acepta depósito válido (ej. 250000), crea operación correlativa `OP-0001`, responde `200 {"status":"recieved","operacionId":"<ID>"}` e incrementa inmediatamente el saldo en CONSULTA. | exp 358, 359; mañana 6, 18 | confirmado |
 | CMD-03a | Réplica interpreta MONTO con `int()`, suma también cero o negativos sin límite propio y registra operación. Valida monto antes de existencia de cuenta. Estos extremos no se probaron en el original. | Réplica: `src/protocol.py` | supuesto |
 
 ### TRANSFER
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CMD-04 | `TRANSFER;<ORIGEN>;<DESTINO>;<MONTO>;<CONTROL>` acepta 40000 y 100000; responde `200 {"status":"recieved","operacionId":"<ID>"}`. Los saldos consultados concuerdan con restar al origen y sumar al destino; 120000 da E506. No determina por sí solo el límite exacto. | mañana 6, 7, 8, 9, 10, 11 | probable |
+| CMD-04 | `TRANSFER;<ORIGEN>;<DESTINO>;<MONTO>;<CONTROL>` transfiere fondos entre cuentas existentes (ej. 40000), responde `200 {"status":"recieved","operacionId":"<ID>"}` y muta inmediatamente reduciendo origen e incrementando destino. Superar 100000 (ej. 120000) responde 422 E506 límite excedido. | exp 361, 362, 363, 369; mañana 6, 7, 8, 9, 10 | confirmado |
 | CMD-04a | Réplica usa `int()` y aplica, en orden, monto válido, monto >100000, cuentas existentes y saldo de origen suficiente. Acepta montos no positivos si pasan esas comprobaciones y permite origen=destino. | Réplica: `src/protocol.py` | supuesto |
 
 ### CONSULTA
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CMD-05 | `CONSULTA;<CUENTA>;<CONTROL>` responde `200 {"cuenta_id":"<CUENTA>","saldo":<MONTO>}`. También funciona `CONSULTa` en la secuencia de la mañana. No devuelve un campo de estado. | mañana 5, 8, 11, 19 | probable |
+| CMD-05 | `CONSULTA;<CUENTA>;<CONTROL>` responde `200 {"cuenta_id":"<CUENTA>","saldo":<MONTO>}` reflejando fielmente el estado mutado tras altas, depósitos, transferencias y anulaciones. | exp 357, 359, 362, 363, 365, 366; mañana 5, 8, 11, 19 | confirmado |
 
 ### ANULA
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CMD-06 | `ANULA;<OPERACION>;<CONTROL>` sobre OP-0003 respondió `200 {"ok":true,"anulada":"OP-0003"}`; repetir respondió `200 {"ok":false,"motivo":"ya anulada"}`. No hay consulta posterior que pruebe restitución de ambos saldos. | mañana 13, 14 | probable |
+| CMD-06 | `ANULA;<OPERACION>;<CONTROL>` sobre una TRANSFER activa responde `200 {"ok":true,"anulada":"<OP-ID>"}` y revierte contablemente ambos saldos (restituye al origen y deduce del destino). Repetir la anulación sobre la misma operación responde `200 {"ok":false,"motivo":"ya anulada"}` sin volver a alterar saldos. | exp 364, 365, 366, 367; mañana 13, 14 | confirmado |
 | CMD-06a | Réplica revierte una TRANSFER sin comprobar saldo actual del destino; marca anulada cualquier operación. Anular DEPOSITO no revierte saldo. No se ha probado ninguno de esos efectos ni la anulación de ID inexistente. | Réplica: `src/protocol.py` | supuesto |
 
 ---
@@ -89,8 +89,8 @@ Estado persistido entre solicitudes, identificadores secuenciales y saldos.
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
 | MEM-01 | AB y BA obtuvieron AC-0001 y AC-0002 sin reset intermedio; se infiere contador de altas exitosas, no de cada request. | exp 186, 187, 281 | probable |
-| MEM-02 | Las cuatro operaciones exitosas de la mañana obtuvieron OP-0001..OP-0004; el rechazo por límite entre OP-0002 y OP-0003 no consumió el siguiente ID visible. | mañana 6, 7, 9, 10, 18 | probable |
-| MEM-03 | Después de varios resets, la siguiente alta vuelve a AC-0001. Esto no prueba borrado de saldos/operaciones, reinicio de X-Req ni aislamiento entre tokens. | exp 93, 94, 154, 155, 156, 282, 283, 284, 285 | confirmado |
+| MEM-02 | Operaciones exitosas obtienen identificadores secuenciales `OP-0001`, `OP-0002`... en depósitos y transferencias. Fallos posteriores no consumen el siguiente identificador correlativo. | exp 358, 361; mañana 6, 7, 9, 10, 18 | confirmado |
+| MEM-03 | Después de varios resets, la siguiente alta vuelve a AC-0001. Esto no prueba borrado de saldos/operaciones, reinicio de X-Req ni aislamiento entre tokens. | exp 93, 94, 154, 155, 156, 282, 283, 284, 285, 355, 356 | confirmado |
 | MEM-04 | Réplica: un único ledger en memoria por proceso; reset vacía cuentas/operaciones y pone ambos contadores a cero. IDs con prefijo AC-/OP- y mínimo cuatro dígitos; no hay estado separado por token ni persistencia tras reinicio. | Réplica: `src/state.py` | supuesto |
 
 ---
@@ -111,8 +111,8 @@ Códigos de error observados, cuerpo exacto y orden de evaluación.
 | ERR-08 | `400 {"error":"E302","mensaje":"aridad inválida"}` para `PING;64;extra`; también para ALTA con nombre separado en dos campos en la mañana. | exp 17; mañana 20 | probable |
 | ERR-09 | `404 {"error":"E401","mensaje":"cuenta inexistente"}` al consultar AC-0009. | mañana 15 | probable |
 | ERR-10 | `404 {"error":"E404","mensaje":"ruta desconocida"}` en las rutas GET/POST ensayadas. | exp 5, 6, 13 | confirmado |
-| ERR-11 | `422 {"error":"E506","mensaje":"límite excedido"}` al transferir 120000; no prueba umbral exacto ni precedencia con otros errores financieros. | mañana 9 | probable |
-| ERR-12 | `422 {"error":"E507","mensaje":"saldo insuficiente"}` al intentar transferir 50000 desde AC-0002, cuyo saldo observado era 40000. | mañana 8, 16 | probable |
+| ERR-11 | `422 {"error":"E506","mensaje":"límite excedido"}` al transferir 120000 (>100000). | exp 369; mañana 9 | confirmado |
+| ERR-12 | `422 {"error":"E507","mensaje":"saldo insuficiente"}` al intentar transferir 50000 desde cuenta con saldo 0. | exp 368; mañana 8, 16 | confirmado |
 | ERR-13 | Réplica: `400 {"error":"E501","mensaje":"monto inválido"}` si falla `int(MONTO)`; `404 {"error":"E402","mensaje":"operación inexistente"}` al anular ID ausente. | Réplica: `src/protocol.py` | supuesto |
 | ERR-14 | Precedencia observada: `PING;64;extra` da aridad aunque `extra` no sea numérico; control vacío de ALTA da segmento vacío. No establece orden total. | exp 17, 21 | probable |
 | ERR-15 | Réplica: rutas conocidas → auth → JSON → tipo de m → delimitador → segmentos vacíos → PING/aridad o formato de control → valor de control → despacho/aridad → negocio. Comando desconocido se rechaza tras control. Dentro del negocio rigen CMD-03a/CMD-04a/CMD-06a; precedencias restantes pendientes de contrastar. | Réplica: `src/main.py`, `src/protocol.py` | supuesto |

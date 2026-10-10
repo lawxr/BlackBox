@@ -34,8 +34,9 @@ Make compatibility evidence reproducible: hermetic local checks, evidence-scoped
 - [x] T4 — Add sequential reset-and-replay comparison for status and exact JSON/text responses, stopping on infrastructure or uncertain outcomes.
   - Route: delegated; runner and focused tests. Schedule after T3 is verified.
   - Outcome: `SequenceResult` and `compare_sequence` implemented in `lab/runner.py`. Executes reset then step-by-step sequence comparisons with key-order-agnostic JSON comparison, early stopping on mismatches, rate-limits (`infra_rate_limit`) or `TransportError`.
-- [ ] T5 — Run one hypothesis-driven current-version campaign and update only conclusions supported by its new evidence.
+- [x] T5 — Run one hypothesis-driven current-version campaign and update only conclusions supported by its new evidence.
   - Route: delegated execution with exact authorized original URL and USER_TOKEN from `.env`, one client, no blind retries, secrets never printed. Do not repeat established probes without a named uncertainty.
+  - Outcome: sequence `s_financial_lifecycle` executed (exp 355-369) against original service. Proved full financial lifecycle: ALTA (AC-0001, AC-0002) initial balance 0, DEPOSITO (OP-0001, status recieved), TRANSFER (OP-0002, status recieved), ANULA with 2-sided ledger reversion and second ANULA rejection ("ya anulada"), E507 insufficient funds, and E506 limit exceeded (>100000). Specification updated with confirmed confidence and exact citations.
 
 ## Verification
 - Baseline: `env UV_OFFLINE=1 UV_CACHE_DIR=/private/tmp/blackbox-inspect-uv PYTHONDONTWRITEBYTECODE=1 uv run --no-sync pytest -p no:cacheprovider` => 4 passed, 1 dependency deprecation warning.
@@ -70,5 +71,5 @@ Make compatibility evidence reproducible: hermetic local checks, evidence-scoped
 - Remaining: original financial behavior has no current successful experiment coverage; raw logging and reset/sequence gaps remain; public deployment is unverified.
 - Authorization update: user approved original experiments/resets with USER_TOKEN from `.env`; then approved focused TDD. Prior no-remote statements describe the completed baseline, not current authority.
 - T3 complete locally: `tests/test_lab_client.py` added with 3 tests using `httpx.MockTransport`; observed RED on `TransportError` collection then GREEN after implementation (3 passed in 0.19s). Full suite `uv run pytest` passes (31 passed, 1 warning in 0.34s). `git diff --check` => exit 0. Commit: `19ae172`.
-- T4 complete locally: `lab/runner.py` implemented with `SequenceResult` and `compare_sequence`; `tests/test_lab_runner.py` added with 3 tests covering match, mismatch stop and rate-limit stop; observed RED then GREEN (3 passed in 0.50s). Full suite `uv run pytest` passes (34 passed, 1 warning in 0.81s). `git diff --check` => exit 0.
-- Next: T4 work-unit commit; then T5.
+- T4 complete locally: `lab/runner.py` implemented with `SequenceResult` and `compare_sequence`; `tests/test_lab_runner.py` added with 3 tests covering match, mismatch stop and rate-limit stop; observed RED then GREEN (3 passed in 0.50s). Full suite `uv run pytest` passes (34 passed, 1 warning in 0.81s). `git diff --check` => exit 0. Commit: `3d17f26`.
+- T5 complete: sequence `s_financial_lifecycle` probes (355-369) executed and logged in `experimentos.jsonl` and `audit.jsonl`; `especificacion.md` updated with confirmed financial behavior; full test suite passes (34 passed).
