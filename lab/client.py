@@ -51,17 +51,24 @@ class LabClient:
         hipotesis: str,
         payload: Optional[Dict[str, Any]] = None,
         conclusion: Optional[str] = None,
+        headers: Optional[Dict[str, str]] = None,
+        raw_content: Optional[bytes] = None,
     ) -> Dict[str, Any]:
         self._throttle()
 
         url = f"{self.base_url}{path}"
-        headers = {}
-        if self.token:
-            headers["Authorization"] = f"Bearer {self.token}"
+        req_headers = {}
+        if headers is not None:
+            req_headers = dict(headers)
+        elif self.token:
+            req_headers["Authorization"] = f"Bearer {self.token}"
 
         start_time = time.perf_counter()
         with httpx.Client(timeout=10.0) as client:
-            resp = client.request(method, url, json=payload, headers=headers)
+            if raw_content is not None:
+                resp = client.request(method, url, content=raw_content, headers=req_headers)
+            else:
+                resp = client.request(method, url, json=payload, headers=req_headers)
         latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
 
         x_req = resp.headers.get("X-Req")

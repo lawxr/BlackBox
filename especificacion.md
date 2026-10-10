@@ -17,8 +17,8 @@ Rutas, métodos, autenticación, forma del cuerpo y límites observados.
 | ENT-01 | `GET /health` responde `200` y cuerpo `{"ok": true}` | 1 | confirmado |
 | ENT-02 | `POST /__reset` reinicia el estado lógico completo y responde `200 {"ok": true}` | 2 | confirmado |
 | ENT-03 | `POST /msg` recibe `{"m": "..."}` | 3 | confirmado |
-| ENT-04 | Rutas inexistentes responden formato del original | TBD | supuesto |
-| ENT-05 | Validación de cabecera `Authorization: Bearer <token>` | TBD | supuesto |
+| ENT-04 | Rutas inexistentes responden `404 {"error": "E404", "mensaje": "ruta desconocida"}` (el router evalúa antes que la autenticación) | 5, 6, 13 | confirmado |
+| ENT-05 | Validación de cabecera `Authorization: Bearer <token>` obligatoria en `/health`, `/__reset` y `/msg`; rechazo responde `401 {"error": "E001", "mensaje": "no autorizado"}` | 9, 10, 11 | confirmado |
 
 ---
 
@@ -62,12 +62,16 @@ Códigos de error observados, cuerpo exacto y orden de evaluación.
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| ERR-01 | Error E201: Formato de control inválido | TBD | supuesto |
-| ERR-02 | Error E202: Checksum / control no coincide | TBD | supuesto |
-| ERR-03 | Error E301 / E302: Formato o aridad de comando incorrecta | TBD | supuesto |
-| ERR-04 | Error E401: Cuenta inexistente | TBD | supuesto |
-| ERR-05 | Error E506: Límite por transferencia superado | TBD | supuesto |
-| ERR-06 | Error E507: Saldo insuficiente | TBD | supuesto |
+| ERR-00 | Error E001: Token ausente, esquema no-Bearer o token inválido devuelve `401 {"error":"E001","mensaje":"no autorizado"}` | 9, 10, 11 | confirmado |
+| ERR-01 | Error E100: Cuerpo HTTP no analizable como JSON válido devuelve `400 {"error":"E100","mensaje":"json inválido"}` | 12 | confirmado |
+| ERR-02 | Error E102: Cuerpo JSON sin clave `"m"` o con tipo no string devuelve `400 {"error":"E102","mensaje":"falta m"}` | 7, 8 | confirmado |
+| ERR-03 | Error E404: Ruta inexistente (GET/POST) devuelve `404 {"error":"E404","mensaje":"ruta desconocida"}` | 5, 6, 13 | confirmado |
+| ERR-04 | Error E201: Formato de control inválido | TBD | supuesto |
+| ERR-05 | Error E202: Checksum / control no coincide | TBD | supuesto |
+| ERR-06 | Error E301 / E302: Formato o aridad de comando incorrecta | TBD | supuesto |
+| ERR-07 | Error E401: Cuenta inexistente | TBD | supuesto |
+| ERR-08 | Error E506: Límite por transferencia superado | TBD | supuesto |
+| ERR-09 | Error E507: Saldo insuficiente | TBD | supuesto |
 
 ---
 

@@ -10,38 +10,57 @@ from src.protocol import parse_message, dispatch_command
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 
+from typing import Optional
+
+def check_auth(request: Request) -> Optional[Response]:
+    if not TEAM_TOKEN:
+        return None
+    auth_header = request.headers.get("Authorization")
+    if auth_header != f"Bearer {TEAM_TOKEN}":
+        return JSONResponse(status_code=401, content={"error": "E001", "mensaje": "no autorizado"})
+    return None
+
+
 @app.get("/health")
 async def health(request: Request) -> Response:
+    auth_err = check_auth(request)
+    if auth_err:
+        return auth_err
     return JSONResponse(status_code=200, content={"ok": True})
 
 
 @app.post("/__reset")
 async def reset(request: Request) -> Response:
+    auth_err = check_auth(request)
+    if auth_err:
+        return auth_err
     ledger.reset()
     return JSONResponse(status_code=200, content={"ok": True})
 
 
 @app.post("/msg")
 async def handle_msg(request: Request) -> Response:
-    # Validate auth if configured
-    auth_header = request.headers.get("Authorization")
-    if TEAM_TOKEN and auth_header != f"Bearer {TEAM_TOKEN}":
-        # Will be tuned against experiment observations
-        pass
+    auth_err = check_auth(request)
+    if auth_err:
+        return auth_err
 
     try:
-        body = await request.json()
+        raw_body = await request.body()
     except Exception:
-        return JSONResponse(status_code=400, content={"error": "invalid_json"})
+        return JSONResponse(status_code=400, content={"error": "E100", "mensaje": "json inválido"})
 
-    if not isinstance(body, dict) or "m" not in body:
-        return JSONResponse(status_code=400, content={"error": "missing_m"})
+    if not raw_body:
+        return JSONResponse(status_code=400, content={"error": "E100", "mensaje": "json inválido"})
 
-    raw_m = body["m"]
-    if not isinstance(raw_m, str):
-        return JSONResponse(status_code=400, content={"error": "invalid_m_type"})
+    try:
+        body = json.loads(raw_body)
+    except Exception:
+        return JSONResponse(status_code=400, content={"error": "E100", "mensaje": "json inválido"})
 
-    parts = parse_message(raw_m)
+    if not isinstance(body, dict) or "m" not in body or not isinstance(body["m"], str):
+        return JSONResponse(status_code=400, content={"error": "E102", "mensaje": "falta m"})
+
+    parts = parse_message(body["m"])
     status_code, response_data = dispatch_command(parts)
     return JSONResponse(status_code=status_code, content=response_data)
 
@@ -49,5 +68,4 @@ async def handle_msg(request: Request) -> Response:
 # Fallback catch-all route for any undefined path/method
 @app.api_route("/{path_name:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
 async def catch_all(request: Request, path_name: str) -> Response:
-    # Explicit 404 handler to replicate legacy behavior without framework leaks
-    return JSONResponse(status_code=404, content={"error": "not_found"})
+    return JSONResponse(status_code=404, content={"error": "E404", "mensaje": "ruta desconocida"})

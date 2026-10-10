@@ -1,3 +1,13 @@
 {"id": 1, "timestamp": "2026-10-10T17:19:40.644512+00:00", "method": "GET", "path": "/health", "latency_ms": 331.33, "status": 200, "x_infra": null}
 {"id": 2, "timestamp": "2026-10-10T17:19:40.943230+00:00", "method": "POST", "path": "/__reset", "latency_ms": 297.71, "status": 200, "x_infra": null}
 {"id": 3, "timestamp": "2026-10-10T17:19:41.245958+00:00", "method": "POST", "path": "/msg", "latency_ms": 301.66, "status": 200, "x_infra": null}
+{"id": 4, "timestamp": "2026-10-10T17:33:01.356718+00:00", "method": "POST", "path": "/__reset", "latency_ms": 426.88, "status": 200, "x_infra": null}
+{"id": 5, "timestamp": "2026-10-10T17:33:02.827519+00:00", "method": "GET", "path": "/ruta_que_no_existe", "latency_ms": 291.5, "status": 404, "x_infra": null}
+{"id": 6, "timestamp": "2026-10-10T17:33:03.125637+00:00", "method": "POST", "path": "/ruta_que_no_existe", "latency_ms": 297.32, "status": 404, "x_infra": null}
+{"id": 7, "timestamp": "2026-10-10T17:33:03.421100+00:00", "method": "POST", "path": "/msg", "latency_ms": 294.64, "status": 400, "x_infra": null}
+{"id": 8, "timestamp": "2026-10-10T17:33:03.716368+00:00", "method": "POST", "path": "/msg", "latency_ms": 294.5, "status": 400, "x_infra": null}
+{"id": 9, "timestamp": "2026-10-10T17:33:39.043221+00:00", "method": "POST", "path": "/msg", "latency_ms": 315.2, "status": 401, "x_infra": null}
+{"id": 10, "timestamp": "2026-10-10T17:33:39.340839+00:00", "method": "POST", "path": "/msg", "latency_ms": 296.58, "status": 401, "x_infra": null}
+{"id": 11, "timestamp": "2026-10-10T17:33:39.637418+00:00", "method": "POST", "path": "/msg", "latency_ms": 295.55, "status": 401, "x_infra": null}
+{"id": 12, "timestamp": "2026-10-10T17:33:39.933675+00:00", "method": "POST", "path": "/msg", "latency_ms": 295.41, "status": 400, "x_infra": null}
+{"id": 13, "timestamp": "2026-10-10T17:33:40.233158+00:00", "method": "GET", "path": "/ruta_inexistente_sin_token", "latency_ms": 298.71, "status": 404, "x_infra": null}

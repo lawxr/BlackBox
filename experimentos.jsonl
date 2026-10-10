@@ -1,3 +1,13 @@
 {"id": 1, "seq": "probe-0", "x_req": null, "hipotesis": "GET /health responde 200 y JSON de salud", "request": {}, "status": 200, "response": {"ok": true}}
 {"id": 2, "seq": "probe-0", "x_req": null, "hipotesis": "POST /__reset reinicia estado del token", "request": {}, "status": 200, "response": {"ok": true}}
 {"id": 3, "seq": "probe-0", "x_req": 1, "hipotesis": "PING con control 64 responde pong", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
+{"id": 4, "seq": "s_auth_http", "x_req": null, "hipotesis": "Reset antes de campaña HTTP/Auth", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 5, "seq": "s_auth_http", "x_req": null, "hipotesis": "Ruta inexistente GET /ruta_que_no_existe", "request": {}, "status": 404, "response": {"error": "E404", "mensaje": "ruta desconocida"}}
+{"id": 6, "seq": "s_auth_http", "x_req": null, "hipotesis": "Ruta inexistente POST /ruta_que_no_existe", "request": {"test": 1}, "status": 404, "response": {"error": "E404", "mensaje": "ruta desconocida"}}
+{"id": 7, "seq": "s_auth_http", "x_req": 2, "hipotesis": "POST /msg con cuerpo vacio {}", "request": {}, "status": 400, "response": {"error": "E102", "mensaje": "falta m"}}
+{"id": 8, "seq": "s_auth_http", "x_req": 3, "hipotesis": "POST /msg con m numerico", "request": {"m": 12345}, "status": 400, "response": {"error": "E102", "mensaje": "falta m"}}
+{"id": 9, "seq": "s_auth_matrix", "x_req": null, "hipotesis": "Llamada sin header Authorization devuelve 401 E001", "request": {"m": "PING;64"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}, "conclusion": "Responde 401 E001 no autorizado"}
+{"id": 10, "seq": "s_auth_matrix", "x_req": null, "hipotesis": "Llamada con Bearer invalido devuelve 401 E001", "request": {"m": "PING;64"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}, "conclusion": "Responde 401 E001 no autorizado"}
+{"id": 11, "seq": "s_auth_matrix", "x_req": null, "hipotesis": "Llamada con scheme Token en vez de Bearer devuelve 401 E001", "request": {"m": "PING;64"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}, "conclusion": "Responde 401 E001 no autorizado"}
+{"id": 12, "seq": "s_auth_matrix", "x_req": 5, "hipotesis": "Body no parseable como JSON devuelve 400 E100", "request": {}, "status": 400, "response": {"error": "E100", "mensaje": "json inválido"}, "conclusion": "Responde 400 E100 json inválido"}
+{"id": 13, "seq": "s_auth_matrix", "x_req": null, "hipotesis": "Ruta inexistente sin token devuelve 404 antes de evaluar auth", "request": {}, "status": 404, "response": {"error": "E404", "mensaje": "ruta desconocida"}, "conclusion": "Responde 404 E404; el router se evalua antes que auth"}
