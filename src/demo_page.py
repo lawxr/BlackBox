@@ -532,7 +532,12 @@ DEMO_HTML = r"""<!DOCTYPE html>
   </div>
 
   <script>
-    const TEAM_TOKEN = "ftr_819e322b513146fe17ddf541595b4e8f";
+    // The token is never embedded: the viewer types it once per browser session.
+    const TEAM_TOKEN = sessionStorage.getItem("bb_token") || (() => {
+      const t = window.prompt("Team token") || "";
+      sessionStorage.setItem("bb_token", t);
+      return t;
+    })();
 
     // ISO 7064 MOD 97-10
     function computeControl(payload) {
