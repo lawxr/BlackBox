@@ -40,9 +40,15 @@ def _find_route(method: str, path: str) -> Optional[Dict[str, Any]]:
 
 async def _message(request: Request) -> Response:
     http = profile.get()["http"]
+    raw_body = await request.body()
+    max_body = profile.get().get("max_body_bytes")
+    if max_body is not None and len(raw_body) > max_body:
+        return _json(error_response("E101"))
+    if raw_body.startswith(b"\xef\xbb\xbf"):
+        return _json(error_response(http["invalid_json_error"]))
+
     invalid = object()  # sentinel: a JSON `null` body is valid JSON, not invalid
     try:
-        raw_body = await request.body()
         body = json.loads(raw_body) if raw_body else invalid
     except Exception:
         body = invalid

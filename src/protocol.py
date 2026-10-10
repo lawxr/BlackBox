@@ -52,10 +52,7 @@ def compute_control(payload: str) -> int:
         return 1
     num_str = "".join(digits)
     rem = (int(num_str) * 100) % 97
-    ctrl = 98 - rem
-    if ctrl == 98:
-        return 1
-    return ctrl
+    return 98 - rem
 
 
 def compute_levenshtein(s1: str, s2: str) -> int:
@@ -157,9 +154,18 @@ def _check(check: Dict[str, Any], args: List[str], prof: Dict[str, Any]) -> bool
     if kind == "operation_exists":
         return vals[0] in ledger.operations
     if kind == "sufficient_balance":
-        return ledger.accounts[vals[0]]["balance"] >= int(vals[1])
+        acct = ledger.accounts.get(vals[0])
+        if not acct:
+            return False
+        amt = parse_amount(vals[1])
+        if amt is None:
+            return False
+        return acct["balance"] >= amt
     if kind == "max_amount":
-        return int(vals[0]) <= prof[check["limit"]]
+        amt = parse_amount(vals[0])
+        if amt is None:
+            return False
+        return amt <= prof[check["limit"]]
     raise profile.ProfileError(f"unsupported check {kind!r}")
 
 

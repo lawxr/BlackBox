@@ -31,8 +31,18 @@ _current: Dict[str, Any] = {}
 
 
 def resolve_path(path: Optional[Union[str, Path]] = None) -> Path:
-    """Explicit path, then $BLACKBOX_PROFILE, then the bundled default."""
-    return Path(path or os.environ.get(ENV_VAR) or DEFAULT_PATH)
+    """Explicit path, then $BLACKBOX_PROFILE, then profiles/ACTIVE, then default."""
+    if path:
+        return Path(path)
+    if os.environ.get(ENV_VAR):
+        return Path(os.environ[ENV_VAR])
+    active_file = Path(__file__).resolve().parents[1] / "profiles" / "ACTIVE"
+    if active_file.exists():
+        tag = active_file.read_text(encoding="utf-8").strip()
+        candidate = active_file.parent / tag / "profile.json"
+        if candidate.exists():
+            return candidate
+    return DEFAULT_PATH
 
 
 def _validate(data: Dict[str, Any]) -> None:

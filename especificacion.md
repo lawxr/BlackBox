@@ -24,7 +24,7 @@ Rutas, métodos, autenticación, forma del cuerpo y límites observados.
 | ENT-04 | GET/POST a las rutas inexistentes ensayadas dieron `404 {"error":"E404","mensaje":"ruta desconocida"}`. La prueba sin token consta en la hipótesis de exp 13, no en cabeceras guardadas. | exp 5, 6, 13 | confirmado |
 | ENT-05 | En `/msg`, las pruebas descritas como sin autorización, Bearer inválido y esquema Token dieron `401 {"error":"E001","mensaje":"no autorizado"}`. No prueban rechazo en `/health` ni `/__reset`. | exp 9, 10, 11 | probable |
 | ENT-06 | Réplica: con token configurado exige igualdad exacta de `Authorization: Bearer <token>` en las tres rutas; sin token configurado omite autenticación. Las rutas no reconocidas usan E404 sin autenticar para GET/POST/PUT/DELETE/PATCH/HEAD/OPTIONS. Métodos restantes y redirecciones quedan sujetos al framework. | Réplica: `src/main.py` | supuesto |
-| ENT-07 | Réplica: analiza el cuerpo como JSON sin comprobar Content-Type; exige objeto y `m` string e ignora otras claves. No fija límites propios de cuerpo, mensaje o nombre; límites del servidor y comportamiento original pendientes. | Réplica: `src/main.py` | supuesto |
+| ENT-07 | Límite de cuerpo y Content-Type: peticiones HTTP cuyo cuerpo supera 8192 bytes responden con `413 {"error":"E101","mensaje":"cuerpo demasiado grande"}` (ver DRIFT-104). Para cuerpos <= 8192 bytes, se procesa el JSON sin comprobar Content-Type, exigiendo objeto con campo `m` string. | exp 2219..2250, 2340, 2356 | confirmado |
 
 ---
 
@@ -35,7 +35,7 @@ Validación de formato de mensaje, checksum y delimitadores.
 |---|---|---|---|
 | INT-01 | `PING` sin delimitador dio E103; `ALTA;Lucia;` dio E104. Todo segmento vacío en cualquier posición responde `400 E104 segmento vacío`. | exp 16, 21 | confirmado |
 | INT-02 | Formato de control estricto: exactamente 1 o 2 dígitos decimales sin signo. Controles con longitud > 2 (`003`, `100`, `150`) o no numéricos (`5X`, `-5`) responden `400 E201 control mal formado`. | exp 18, 19, 20, 26, 495 | confirmado |
-| INT-03 | Algoritmo matemático exacto ISO 7064 MOD 97-10: se normaliza a mayúsculas el texto antes del último `;`, se concatenan dígitos 0..9 y letras A=1..Z=26 en un entero $N$. Se calcula el resto $R = (N \times 100) \pmod{97}$ y el control $C = 98 - R$ (si $C=98$, se normaliza a 1). El rango válido de control es estrictamente 1..97; cuando $R=1$ el control es 97, nunca 0. Controles con valor 0 responden E202. | exp 92, 154, 156, 184, 187, 281, 283, 285, 353, 421, 429 | confirmado |
+| INT-03 | Algoritmo matemático exacto ISO 7064 MOD 97-10: se normaliza a mayúsculas el texto antes del último `;`, se concatenan dígitos 0..9 y letras A=1..Z=26 en un entero $N$. Se calcula el resto $R = (N \times 100) \pmod{97}$ y el control $C = 98 - R$. El rango válido de control es estrictamente 1..98; cuando $R=0$ el control es exactamente 98 (no se normaliza a 1). Controles con valor 0 responden E202. | exp 92, 154, 156, 184, 187, 281, 283, 285, 353, 421, 429, 2376..2414 | confirmado |
 | INT-04 | PING aceptó los controles `64`, `65` y `XX` sin comprobar su valor. Requiere exactamente 2 segmentos (`PING;<CTRL>`). | exp 3, 14, 15 | confirmado |
 | INT-05 | Validación de valor de control: se evalúa como igualdad estricta de cadena contra el control computado (`str(expected) == ctrl_str`). Controles con ceros iniciales (`03` cuando se espera `3`) responden `400 E202 control inválido`. | exp 22, 23, 24, 25, 27, 28, 493, 494 | confirmado |
 
@@ -70,13 +70,13 @@ Cada forma incluye el control como último campo. Los cuerpos de éxito siguient
 ### TRANSFER
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CMD-04 | `TRANSFER;<ORIGEN>;<DESTINO>;<MONTO>;<CONTROL>` transfiere fondos entre cuentas existentes (ej. 40000), responde `200 {"status":"recieved","operacionId":"<ID>"}` y muta inmediatamente reduciendo origen e incrementando destino. Superar 100000 (ej. 120000) responde 422 E506 límite excedido si hay fondos suficientes. | exp 361, 362, 363, 369; mañana 6, 7, 8, 9, 10 | confirmado |
+| CMD-04 | `TRANSFER;<ORIGEN>;<DESTINO>;<MONTO>;<CONTROL>` transfiere fondos entre cuentas existentes (ej. 40000), responde `200 {"status":"recieved","operacionId":"<ID>"}` y muta inmediatamente reduciendo origen e incrementando destino. En v1 el límite era 100000; en v2 se redujo exactamente a 50000 (ver DRIFT-101): superar 50000 responde `422 E506 límite excedido`. | exp 361, 362, 363, 1319, 2129..2250; mañana 6..10 | confirmado |
 | CMD-04a | Montos <= 0 o no enteros responden 400 E303 monto inválido. Transferir a la misma cuenta (`origen == destino`) responde 400 E304 origen y destino iguales, evaluado antes de la existencia de cuentas o saldo. | exp 382, 383, 384, 391, 392 | confirmado |
 
 ### CONSULTA
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CMD-05 | `CONSULTA;<CUENTA>;<CONTROL>` responde `200 {"cuenta_id":"<CUENTA>","saldo":<MONTO>}` reflejando fielmente el estado mutado tras altas, depósitos, transferencias y anulaciones. | exp 357, 359, 362, 363, 365, 366, 375, 378, 385; mañana 5, 8, 11, 19 | confirmado |
+| CMD-05 | `CONSULTA;<CUENTA>;<CONTROL>` responde `200 {"cuenta_id":"<CUENTA>","saldo":<MONTO>}` reflejando fielmente el estado mutado tras altas, depósitos, transferencias y anulaciones. En v1 el saldo era un entero; en v2 responde como string decimal con dos decimales (ej. `"0.00"`, `"258.74"`, ver DRIFT-102). | exp 357, 359, 2382, 2383, 2397, 2398; mañana 5, 8 | confirmado |
 
 ### ANULA
 | ID | Comportamiento | Evidencia | Confianza |
@@ -125,22 +125,23 @@ Códigos de error observados, cuerpo exacto y orden de evaluación.
 | ERR-09 | `404 {"error":"E401","mensaje":"cuenta inexistente"}` al consultar, depositar o transferir con identificador de cuenta ausente. | exp 381, 386, 387; mañana 15 | confirmado |
 | ERR-09a | `404 {"error":"E402","mensaje":"operación inexistente"}` al intentar anular una operación con identificador ausente (`OP-9999`). | exp 376 | confirmado |
 | ERR-10 | `404 {"error":"E404","mensaje":"ruta desconocida"}` en las rutas GET/POST ensayadas. | exp 5, 6, 13 | confirmado |
-| ERR-11 | `422 {"error":"E506","mensaje":"límite excedido"}` al transferir >100000 con saldo suficiente. Evaluado tras comprobar saldo suficiente. | exp 369; mañana 9 | confirmado |
-| ERR-12 | `422 {"error":"E507","mensaje":"saldo insuficiente"}` al intentar transferir sin saldo suficiente. Se evalúa antes que E506 cuando ambos aplican. | exp 368, 394; mañana 8, 16 | confirmado |
+| ERR-11 | `422 {"error":"E506","mensaje":"límite excedido"}` al transferir monto mayor al límite de transferencia (100000 en v1, 50000 en v2). En v2 se evalúa antes que E507 cuando ambos aplican (ver DRIFT-103). | exp 369, 1319, 2129..2250; mañana 9 | confirmado |
+| ERR-12 | `422 {"error":"E507","mensaje":"saldo insuficiente"}` al intentar transferir sin saldo suficiente. En v1 se evaluaba antes que E506; en v2 se evalúa tras comprobar el límite máximo E506 (ver DRIFT-103). | exp 368, 394, 1319; mañana 8, 16 | confirmado |
 | ERR-14 | Precedencia observada: `PING;64;extra` da aridad aunque `extra` no sea numérico; control vacío de ALTA da segmento vacío. | exp 17, 21 | probable |
 | ERR-16 | `409 {"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}` para HALT con aridad y control válidos; se evalúa después de E104, E202 y E302. | exp 1134, 1135, 1199, 1200, 1201 | confirmado |
-| ERR-15 | Precedencia total comprobada: Rutas conocidas → Auth (401 E001) → JSON (400 E100/E102) → Delimitador (400 E103) → Segmentos vacíos (400 E104) → Control (400 E201/E202) → Comando/Aridad (400 E301/E302) → Formato monto (400 E303) → Origen/Destino iguales (400 E304) → Existencia de cuenta/operación (404 E401/E402) → Saldo suficiente (422 E507) → Límite excedido (422 E506). | exp 382, 391, 392, 393, 394, 395 | confirmado |
+| ERR-15 | Precedencia total comprobada: Rutas conocidas → Auth (401 E001) → Límite de cuerpo (413 E101) → JSON (400 E100/E102) → Delimitador (400 E103) → Segmentos vacíos (400 E104) → Control (400 E201/E202) → Comando/Aridad (400 E301/E302) → Formato monto (400 E303) → Origen/Destino iguales (400 E304) → Existencia de cuenta/operación (404 E401/E402) → Límite excedido (422 E506 en v2) → Saldo suficiente (422 E507 en v2). | exp 382, 391, 392, 393, 394, 395, 1319, 2219..2250 | confirmado |
 
 ---
 
-## 6. Cambios durante el día
-Registro de divergencias detectadas en la versión activa del servicio durante la jornada.
+## 6. Cambios durante el día (Incidente FR-0153: Despliegue v2 del proveedor)
+Registro de divergencias detectadas en la versión 2 activa del servicio durante la jornada tras el incidente no anunciado de las 15:30.
 
-| ID | Comportamiento | Evidencia | Confianza |
+| ID | Cambio de Contrato (v1 vs v2) | Evidencia y Detección | Confianza |
 |---|---|---|---|
-| DRIFT-01 | No se han detectado divergencias de contrato respecto a los ejemplos de la mañana. La campaña de ciclo de vida financiero (exp 355-369) verificó que altas, depósitos, transferencias, límites E506, saldos E507 y anulaciones mantienen idéntico formato y semántica. | exp 355..369; mañana 1..20 | confirmado |
-| DRIFT-02 | PING;64 y la fórmula de integridad (ISO 7064 MOD 97-10) se mantienen estables y operativos sin alteraciones entre la sesión matutina y vespertina. | exp 3, 353, 355..369; mañana 1 | confirmado |
-| DRIFT-03 | Fuzzer diferencial propio con semilla (`lab/seqfuzz.py`, semilla 2026) generó 100 secuencias con la forma del set (40 de 1, 45 de 2-5, 15 de 6-12) contra original y réplica; 451 requests, 7 divergencias, todas explicadas por CMD-03b, CMD-03c y CMD-07 salvo una contaminada por un canary concurrente con el mismo token. | exp 764-1121 | confirmado |
+| DRIFT-101 | **Límite de Transferencia reducido a 50.000**: En v1 el tope por transferencia era 100.000 (CMD-04). En v2 el tope se redujo exactamente a 50.000 (`transfer_limit: 50000`); montos > 50.000 responden `422 E506 límite excedido`. | Detectado autónomamente por búsqueda binaria (`boundaries.search_transfer_limit`). Exp 1319, exp 2129..2250. | confirmado |
+| DRIFT-102 | **Formato de Saldo en CONSULTA a decimal**: En v1 `CONSULTA` respondía `{"saldo": <int>}` (ej. `0`, `100`). En v2 responde estrictamente como string decimal formateado con dos decimales (`"0.00"`, `"258.74"`). | Detectado autónomamente por inferencia de formas (`shapes.infer_balance_format`). Exp 2382, 2383, 2397, 2398, 2406, 2414. | confirmado |
+| DRIFT-103 | **Precedencia en TRANSFER (max_amount antes de sufficient_balance)**: En v1 `sufficient_balance` (E507) se evaluaba antes que el tope de transferencia. En v2, si se viola el tope (>50.000) y además se supera el saldo disponible, el servicio evalúa primero `max_amount` respondiendo `422 E506`. | Detectado por motor de precedencia (`precedence.determine_transfer_checks_order`). Exp 1319. | confirmado |
+| DRIFT-104 | **Límite de tamaño de cuerpo HTTP (8192 bytes, E101)**: En v1 no existía tope documentado. En v2 peticiones HTTP cuyo cuerpo excede 8192 bytes responden `413 {"error":"E101","mensaje":"cuerpo demasiado grande"}`. | Detectado por mutación de gramática y búsqueda binaria (`boundaries.search_body_size`). Exp 2219..2250, 2340, 2356. | confirmado |
 
 ---
 
