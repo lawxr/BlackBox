@@ -133,14 +133,15 @@ Códigos de error observados, cuerpo exacto y orden de evaluación.
 
 ---
 
-## 6. Cambios durante el día
-Registro de divergencias detectadas en la versión activa del servicio durante la jornada.
+## 6. Cambios durante el día (Incidente FR-0153: Despliegue v2 del proveedor)
+Registro de divergencias detectadas en la versión 2 activa del servicio durante la jornada tras el incidente no anunciado de las 15:30.
 
-| ID | Comportamiento | Evidencia | Confianza |
+| ID | Cambio de Contrato (v1 vs v2) | Evidencia y Detección | Confianza |
 |---|---|---|---|
-| DRIFT-01 | No se han detectado divergencias de contrato respecto a los ejemplos de la mañana. La campaña de ciclo de vida financiero (exp 355-369) verificó que altas, depósitos, transferencias, límites E506, saldos E507 y anulaciones mantienen idéntico formato y semántica. | exp 355..369; mañana 1..20 | confirmado |
-| DRIFT-02 | PING;64 y la fórmula de integridad (ISO 7064 MOD 97-10) se mantienen estables y operativos sin alteraciones entre la sesión matutina y vespertina. | exp 3, 353, 355..369; mañana 1 | confirmado |
-| DRIFT-03 | Fuzzer diferencial propio con semilla (`lab/seqfuzz.py`, semilla 2026) generó 100 secuencias con la forma del set (40 de 1, 45 de 2-5, 15 de 6-12) contra original y réplica; 451 requests, 7 divergencias, todas explicadas por CMD-03b, CMD-03c y CMD-07 salvo una contaminada por un canary concurrente con el mismo token. | exp 764-1121 | confirmado |
+| DRIFT-101 | **Límite de Transferencia reducido a 50.000**: En v1 el tope por transferencia era 100.000 (CMD-04). En v2 el tope se redujo exactamente a 50.000 (`transfer_limit: 50000`); montos > 50.000 responden `422 E506 límite excedido`. | Detectado autónomamente por búsqueda binaria (`boundaries.search_transfer_limit`). Exp 1319, exp 2129..2250. | confirmado |
+| DRIFT-102 | **Formato de Saldo en CONSULTA a decimal**: En v1 `CONSULTA` respondía `{"saldo": <int>}` (ej. `0`, `100`). En v2 responde estrictamente como string decimal formateado con dos decimales (`"0.00"`, `"258.74"`). | Detectado autónomamente por inferencia de formas (`shapes.infer_balance_format`). Exp 2382, 2383, 2397, 2398, 2406, 2414. | confirmado |
+| DRIFT-103 | **Precedencia en TRANSFER (max_amount antes de sufficient_balance)**: En v1 `sufficient_balance` (E507) se evaluaba antes que el tope de transferencia. En v2, si se viola el tope (>50.000) y además se supera el saldo disponible, el servicio evalúa primero `max_amount` respondiendo `422 E506`. | Detectado por motor de precedencia (`precedence.determine_transfer_checks_order`). Exp 1319. | confirmado |
+| DRIFT-104 | **Límite de tamaño de cuerpo HTTP (8192 bytes, E101)**: En v1 no existía tope documentado. En v2 peticiones HTTP cuyo cuerpo excede 8192 bytes responden `413 {"error":"E101","mensaje":"cuerpo demasiado grande"}`. | Detectado por mutación de gramática y búsqueda binaria (`boundaries.search_body_size`). Exp 2219..2250, 2340, 2356. | confirmado |
 
 ---
 

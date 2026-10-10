@@ -16,7 +16,12 @@ import httpx
 from fastapi.testclient import TestClient
 
 from lab.client import LabClient, TransportError
+from lab.explore import boundaries, inputs, precedence, replay, shapes, stateful
+from lab.explore.observation import Observation, Target
+from lab.explore.targets import LiveTarget, ReplicaTarget, ScopedTarget
 from lab.runner import json_equal
+from lab.synthesize import synthesize_profile
+from lab.versioning import DEFAULT_PROFILES_DIR, publish_version
 from src import profile
 from src.main import app
 from src.protocol import compute_control
@@ -414,6 +419,147 @@ def run_live_learning(
     return 0
 
 
+def run_autonomous_pipeline(
+    target: Target,
+    budget: int,
+    base_profile_path: Path = DEFAULT_PROFILE_PATH,
+    profiles_dir: Optional[Path | str] = None,
+    log_path: Optional[Path | str] = "experimentos.jsonl",
+) -> int:
+    """Run full autonomous exploration, synthesis, and gate promotion pipeline."""
+    base_data = profile.load_profile(base_profile_path)
+
+    print(f"🚀 Starting Autonomous Pipeline with budget: {budget} requests...")
+
+    # Allocate sub-budgets to ensure each engine gets adequate execution
+    has_log = bool(log_path and Path(log_path).exists())
+    b_replay = max(10, int(budget * 0.10)) if has_log else 0
+    b_xfer = max(15, int(budget * 0.15))
+    b_body = max(10, int(budget * 0.10))
+    b_prec = max(5, int(budget * 0.05))
+    rem = max(10, budget - (b_replay + b_xfer + b_body + b_prec))
+    b_inputs = rem // 2
+    b_state = rem - b_inputs
+
+    all_obs: List[Observation] = []
+
+    # Engine 0: Historical Replay (if recorded log exists)
+    if has_log:
+        clean_segs = replay.extract_clean_segments(log_path, max_segments=5)
+        if clean_segs:
+            t_replay = ScopedTarget(target, b_replay)
+            try:
+                obs_replay, replay_summary = replay.replay_segments(t_replay, clean_segs, budget=b_replay)
+                all_obs.extend(obs_replay)
+                print(
+                    f"  [Replay] Replayed {replay_summary['total_segments']} segments, "
+                    f"{replay_summary['divergent_segments']} divergent clusters found"
+                )
+            except Exception as e:
+                print(f"  [Replay] Historical replay skipped: {e}")
+
+    # Engine 1: Boundaries (transfer limit)
+    t_xfer = ScopedTarget(target, b_xfer)
+    try:
+        xfer_limit, obs_xfer = boundaries.search_transfer_limit(t_xfer)
+        all_obs.extend(obs_xfer)
+        print(f"  [Boundaries] Transfer limit inferred: {xfer_limit} ({len(obs_xfer)} observations)")
+    except Exception as e:
+        print(f"  [Boundaries] Transfer limit search skipped: {e}")
+        xfer_limit = 0
+
+    # Engine 2: Boundaries (body size)
+    t_body = ScopedTarget(target, b_body)
+    try:
+        body_size, obs_body = boundaries.search_body_size(t_body)
+        all_obs.extend(obs_body)
+        print(f"  [Boundaries] Body size limit inferred: {body_size} ({len(obs_body)} observations)")
+    except Exception as e:
+        print(f"  [Boundaries] Body size search skipped: {e}")
+        body_size = 0
+
+    # Engine 3: Precedence
+    t_prec = ScopedTarget(target, b_prec)
+    try:
+        prec_order, obs_prec = precedence.determine_transfer_checks_order(t_prec, transfer_limit=xfer_limit)
+        all_obs.extend(obs_prec)
+        print(f"  [Precedence] Transfer checks order: {prec_order} ({len(obs_prec)} observations)")
+    except Exception as e:
+        print(f"  [Precedence] Precedence search skipped: {e}")
+        prec_order = []
+
+    # Engine 4: Grammar Inputs
+    t_inputs = ScopedTarget(target, b_inputs)
+    try:
+        obs_inputs = inputs.explore(t_inputs, budget=b_inputs, n=max(5, b_inputs // 3))
+        all_obs.extend(obs_inputs)
+        print(f"  [Inputs] Generated {len(obs_inputs)} grammar mutation observations")
+    except Exception as e:
+        print(f"  [Inputs] Input exploration skipped: {e}")
+
+    # Engine 5: Stateful Chains
+    t_state = ScopedTarget(target, b_state)
+    try:
+        obs_state = stateful.explore(t_state, budget=b_state, n=max(3, b_state // 8))
+        all_obs.extend(obs_state)
+        print(f"  [Stateful] Generated {len(obs_state)} stateful chain observations")
+    except Exception as e:
+        print(f"  [Stateful] Stateful exploration skipped: {e}")
+
+    # Shapes inference
+    bal_fmt = shapes.infer_balance_format(all_obs)
+    print(f"  [Shapes] Inferred balance format: {bal_fmt}")
+
+    # Prepare synthesis inputs
+    inferred_bounds = {}
+    if xfer_limit > 0:
+        inferred_bounds["transfer_limit"] = xfer_limit
+    if 0 < body_size < 65536:
+        inferred_bounds["max_body_bytes"] = body_size
+
+    inferred_shapes = {}
+    if bal_fmt:
+        inferred_shapes["balance_format"] = bal_fmt
+
+    inferred_prec = {}
+    if prec_order:
+        inferred_prec["TRANSFER"] = prec_order
+
+    # Synthesize candidate profile
+    candidate, manifest = synthesize_profile(
+        base_profile=base_data,
+        observations=all_obs,
+        inferred_boundaries=inferred_bounds,
+        inferred_shapes=inferred_shapes,
+        inferred_precedence=inferred_prec,
+    )
+
+    diff_text = generate_diff_markdown(
+        base=base_data,
+        candidate=candidate,
+        needs_review=candidate.get("needs_review", []),
+    )
+
+    # Automated Gates
+    print("  [Gates] Verifying candidate profile validity...")
+    try:
+        profile._validate(candidate)
+    except Exception as e:
+        print(f"  ❌ Gate validation failed: {e}", file=sys.stderr)
+        return 1
+
+    # Publish version
+    version_dir = publish_version(
+        profile_data=candidate,
+        manifest_data=manifest,
+        profiles_dir=profiles_dir,
+        diff_text=diff_text,
+    )
+    print(f"  ✅ Gate promotion passed! Version published to {version_dir}")
+    print(f"  ACTIVE pointer updated to: {version_dir.name}")
+    return 0
+
+
 def main(
     argv: Optional[List[str]] = None,
     transport: Optional[httpx.BaseTransport] = None,
@@ -422,6 +568,8 @@ def main(
     parser.add_argument("--plan", action="store_true", help="Print probes and budget without network (default)")
     parser.add_argument("--live", action="store_true", help="Execute live learning via LabClient")
     parser.add_argument("--check", action="store_true", help="Check parity and report drift only (replaces canary)")
+    parser.add_argument("--autonomous", action="store_true", help="Run full autonomous exploration and promotion")
+    parser.add_argument("--profiles-dir", type=Path, default=None, help="Directory for versioned profiles")
     parser.add_argument("--budget", type=int, default=100, help="Maximum request budget for live learning")
     parser.add_argument("--probes", type=Path, default=DEFAULT_PROBES_PATH, help="Path to probes.json")
     parser.add_argument("--profile", type=Path, default=DEFAULT_PROFILE_PATH, help="Path to active profile.json")
@@ -429,6 +577,34 @@ def main(
     parser.add_argument("--diff-out", type=Path, default=DEFAULT_DIFF_PATH, help="Output path for diff markdown")
 
     args = parser.parse_args(argv)
+
+    if args.autonomous:
+        if transport is not None:
+            with LabClient(transport=transport, rate_limit_delay=0.0) as client:
+                target = LiveTarget(client, budget=args.budget)
+                return run_autonomous_pipeline(
+                    target=target,
+                    budget=args.budget,
+                    base_profile_path=args.profile,
+                    profiles_dir=args.profiles_dir,
+                )
+        elif args.live:
+            with LabClient(rate_limit_delay=0.15) as client:
+                target = LiveTarget(client, budget=args.budget)
+                return run_autonomous_pipeline(
+                    target=target,
+                    budget=args.budget,
+                    base_profile_path=args.profile,
+                    profiles_dir=args.profiles_dir,
+                )
+        else:
+            target = ReplicaTarget(args.profile)
+            return run_autonomous_pipeline(
+                target=target,
+                budget=args.budget,
+                base_profile_path=args.profile,
+                profiles_dir=args.profiles_dir,
+            )
 
     probes = load_probes(args.probes)
 

@@ -1,0 +1,26 @@
+{
+  "seed": 42,
+  "total_requests_used": 523,
+  "a2_inputs": {
+    "observations": 1,
+    "coverage": {
+      "http": 1,
+      "auth": 0,
+      "body": 0,
+      "message": 0
+    },
+    "compared": 1,
+    "divergent_count": 1,
+    "clusters": [
+      "PING:401->200"
+    ]
+  },
+  "a1_stateful": {
+    "observations": 60,
+    "compared": 60,
+    "divergent_count": 1,
+    "clusters": [
+      "TRANSFER:400->200"
+    ]
+  }
+}

@@ -96,26 +96,29 @@ docker build -t blackbox .
 docker run -p 8000:8000 -e TEAM_TOKEN="tu-token" blackbox
 ```
 
-### 4. Batería de pruebas automatizadas (37 tests herméticos en <1s)
+### 4. Batería de pruebas automatizadas (113 tests herméticos en <2s)
 
-Ejecuta todas las pruebas unitarias, de contrato, precedencia y casos borde sin necesidad de red:
+Ejecuta todas las pruebas unitarias, de contrato, precedencia, motores de exploración y oráculo de regresión sin necesidad de red:
 
 ```bash
 uv run pytest
 ```
 
-### 5. Suite diferencial de secuencias complejas (T5 & T6)
+### 5. Pipeline de Aprendizaje 100% Autónomo (`lab.learn`)
 
-Ejecuta 40 pasos en 5 secuencias complejas de hasta 12 pasos contrastando paso a paso el servicio original contra la réplica local:
-
-```bash
-uv run python -m lab.run_differential_sequences
-```
-
-### 6. Monitor canario de detección de cambios (Incidente 15:30)
-
-Ejecuta la sonda periódica contra el servicio original para detectar cualquier mutación del contrato en vivo:
+Aprende el contrato de la caja negra directamente por exploración genérica (búsqueda binaria de límites numéricos, inferencia de precedencia de validaciones, mutación de gramática HTTP/mensajes, secuencias de estado largas y deducción de formatos de respuesta), sintetiza el perfil con consenso estadístico y lo promueve a través de compuertas automáticas:
 
 ```bash
-uv run python -m lab.canary
+# Modo autónomo en vivo (explora, sintetiza y promueve el perfil activo)
+uv run python -m lab.learn --autonomous --live --budget 600 --profiles-dir profiles
+
+# Verificación de paridad y detección de drift canario (sin mutar estado)
+uv run python -m lab.learn --check
 ```
+
+### 6. Arquitectura de Perfiles Versionados (`profiles/`)
+
+El comportamiento del servicio está 100% desacoplado del código fuente y gobernado por perfiles declarativos:
+- `profiles/ACTIVE`: Puntero atómico a la versión en producción (ej. `20261010T220931Z`).
+- `profiles/<timestamp>/`: Carpeta inmutable que contiene `profile.json`, `manifest.json` (con procedencia de experimentos por campo) y `diff.md`.
+- `BLACKBOX_PROFILE`: Variable de entorno para sobreescribir el perfil en entornos aislados o pruebas de regresión.

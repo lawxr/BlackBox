@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "justifications": {
+    "errors.E102": [
+      3407,
+      3407,
+      3407,
+      3407,
+      5706,
+      6440
+    ],
+    "errors.E506": [
+      2920,
+      3223,
+      3044
+    ],
+    "errors.E001": [
+      755,
+      1931,
+      2484
+    ],
+    "transfer_limit": [
+      1
+    ],
+    "max_body_bytes": [
+      1
+    ],
+    "balance_format": [
+      1
+    ],
+    "commands.TRANSFER.checks": [
+      1
+    ]
+  },
+  "evidence_count": 24
+}

@@ -267,3 +267,30 @@ def test_check_mode_reports_drift():
     transport = make_stand_in_transport(error_translations={"E303": "drifted message"})
     ret = learn.main(["--check"], transport=transport)
     assert ret == 1
+
+
+def test_autonomous_mode_synthesizes_and_promotes_profile(tmp_path, monkeypatch):
+    """Autonomous pipeline executes exploration, synthesizes candidate, and promotes through gates."""
+    profiles_root = tmp_path / "profiles"
+    transport = make_stand_in_transport()
+
+    ret = learn.main(
+        [
+            "--autonomous",
+            "--budget",
+            "100",
+            "--profiles-dir",
+            str(profiles_root),
+        ],
+        transport=transport,
+    )
+    assert ret == 0
+
+    active_file = profiles_root / "ACTIVE"
+    assert active_file.exists()
+    version_tag = active_file.read_text(encoding="utf-8").strip()
+    active_profile = profiles_root / version_tag / "profile.json"
+    manifest_file = profiles_root / version_tag / "manifest.json"
+    assert active_profile.exists()
+    assert manifest_file.exists()
+

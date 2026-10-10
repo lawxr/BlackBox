@@ -29,6 +29,8 @@ EXCLUSION_RULES = {
                     "(concurrent writers shared the original's state)",
     "no_reset": "entries recorded before any reset of their seq; initial state unknown",
     "canary_probe": "declarative probe checks, not a stateful sequence",
+    "single_probe": "single-request input mutation probes, not a stateful sequence",
+    "boundary_probe": "numeric boundary and precedence exploration probes, not a stateful sequence",
 }
 KNOWN_CONTAMINATED = {"sf_2026_45", "sf_2026_46", "canary@766"}
 
@@ -74,8 +76,14 @@ def split_segments(log: List[Tuple[int, Dict[str, Any]]]):
     excluded: Dict[str, str] = {}
     for n, entry in log:
         seq = entry["seq"]
-        if seq == "canary_check":
+        if seq == "canary_check" or seq.startswith("diag_"):
             excluded.setdefault(seq, "canary_probe")
+            continue
+        if seq.startswith("input_"):
+            excluded.setdefault(seq, "single_probe")
+            continue
+        if seq.startswith("boundary_") or seq.startswith("precedence_"):
+            excluded.setdefault(seq, "boundary_probe")
             continue
         if _is_reset(entry):
             seg = Segment(seq, n)

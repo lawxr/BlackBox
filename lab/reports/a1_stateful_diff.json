@@ -1,0 +1,58 @@
+{
+  "total_compared": 60,
+  "divergent_count": 1,
+  "clusters": {
+    "TRANSFER:400->200": {
+      "command": "TRANSFER",
+      "orig_status": 400,
+      "ref_status": 200,
+      "count": 1,
+      "shortest_seq": "stateful_0006",
+      "shortest_steps": [
+        {
+          "m": "ALTA;U27;2",
+          "__path__": "/msg"
+        },
+        {
+          "m": "ALTA;U23;14",
+          "__path__": "/msg"
+        },
+        {
+          "m": "DEPOSITO;AC-0001;50000;39",
+          "__path__": "/msg"
+        },
+        {
+          "m": "TRANSFER;AC-0001;AC-0002;48241;1",
+          "__path__": "/msg"
+        },
+        {
+          "m": "ANULA;OP-0002;69",
+          "__path__": "/msg"
+        },
+        {
+          "m": "CONSULTA;AC-0001;14",
+          "__path__": "/msg"
+        },
+        {
+          "m": "CONSULTA;AC-0002;11",
+          "__path__": "/msg"
+        }
+      ],
+      "divergent_step": 3,
+      "orig_response": [
+        400,
+        {
+          "error": "E202",
+          "mensaje": "control inv\u00e1lido"
+        }
+      ],
+      "ref_response": [
+        200,
+        {
+          "status": "recieved",
+          "operacionId": "OP-0002"
+        }
+      ]
+    }
+  }
+}
