@@ -1,21 +1,41 @@
+"""Generic message engine driven by src/profile.json.
+
+The code knows *how* to validate and execute (stages, checks, handler kinds);
+the profile says *what* the protocol looks like (codes, messages, statuses,
+keys, commands, limits, precedence).
+"""
 from __future__ import annotations
+
 import re
-from typing import Tuple, Any, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+from src import profile
 from src.state import ledger
 
-# Original accepts only canonical positive decimal integers below 10^10
-# (no sign, padding, whitespace or leading zeros).
-_AMOUNT_RE = re.compile(r"[1-9][0-9]{0,9}")
+Result = Tuple[int, Dict[str, Any]]
 
-HALT_REFUSED = {
-    "error": "E520",
-    "mensaje": "operación destructiva: detiene el servicio; reenvía con confirmación",
-}
+
+class ProtocolError(Exception):
+    """Short-circuits the pipeline with one profile error code."""
+
+    def __init__(self, code: str, extra: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(code)
+        self.code = code
+        self.extra = extra or {}
+
+
+def error_response(code: str, extra: Optional[Dict[str, Any]] = None) -> Result:
+    prof = profile.get()
+    spec = prof["errors"][code]
+    keys = prof["error_keys"]
+    body: Dict[str, Any] = {keys["code"]: code, keys["message"]: spec["mensaje"]}
+    body.update(extra or {})
+    return spec["status"], body
 
 
 def parse_amount(raw: str) -> Optional[int]:
-    """Return the amount if the original would accept it, else None."""
-    if not _AMOUNT_RE.fullmatch(raw):
+    """Return the amount if the profile's amount rule accepts it, else None."""
+    if not re.fullmatch(profile.get()["amount_pattern"], raw):
         return None
     return int(raw)
 
@@ -24,7 +44,7 @@ def compute_control(payload: str) -> int:
     """Calculate the exact ISO 7064 MOD 97-10 check value for the protocol payload."""
     digits: list[str] = []
     for ch in payload.upper():
-        if ch.isdigit():
+        if "0" <= ch <= "9":  # ASCII only: fullwidth digits are not digits (exp 1196)
             digits.append(ch)
         elif "A" <= ch <= "Z":
             digits.append(str(ord(ch) - ord("A") + 1))
@@ -36,146 +56,6 @@ def compute_control(payload: str) -> int:
     if ctrl == 98:
         return 1
     return ctrl
-
-
-def process_message(raw_msg: str) -> Tuple[int, Dict[str, Any]]:
-    """Validate message integrity, format, and control before dispatching."""
-    if ";" not in raw_msg:
-        return 400, {"error": "E103", "mensaje": "falta control"}
-
-    parts = raw_msg.split(";")
-    if any(len(p) == 0 for p in parts):
-        return 400, {"error": "E104", "mensaje": "segmento vacío"}
-
-    cmd = parts[0].upper()
-
-    # PING command has special semantics: ignores control value/format
-    if cmd == "PING":
-        if len(parts) != 2:
-            return 400, {"error": "E302", "mensaje": "aridad inválida"}
-        return 200, {"pong": True}
-
-    # Validate control format on last segment (must be 1 or 2 digits, no sign or length > 2)
-    ctrl_str = parts[-1]
-    if not ctrl_str.isdigit() or len(ctrl_str) not in (1, 2):
-        return 400, {"error": "E201", "mensaje": "control mal formado"}
-
-    # Validate control value (strict string equality without leading zeroes)
-    payload = raw_msg.rsplit(";", 1)[0]
-    expected_ctrl = compute_control(payload)
-    if ctrl_str != str(expected_ctrl):
-        return 400, {"error": "E202", "mensaje": "control inválido"}
-
-    return dispatch_command(cmd, parts[:-1])
-
-
-def dispatch_command(cmd: str, args: list[str]) -> Tuple[int, Dict[str, Any]]:
-    """Execute business commands once integrity and control are verified."""
-    if cmd == "ALTA":
-        if len(args) != 2:
-            return 400, {"error": "E302", "mensaje": "aridad inválida"}
-        name = args[1]
-        acct_id = ledger.next_account_id()
-        ledger.accounts[acct_id] = {"name": name, "balance": 0}
-        return 201, {"cuentaId": acct_id}
-
-    if cmd == "CONSULTA":
-        if len(args) != 2:
-            return 400, {"error": "E302", "mensaje": "aridad inválida"}
-        acct_id = args[1]
-        if acct_id not in ledger.accounts:
-            return 404, {"error": "E401", "mensaje": "cuenta inexistente"}
-        return 200, {"cuenta_id": acct_id, "saldo": ledger.accounts[acct_id]["balance"]}
-
-    if cmd == "DEPOSITO":
-        if len(args) != 3:
-            return 400, {"error": "E302", "mensaje": "aridad inválida"}
-        acct_id = args[1]
-        amount = parse_amount(args[2])
-        if amount is None:
-            return 400, {"error": "E303", "mensaje": "monto inválido"}
-        if acct_id not in ledger.accounts:
-            return 404, {"error": "E401", "mensaje": "cuenta inexistente"}
-        ledger.accounts[acct_id]["balance"] += amount
-        op_id = ledger.next_operation_id()
-        ledger.operations[op_id] = {
-            "kind": "DEPOSITO",
-            "target": acct_id,
-            "amount": amount,
-            "annulled": False,
-        }
-        return 200, {"status": "recieved", "operacionId": op_id}
-
-    if cmd == "TRANSFER":
-        if len(args) != 4:
-            return 400, {"error": "E302", "mensaje": "aridad inválida"}
-        src_id, dst_id = args[1], args[2]
-        amount = parse_amount(args[3])
-        if amount is None:
-            return 400, {"error": "E303", "mensaje": "monto inválido"}
-        if src_id == dst_id:
-            return 400, {"error": "E304", "mensaje": "origen y destino iguales"}
-        if src_id not in ledger.accounts or dst_id not in ledger.accounts:
-            return 404, {"error": "E401", "mensaje": "cuenta inexistente"}
-        if ledger.accounts[src_id]["balance"] < amount:
-            return 422, {"error": "E507", "mensaje": "saldo insuficiente"}
-        if amount > 100000:
-            return 422, {"error": "E506", "mensaje": "límite excedido"}
-        ledger.accounts[src_id]["balance"] -= amount
-        ledger.accounts[dst_id]["balance"] += amount
-        op_id = ledger.next_operation_id()
-        ledger.operations[op_id] = {
-            "kind": "TRANSFER",
-            "source": src_id,
-            "target": dst_id,
-            "amount": amount,
-            "annulled": False,
-        }
-        return 200, {"status": "recieved", "operacionId": op_id}
-
-    if cmd == "ANULA":
-        if len(args) != 2:
-            return 400, {"error": "E302", "mensaje": "aridad inválida"}
-        op_id = args[1]
-        if op_id not in ledger.operations:
-            return 404, {"error": "E402", "mensaje": "operación inexistente"}
-        op = ledger.operations[op_id]
-        if op["annulled"]:
-            return 200, {"ok": False, "motivo": "ya anulada"}
-        # Revert operations
-        if op["kind"] == "TRANSFER":
-            src_id = op["source"]
-            dst_id = op["target"]
-            amount = op["amount"]
-            ledger.accounts[dst_id]["balance"] -= amount
-            ledger.accounts[src_id]["balance"] += amount
-        elif op["kind"] == "DEPOSITO":
-            target_id = op["target"]
-            amount = op["amount"]
-            ledger.accounts[target_id]["balance"] -= amount
-        op["annulled"] = True
-        return 200, {"ok": True, "anulada": op_id}
-
-    if cmd == "HALT":
-        if len(args) != 2:
-            return 400, {"error": "E302", "mensaje": "aridad inválida"}
-        # Never actually stops: the original refuses without a confirmation.
-        return 409, dict(HALT_REFUSED)
-
-    # Unknown command handling with Levenshtein distance <= 2 suggestions
-    known_commands = ["PING", "ALTA", "CONSULTA", "DEPOSITO", "TRANSFER", "ANULA", "HALT"]
-    best_cmd = None
-    min_dist = 3  # Suggest only when distance is <= 2
-    for candidate in known_commands:
-        dist = compute_levenshtein(cmd, candidate)
-        if dist < min_dist:
-            min_dist = dist
-            best_cmd = candidate
-
-    err_payload: Dict[str, Any] = {"error": "E301", "mensaje": "comando desconocido "}
-    if best_cmd is not None:
-        err_payload["sugerencia"] = best_cmd
-    return 400, err_payload
 
 
 def compute_levenshtein(s1: str, s2: str) -> int:
@@ -194,3 +74,186 @@ def compute_levenshtein(s1: str, s2: str) -> int:
             current_row.append(min(insertions, deletions, substitutions))
         previous_row = current_row
     return previous_row[-1]
+
+
+# --- validation stages ---------------------------------------------------------
+class _Msg:
+    def __init__(self, raw: str, prof: Dict[str, Any]) -> None:
+        self.raw = raw
+        self.sep = prof["message"]["separator"]
+        self.parts = raw.split(self.sep)
+        name = self.parts[0]
+        self.name = name.upper() if prof["message"]["case_insensitive_commands"] else name
+        self.command = prof["commands"].get(self.name)
+        # Commands declared control-free skip the control stages entirely.
+        self.uses_control = self.command is None or self.command.get("control", True)
+        self.args = self.parts[:-1] if self.uses_control else self.parts
+
+
+def _stage_missing_control(msg: _Msg, stage: Dict[str, Any]) -> None:
+    if msg.sep not in msg.raw:
+        raise ProtocolError(stage["error"])
+
+
+def _stage_empty_segment(msg: _Msg, stage: Dict[str, Any]) -> None:
+    if any(len(p) == 0 for p in msg.parts):
+        raise ProtocolError(stage["error"])
+
+
+def _stage_control_format(msg: _Msg, stage: Dict[str, Any]) -> None:
+    if not msg.uses_control:
+        return
+    ctrl = msg.parts[-1]
+    if not ctrl.isdigit() or not 1 <= len(ctrl) <= stage["max_digits"]:
+        raise ProtocolError(stage["error"])
+
+
+def _stage_control_value(msg: _Msg, stage: Dict[str, Any]) -> None:
+    if not msg.uses_control:
+        return
+    payload = msg.raw.rsplit(msg.sep, 1)[0]
+    # Strict string equality: a leading zero is a wrong control.
+    if msg.parts[-1] != str(compute_control(payload)):
+        raise ProtocolError(stage["error"])
+
+
+def _stage_command(msg: _Msg, stage: Dict[str, Any]) -> None:
+    if msg.command is not None:
+        return
+    rule = profile.get()["message"]["suggestion"]
+    best, best_dist = None, rule["max_distance"] + 1
+    for candidate in profile.get()["commands"]:
+        dist = compute_levenshtein(msg.name, candidate)
+        if dist < best_dist:
+            best, best_dist = candidate, dist
+    raise ProtocolError(stage["error"], {rule["key"]: best} if best is not None else None)
+
+
+def _stage_arity(msg: _Msg, stage: Dict[str, Any]) -> None:
+    if len(msg.parts) != msg.command["segments"]:
+        raise ProtocolError(stage["error"])
+
+
+STAGES: Dict[str, Callable[[_Msg, Dict[str, Any]], None]] = {
+    "missing_control": _stage_missing_control,
+    "empty_segment": _stage_empty_segment,
+    "control_format": _stage_control_format,
+    "control_value": _stage_control_value,
+    "command": _stage_command,
+    "arity": _stage_arity,
+}
+
+
+# --- business checks -------------------------------------------------------------
+def _check(check: Dict[str, Any], args: List[str], prof: Dict[str, Any]) -> bool:
+    vals = [args[i] for i in check["args"]]
+    kind = check["check"]
+    if kind == "amount":
+        return parse_amount(vals[0]) is not None
+    if kind == "distinct":
+        return len(set(vals)) == len(vals)
+    if kind == "account_exists":
+        return all(v in ledger.accounts for v in vals)
+    if kind == "operation_exists":
+        return vals[0] in ledger.operations
+    if kind == "sufficient_balance":
+        return ledger.accounts[vals[0]]["balance"] >= int(vals[1])
+    if kind == "max_amount":
+        return int(vals[0]) <= prof[check["limit"]]
+    raise profile.ProfileError(f"unsupported check {kind!r}")
+
+
+def _render(template: Dict[str, Any], ctx: Dict[str, Any]) -> Result:
+    """Fill exact "{name}" placeholders with typed context values."""
+    def fill(value: Any) -> Any:
+        if isinstance(value, str) and value.startswith("{") and value.endswith("}"):
+            return ctx.get(value[1:-1], value)
+        if isinstance(value, dict):
+            return {k: fill(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [fill(v) for v in value]
+        return value
+    return template["status"], fill(template["body"])
+
+
+# --- handler kinds ---------------------------------------------------------------
+def _record_operation(**op: Any) -> str:
+    op_id = ledger.next_operation_id()
+    ledger.operations[op_id] = dict(op, annulled=False)
+    return op_id
+
+
+def _h_pong(cmd, args):
+    return _render(cmd["response"], {})
+
+
+def _h_create_account(cmd, args):
+    acct_id = ledger.next_account_id()
+    ledger.accounts[acct_id] = {"name": args[cmd["name_arg"]], "balance": 0}
+    return _render(cmd["response"], {"account": acct_id})
+
+
+def _h_query_account(cmd, args):
+    acct_id = args[cmd["account_arg"]]
+    balance = ledger.accounts[acct_id]["balance"]
+    return _render(cmd["response"], {"account": acct_id, "balance": balance})
+
+
+def _h_credit(cmd, args):
+    acct_id, amount = args[cmd["account_arg"]], int(args[cmd["amount_arg"]])
+    ledger.accounts[acct_id]["balance"] += amount
+    op_id = _record_operation(credits={acct_id: amount})
+    return _render(cmd["response"], {"account": acct_id, "operation": op_id})
+
+
+def _h_transfer(cmd, args):
+    src, dst = args[cmd["source_arg"]], args[cmd["target_arg"]]
+    amount = int(args[cmd["amount_arg"]])
+    ledger.accounts[src]["balance"] -= amount
+    ledger.accounts[dst]["balance"] += amount
+    op_id = _record_operation(credits={src: -amount, dst: amount})
+    return _render(cmd["response"], {"operation": op_id})
+
+
+def _h_annul(cmd, args):
+    op_id = args[cmd["operation_arg"]]
+    op = ledger.operations[op_id]
+    if op["annulled"]:
+        return _render(cmd["already_annulled"], {"operation": op_id})
+    for acct_id, delta in op["credits"].items():
+        ledger.accounts[acct_id]["balance"] -= delta
+    op["annulled"] = True
+    return _render(cmd["response"], {"operation": op_id})
+
+
+def _h_refuse(cmd, args):
+    # Never performs the action (e.g. HALT): always answers the refusal error.
+    raise ProtocolError(cmd["error"])
+
+
+HANDLERS = {
+    "pong": _h_pong,
+    "create_account": _h_create_account,
+    "query_account": _h_query_account,
+    "credit": _h_credit,
+    "transfer": _h_transfer,
+    "annul": _h_annul,
+    "refuse": _h_refuse,
+}
+
+
+def process_message(raw_msg: str) -> Result:
+    """Run the profile's precedence pipeline, then the command's checks and handler."""
+    prof = profile.get()
+    msg = _Msg(raw_msg, prof)
+    try:
+        for stage in prof["message"]["precedence"]:
+            if stage["stage"] == "handler":
+                for check in msg.command.get("checks", []):
+                    if not _check(check, msg.args, prof):
+                        raise ProtocolError(check["error"])
+                return HANDLERS[msg.command["kind"]](msg.command, msg.args)
+            STAGES[stage["stage"]](msg, stage)
+    except ProtocolError as exc:
+        return error_response(exc.code, exc.extra)
+    raise profile.ProfileError("precedence has no 'handler' stage")

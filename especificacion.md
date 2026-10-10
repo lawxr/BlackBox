@@ -65,6 +65,7 @@ Cada forma incluye el control como último campo. Los cuerpos de éxito siguient
 | CMD-03a | Valida formato y positividad del monto (E303) antes de comprobar la existencia de la cuenta (E401). | exp 395 | confirmado |
 | CMD-03b | El monto debe ser un entero decimal canónico de 1 a 10 dígitos sin cero a la izquierda: `[1-9][0-9]{0,9}`. Se aceptan 1, 2147483648 y 9999999999; se rechazan con E303 10000000000, 99999999999999999999, `01`, `01000`, `+5`, ` 1`, `1 `, `1_000` y `1.0`. El saldo acumulado no tiene ese tope (CONSULTA devolvió 199601488657). | exp 774, 954, 998, 1125, 1126, 1127, 1187, 1189, 1190, 1191, 1192, 1193, 1194, 1195, 1197 | confirmado |
 | CMD-03c | El formato del monto (E303) se evalúa antes que la existencia de la cuenta (E401) y que origen=destino (E304): `DEPOSITO;ac-0001; 100` y `TRANSFER;AC-0002;AC-0002;100 ` dan E303. | exp 802, 996, 1074 | confirmado |
+| CMD-03d | Los dígitos no ASCII (por ejemplo `１`, U+FF11) no cuentan como dígitos para el control. `DEPOSITO;AC-0001;１;28` da 400 E202, no E303. | exp 1196 | confirmado |
 
 ### TRANSFER
 | ID | Comportamiento | Evidencia | Confianza |

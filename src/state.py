@@ -2,6 +2,8 @@ from __future__ import annotations
 import threading
 from typing import Dict, Any
 
+from src import profile
+
 
 class LedgerState:
     """In-memory EFSM ledger representing the service's mutable state."""
@@ -20,11 +22,11 @@ class LedgerState:
 
     def next_account_id(self) -> str:
         self.account_counter += 1
-        return f"AC-{self.account_counter:04d}"
+        return profile.get()["id_formats"]["account"].format(n=self.account_counter)
 
     def next_operation_id(self) -> str:
         self.operation_counter += 1
-        return f"OP-{self.operation_counter:04d}"
+        return profile.get()["id_formats"]["operation"].format(n=self.operation_counter)
 
 
 # Global single-process state instance

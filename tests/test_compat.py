@@ -283,3 +283,10 @@ def test_halt_command_requires_confirmation(client, message, status, body):
     r = client.post("/msg", headers=VALID_AUTH, json={"m": message})
     assert (r.status_code, r.json()) == (status, body)
     assert client.post("/msg", headers=VALID_AUTH, json={"m": "PING;64"}).status_code == 200
+
+
+def test_fullwidth_digit_is_not_a_control_digit(client):
+    # exp 1196: U+FF11 is skipped by the control, so the ASCII-computed control fails (E202)
+    client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("ALTA;Probe")})
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "DEPOSITO;AC-0001;１;28"})
+    assert (r.status_code, r.json()) == (400, {"error": "E202", "mensaje": "control inválido"})
