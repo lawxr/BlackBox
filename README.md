@@ -41,14 +41,36 @@ Proyecto para resolver el **Reto 2: La caja negra**. Consiste en entender el com
     └── test_lab_runner.py  # Pruebas del ejecutor de secuencias y paradas tempranas
 ```
 
-## Arquitectura del Reemplazo
+## Arquitectura del Reemplazo (Diseño Universal sin Hardcodeo)
 
-- **Motor de Integridad**: Implementación exacta de **ISO 7064 MOD 97-10** sobre cadenas alfanuméricas en mayúsculas (`(98 - int(num_str) * 100) % 97`).
-- **Ledger Transaccional**: Ledger en memoria thread-safe (`src/state.py`) que gestiona cuentas (`AC-XXXX`), operaciones (`OP-XXXX`), saldos acumulados y reversiones contables bidireccionales en transferencias y depósitos.
-- **Precedencia Estricta**: Evaluación determinista de errores que reproduce fielmente el orden heredado: Rutas → Auth → JSON → Formato/Delimitador → Control → Aridad/Comando → Monto inválido (E303) → Origen=Destino (E304) → Existencia de cuenta/operación (E401/E402) → Saldo insuficiente (E507) → Límite excedido (E506).
-- **Contrato de Evaluación**: Entrypoints `GET /health`, `POST /__reset`, `POST /msg` y captura estricta 404 E404 para cualquier ruta no mapeada.
+Este reemplazo **no utiliza tablas estáticas, mocks ni respuestas pregrabadas**. Es un motor formal de protocolo bancario ASGI que computa matemáticamente la integridad de los mensajes, despacha comandos y muta el estado contable en memoria de forma determinista ante cualquier entrada arbitraria:
 
-## Guía de Ejecución
+1. **Motor de Integridad (ISO 7064 MOD 97-10)**:
+   - Implementado en `src/protocol.py` (`compute_control`).
+   - Normaliza cadenas alfanuméricas a mayúsculas, mapea `0..9` directos y `A..Z` a ordinales 1..26.
+   - Computa el resto $R = (N \times 100) \pmod{97}$ y el control $C = 98 - R$ (normalizado a $1$ si $C=98$).
+   - Rango válido estricto: **$1 \dots 97$** (el valor 0 nunca es válido; cuando $R=1$, el control es $97$).
+   - Validación estricta de formato: exige 1 o 2 dígitos decimales sin ceros a la izquierda (`len in (1, 2)` y `str(expected) == ctrl_str`). Controles como `03` se rechazan con `E202 control inválido` y `003` con `E201 control mal formado`.
+
+2. **Ledger Transaccional en Memoria (`src/state.py`)**:
+   - Máquina de estados extendida (EFSM) protegida contra condiciones de carrera mediante `threading.Lock`.
+   - Generación correlativa dinámica de cuentas (`AC-0001`, `AC-0002`...) y operaciones (`OP-0001`, `OP-0002`...).
+   - Gestión estricta de saldos acumulados: sumas en depósitos, deducciones en transferencias y **reversiones contables completas** al anular operaciones (restituye fondos al origen y deduce del destino en transferencias; descuenta el saldo en depósitos).
+   - Reset determinista (`POST /__reset`): reinicia contadores a cero y vacía todas las estructuras de memoria.
+
+3. **Corrector Tipográfico Métrico (`compute_levenshtein`)**:
+   - En caso de comandos desconocidos fuera del conjunto base (`{PING, ALTA, CONSULTA, DEPOSITO, TRANSFER, ANULA}`), calcula la distancia de edición Levenshtein.
+   - Si la distancia mínima es $\le 2$, devuelve `400 {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "<COMANDO>"}`.
+   - Si la distancia es $> 2$, devuelve `400 {"error": "E301", "mensaje": "comando desconocido "}` sin el campo de sugerencia.
+
+4. **Precedencia Determinista de Errores**:
+   - Rutas conocidas $\rightarrow$ Auth (`401 E001`) $\rightarrow$ JSON (`400 E100/E102`) $\rightarrow$ Delimitadores (`400 E103/E104`) $\rightarrow$ Control (`400 E201/E202`) $\rightarrow$ Comando/Aridad (`400 E301/E302`) $\rightarrow$ Monto inválido (`400 E303`) $\rightarrow$ Origen=Destino (`400 E304`) $\rightarrow$ Cuentas/Operaciones inexistentes (`404 E401/E402`) $\rightarrow$ Saldo insuficiente (`422 E507`) $\rightarrow$ Límite excedido (`422 E506`).
+
+---
+
+## Guía de Ejecución y Reproducibilidad
+
+Cualquier persona puede clonar este repositorio y reproducir la totalidad de la réplica y las pruebas con comandos estándar:
 
 ### 1. Variables de entorno
 
@@ -57,10 +79,10 @@ cp .env.example .env
 # Configura TEAM_TOKEN con el token asignado en /evento
 ```
 
-### 2. Ejecución local con uv o Python
+### 2. Ejecución local de la réplica
 
 ```bash
-# Con uv
+# Con uv (recomendado)
 uv run uvicorn src.main:app --host 0.0.0.0 --port 8000
 
 # O con python estándar
@@ -74,8 +96,26 @@ docker build -t blackbox .
 docker run -p 8000:8000 -e TEAM_TOKEN="tu-token" blackbox
 ```
 
-### 4. Ejecutar suite de pruebas
+### 4. Batería de pruebas automatizadas (37 tests herméticos en <1s)
+
+Ejecuta todas las pruebas unitarias, de contrato, precedencia y casos borde sin necesidad de red:
 
 ```bash
 uv run pytest
+```
+
+### 5. Suite diferencial de secuencias complejas (T5 & T6)
+
+Ejecuta 40 pasos en 5 secuencias complejas de hasta 12 pasos contrastando paso a paso el servicio original contra la réplica local:
+
+```bash
+uv run python -m lab.run_differential_sequences
+```
+
+### 6. Monitor canario de detección de cambios (Incidente 15:30)
+
+Ejecuta la sonda periódica contra el servicio original para detectar cualquier mutación del contrato en vivo:
+
+```bash
+uv run python -m lab.canary
 ```

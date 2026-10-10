@@ -201,3 +201,25 @@ def test_unknown_command_levenshtein_suggestions(client):
     ctrl = compute_control("SALDOS;AC-0001")
     r = client.post("/msg", headers=VALID_AUTH, json={"m": f"SALDOS;AC-0001;{ctrl}"})
     assert r.status_code == 400 and r.json() == {"error": "E301", "mensaje": "comando desconocido "}
+
+
+def test_control_edge_cases_iso7064(client):
+    """Test ISO 7064 MOD 97-10 check value 97 and strict formatting without leading zeroes."""
+    # Check value 97 (when rem == 1, check is 97, not 0)
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "AYUDA;97"})
+    assert r.status_code == 400 and r.json()["error"] == "E301"
+
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "AYUDA;0"})
+    assert r.status_code == 400 and r.json() == {"error": "E202", "mensaje": "control inválido"}
+
+    # Single digit accepted without leading zero
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "ALTA;Mateo;3"})
+    assert r.status_code == 201 and r.json() == {"cuentaId": "AC-0001"}
+
+    # Leading zero rejected with E202 (not E201)
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "ALTA;Mateo;03"})
+    assert r.status_code == 400 and r.json() == {"error": "E202", "mensaje": "control inválido"}
+
+    # Length > 2 rejected with E201
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "ALTA;Mateo;003"})
+    assert r.status_code == 400 and r.json() == {"error": "E201", "mensaje": "control mal formado"}

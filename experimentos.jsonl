@@ -484,3 +484,15 @@
 {"id": 484, "seq": "seq_t6_3_deep_12_step_ledger", "x_req": 455, "hipotesis": "Paso 10: CONSULTA;AC-0003", "request": {"m": "CONSULTA;AC-0003;8"}, "status": 200, "response": {"cuenta_id": "AC-0003", "saldo": 30000}}
 {"id": 485, "seq": "seq_t6_3_deep_12_step_ledger", "x_req": 456, "hipotesis": "Paso 11: CONSULTA;AC-0002", "request": {"m": "CONSULTA;AC-0002;11"}, "status": 200, "response": {"cuenta_id": "AC-0002", "saldo": 25000}}
 {"id": 486, "seq": "seq_t6_3_deep_12_step_ledger", "x_req": 457, "hipotesis": "Paso 12: CONSULTA;AC-0001", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": 45000}}
+{"id": 487, "seq": "s_test", "x_req": 458, "hipotesis": "ctrl 3", "request": {"m": "ALTA;Mateo;3"}, "status": 201, "response": {"cuentaId": "AC-0004"}}
+{"id": 488, "seq": "s_test", "x_req": 459, "hipotesis": "ctrl 03", "request": {"m": "ALTA;Mateo;03"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 489, "seq": "s_test", "x_req": 460, "hipotesis": "ctrl 03", "request": {"m": "ALTA;Mateo;03"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 490, "seq": "s_test", "x_req": 461, "hipotesis": "ctrl 003", "request": {"m": "ALTA;Mateo;003"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 491, "seq": "s_test", "x_req": 462, "hipotesis": "ALTA with spaces", "request": {"m": "ALTA;Lucia Gomez;11"}, "status": 201, "response": {"cuentaId": "AC-0005"}}
+{"id": 492, "seq": "s_test", "x_req": 463, "hipotesis": "CONSULTA lowercase ID", "request": {"m": "CONSULTA;ac-0001;14"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 493, "seq": "s_ping", "x_req": 464, "hipotesis": "Test PING;64", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
+{"id": 494, "seq": "s_ping", "x_req": 465, "hipotesis": "Test PING;XX", "request": {"m": "PING;XX"}, "status": 200, "response": {"pong": true}}
+{"id": 495, "seq": "s_ping", "x_req": 466, "hipotesis": "Test PING;99", "request": {"m": "PING;99"}, "status": 200, "response": {"pong": true}}
+{"id": 496, "seq": "s_ping", "x_req": 467, "hipotesis": "Test PING;0", "request": {"m": "PING;0"}, "status": 200, "response": {"pong": true}}
+{"id": 497, "seq": "s_ping", "x_req": 468, "hipotesis": "Test PING;abc", "request": {"m": "PING;abc"}, "status": 200, "response": {"pong": true}}
+{"id": 498, "seq": "s_ping", "x_req": 469, "hipotesis": "Test PING;100", "request": {"m": "PING;100"}, "status": 200, "response": {"pong": true}}

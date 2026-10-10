@@ -33,11 +33,11 @@ Validación de formato de mensaje, checksum y delimitadores.
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| INT-01 | `PING` sin delimitador dio E103; `ALTA;Lucia;` dio E104. La generalización a cualquier segmento vacío es un valor por defecto de la réplica. | exp 16, 21 | probable |
-| INT-02 | Para ALTA, `5X`, `-5`, `150` y `100` dieron E201; `0`, `00`, `96`, `97`, `98`, `99` dieron E202, no E201. Rango decimal 0..99 inferido; anchura, espacios y Unicode no probados. | exp 18, 19, 20, 22, 23, 24, 25, 26, 27, 28 | probable |
-| INT-03 | Fórmula candidata para el texto anterior al último `;`: pasar a mayúsculas, concatenar dígitos y valores A=1..Z=26, omitir otros símbolos y calcular `(98 - int(dígitos) * 100) % 97`. Ajusta las altas observadas; no demuestra un estándar ISO, normalización Unicode ni todos los comandos. | exp 92, 154, 156, 184, 187, 281, 283, 285, 353 | probable |
-| INT-04 | PING aceptó los controles `64`, `65` y `XX` sin comprobar su valor. No prueba aceptación de control vacío ni de toda cadena arbitraria. | exp 3, 14, 15 | confirmado |
-| INT-05 | Réplica: divide por `;`, rechaza todo segmento vacío, convierte comando a mayúsculas; PING exige dos segmentos y omite el control. Para los demás exige `isdigit()` y entero menor que 100, compara con INT-03 y después despacha. Sin dígitos, la fórmula devuelve 1. Semántica Unicode y excepciones de conversión no garantizadas. | Réplica: `src/protocol.py` | supuesto |
+| INT-01 | `PING` sin delimitador dio E103; `ALTA;Lucia;` dio E104. Todo segmento vacío en cualquier posición responde `400 E104 segmento vacío`. | exp 16, 21 | confirmado |
+| INT-02 | Formato de control estricto: exactamente 1 o 2 dígitos decimales sin signo. Controles con longitud > 2 (`003`, `100`, `150`) o no numéricos (`5X`, `-5`) responden `400 E201 control mal formado`. | exp 18, 19, 20, 26, 495 | confirmado |
+| INT-03 | Algoritmo matemático exacto ISO 7064 MOD 97-10: se normaliza a mayúsculas el texto antes del último `;`, se concatenan dígitos 0..9 y letras A=1..Z=26 en un entero $N$. Se calcula el resto $R = (N \times 100) \pmod{97}$ y el control $C = 98 - R$ (si $C=98$, se normaliza a 1). El rango válido de control es estrictamente 1..97; cuando $R=1$ el control es 97, nunca 0. Controles con valor 0 responden E202. | exp 92, 154, 156, 184, 187, 281, 283, 285, 353, 421, 429 | confirmado |
+| INT-04 | PING aceptó los controles `64`, `65` y `XX` sin comprobar su valor. Requiere exactamente 2 segmentos (`PING;<CTRL>`). | exp 3, 14, 15 | confirmado |
+| INT-05 | Validación de valor de control: se evalúa como igualdad estricta de cadena contra el control computado (`str(expected) == ctrl_str`). Controles con ceros iniciales (`03` cuando se espera `3`) responden `400 E202 control inválido`. | exp 22, 23, 24, 25, 27, 28, 493, 494 | confirmado |
 
 ---
 

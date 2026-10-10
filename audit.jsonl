@@ -484,3 +484,15 @@
 {"id": 484, "timestamp": "2026-10-10T18:33:51.512398+00:00", "method": "POST", "path": "/msg", "latency_ms": 233.95, "status": 200, "x_infra": null}
 {"id": 485, "timestamp": "2026-10-10T18:33:51.750904+00:00", "method": "POST", "path": "/msg", "latency_ms": 236.35, "status": 200, "x_infra": null}
 {"id": 486, "timestamp": "2026-10-10T18:33:51.985325+00:00", "method": "POST", "path": "/msg", "latency_ms": 231.85, "status": 200, "x_infra": null}
+{"id": 487, "timestamp": "2026-10-10T18:48:05.407901+00:00", "method": "POST", "path": "/msg", "latency_ms": 263.09, "status": 201, "x_infra": null}
+{"id": 488, "timestamp": "2026-10-10T18:48:05.656354+00:00", "method": "POST", "path": "/msg", "latency_ms": 245.37, "status": 400, "x_infra": null}
+{"id": 489, "timestamp": "2026-10-10T18:48:12.953350+00:00", "method": "POST", "path": "/msg", "latency_ms": 241.24, "status": 400, "x_infra": null}
+{"id": 490, "timestamp": "2026-10-10T18:48:13.189747+00:00", "method": "POST", "path": "/msg", "latency_ms": 235.06, "status": 400, "x_infra": null}
+{"id": 491, "timestamp": "2026-10-10T18:48:21.674640+00:00", "method": "POST", "path": "/msg", "latency_ms": 238.84, "status": 201, "x_infra": null}
+{"id": 492, "timestamp": "2026-10-10T18:48:29.389777+00:00", "method": "POST", "path": "/msg", "latency_ms": 239.19, "status": 404, "x_infra": null}
+{"id": 493, "timestamp": "2026-10-10T18:48:36.757008+00:00", "method": "POST", "path": "/msg", "latency_ms": 238.79, "status": 200, "x_infra": null}
+{"id": 494, "timestamp": "2026-10-10T18:48:36.989428+00:00", "method": "POST", "path": "/msg", "latency_ms": 231.73, "status": 200, "x_infra": null}
+{"id": 495, "timestamp": "2026-10-10T18:48:37.218058+00:00", "method": "POST", "path": "/msg", "latency_ms": 228.13, "status": 200, "x_infra": null}
+{"id": 496, "timestamp": "2026-10-10T18:48:37.446156+00:00", "method": "POST", "path": "/msg", "latency_ms": 227.65, "status": 200, "x_infra": null}
+{"id": 497, "timestamp": "2026-10-10T18:48:37.678218+00:00", "method": "POST", "path": "/msg", "latency_ms": 231.71, "status": 200, "x_infra": null}
+{"id": 498, "timestamp": "2026-10-10T18:48:37.903679+00:00", "method": "POST", "path": "/msg", "latency_ms": 225.12, "status": 200, "x_infra": null}

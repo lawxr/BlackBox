@@ -12,9 +12,13 @@ def compute_control(payload: str) -> int:
         elif "A" <= ch <= "Z":
             digits.append(str(ord(ch) - ord("A") + 1))
     if not digits:
-        return 98 % 97
+        return 1
     num_str = "".join(digits)
-    return (98 - (int(num_str) * 100)) % 97
+    rem = (int(num_str) * 100) % 97
+    ctrl = 98 - rem
+    if ctrl == 98:
+        return 1
+    return ctrl
 
 
 def process_message(raw_msg: str) -> Tuple[int, Dict[str, Any]]:
@@ -34,15 +38,15 @@ def process_message(raw_msg: str) -> Tuple[int, Dict[str, Any]]:
             return 400, {"error": "E302", "mensaje": "aridad inválida"}
         return 200, {"pong": True}
 
-    # Validate control format on last segment
+    # Validate control format on last segment (must be 1 or 2 digits, no sign or length > 2)
     ctrl_str = parts[-1]
-    if not ctrl_str.isdigit() or int(ctrl_str) < 0 or int(ctrl_str) >= 100:
+    if not ctrl_str.isdigit() or len(ctrl_str) not in (1, 2):
         return 400, {"error": "E201", "mensaje": "control mal formado"}
 
-    # Validate control value
+    # Validate control value (strict string equality without leading zeroes)
     payload = raw_msg.rsplit(";", 1)[0]
     expected_ctrl = compute_control(payload)
-    if int(ctrl_str) != expected_ctrl:
+    if ctrl_str != str(expected_ctrl):
         return 400, {"error": "E202", "mensaje": "control inválido"}
 
     return dispatch_command(cmd, parts[:-1])
