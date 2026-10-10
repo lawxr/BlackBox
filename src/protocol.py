@@ -72,8 +72,10 @@ def dispatch_command(cmd: str, args: list[str]) -> Tuple[int, Dict[str, Any]]:
         acct_id = args[1]
         try:
             amount = int(args[2])
+            if amount <= 0:
+                return 400, {"error": "E303", "mensaje": "monto inválido"}
         except ValueError:
-            return 400, {"error": "E501", "mensaje": "monto inválido"}
+            return 400, {"error": "E303", "mensaje": "monto inválido"}
         if acct_id not in ledger.accounts:
             return 404, {"error": "E401", "mensaje": "cuenta inexistente"}
         ledger.accounts[acct_id]["balance"] += amount
@@ -92,14 +94,18 @@ def dispatch_command(cmd: str, args: list[str]) -> Tuple[int, Dict[str, Any]]:
         src_id, dst_id = args[1], args[2]
         try:
             amount = int(args[3])
+            if amount <= 0:
+                return 400, {"error": "E303", "mensaje": "monto inválido"}
         except ValueError:
-            return 400, {"error": "E501", "mensaje": "monto inválido"}
-        if amount > 100000:
-            return 422, {"error": "E506", "mensaje": "límite excedido"}
+            return 400, {"error": "E303", "mensaje": "monto inválido"}
+        if src_id == dst_id:
+            return 400, {"error": "E304", "mensaje": "origen y destino iguales"}
         if src_id not in ledger.accounts or dst_id not in ledger.accounts:
             return 404, {"error": "E401", "mensaje": "cuenta inexistente"}
         if ledger.accounts[src_id]["balance"] < amount:
             return 422, {"error": "E507", "mensaje": "saldo insuficiente"}
+        if amount > 100000:
+            return 422, {"error": "E506", "mensaje": "límite excedido"}
         ledger.accounts[src_id]["balance"] -= amount
         ledger.accounts[dst_id]["balance"] += amount
         op_id = ledger.next_operation_id()
@@ -121,13 +127,17 @@ def dispatch_command(cmd: str, args: list[str]) -> Tuple[int, Dict[str, Any]]:
         op = ledger.operations[op_id]
         if op["annulled"]:
             return 200, {"ok": False, "motivo": "ya anulada"}
-        # Revert transfer
+        # Revert operations
         if op["kind"] == "TRANSFER":
             src_id = op["source"]
             dst_id = op["target"]
             amount = op["amount"]
             ledger.accounts[dst_id]["balance"] -= amount
             ledger.accounts[src_id]["balance"] += amount
+        elif op["kind"] == "DEPOSITO":
+            target_id = op["target"]
+            amount = op["amount"]
+            ledger.accounts[target_id]["balance"] -= amount
         op["annulled"] = True
         return 200, {"ok": True, "anulada": op_id}
 

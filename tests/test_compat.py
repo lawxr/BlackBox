@@ -121,3 +121,48 @@ def test_replay_20_historical_examples(client):
         context = f"Historical step {item['n']}: {item['request']}"
         assert response.status_code == item["status"], context
         assert response.json() == item["response"], context
+
+
+def test_edge_cases_deposit_and_transfer_validation(client):
+    """Test verified business rules: E303, E304, E402, and deposit annulment."""
+    # Setup
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "ALTA;Alfa;65"})
+    assert r.status_code == 201 and r.json() == {"cuentaId": "AC-0001"}
+
+    # DEPOSITO 10000 -> OP-0001
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "DEPOSITO;AC-0001;10000;50"})
+    assert r.status_code == 200 and r.json() == {"status": "recieved", "operacionId": "OP-0001"}
+
+    # Anular non-existent OP-9999 -> 404 E402
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "ANULA;OP-9999;51"})
+    assert r.status_code == 404 and r.json() == {"error": "E402", "mensaje": "operación inexistente"}
+
+    # Anular deposit OP-0001 -> reverts balance to 0
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "ANULA;OP-0001;72"})
+    assert r.status_code == 200 and r.json() == {"ok": True, "anulada": "OP-0001"}
+
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "CONSULTA;AC-0001;14"})
+    assert r.status_code == 200 and r.json()["saldo"] == 0
+
+    # Repeating annulment -> 200 ok: false
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "ANULA;OP-0001;72"})
+    assert r.status_code == 200 and r.json() == {"ok": False, "motivo": "ya anulada"}
+
+    # DEPOSITO 0 or negative -> 400 E303
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "DEPOSITO;AC-0001;0;31"})
+    assert r.status_code == 400 and r.json() == {"error": "E303", "mensaje": "monto inválido"}
+
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "DEPOSITO;AC-0001;-500;46"})
+    assert r.status_code == 400 and r.json() == {"error": "E303", "mensaje": "monto inválido"}
+
+    # TRANSFER to self -> 400 E304
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "TRANSFER;AC-0001;AC-0001;1000;64"})
+    assert r.status_code == 400 and r.json() == {"error": "E304", "mensaje": "origen y destino iguales"}
+
+    # TRANSFER 0 or negative -> 400 E303
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "TRANSFER;AC-0001;AC-0002;0;44"})
+    assert r.status_code == 400 and r.json() == {"error": "E303", "mensaje": "monto inválido"}
+
+    # TRANSFER to self with amount > 100000 still gives E304 (precedence)
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "TRANSFER;AC-0001;AC-0001;120000;39"})
+    assert r.status_code == 400 and r.json() == {"error": "E304", "mensaje": "origen y destino iguales"}
