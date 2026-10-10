@@ -31,8 +31,9 @@ Make compatibility evidence reproducible: hermetic local checks, evidence-scoped
   - Checks: observed RED then GREEN for new fake-transport tests; one full local suite at closure; `git diff --check`. Existing original behavior is not reprobed.
   - Rollback: lab logger and its tests/docs only; production runtime and existing experiment records unchanged.
   - Outcome: `LabClient` supports hermetic transport injection, configurable audit/experiments paths, pre-send directory checks, explicit `TransportError`, durable uncertain recording on timeout/transport failures without blind retries or fabricated data, and distinguishable bodyless vs payload representations.
-- [ ] T4 — Add sequential reset-and-replay comparison for status and exact JSON/text responses, stopping on infrastructure or uncertain outcomes.
+- [x] T4 — Add sequential reset-and-replay comparison for status and exact JSON/text responses, stopping on infrastructure or uncertain outcomes.
   - Route: delegated; runner and focused tests. Schedule after T3 is verified.
+  - Outcome: `SequenceResult` and `compare_sequence` implemented in `lab/runner.py`. Executes reset then step-by-step sequence comparisons with key-order-agnostic JSON comparison, early stopping on mismatches, rate-limits (`infra_rate_limit`) or `TransportError`.
 - [ ] T5 — Run one hypothesis-driven current-version campaign and update only conclusions supported by its new evidence.
   - Route: delegated execution with exact authorized original URL and USER_TOKEN from `.env`, one client, no blind retries, secrets never printed. Do not repeat established probes without a named uncertainty.
 
@@ -68,5 +69,6 @@ Make compatibility evidence reproducible: hermetic local checks, evidence-scoped
 - Engram recovery: discovery saves succeeded (714 and 716); full current tracker is mirrored under `odd/compatibility-evidence/tasks` and must be read back before closing.
 - Remaining: original financial behavior has no current successful experiment coverage; raw logging and reset/sequence gaps remain; public deployment is unverified.
 - Authorization update: user approved original experiments/resets with USER_TOKEN from `.env`; then approved focused TDD. Prior no-remote statements describe the completed baseline, not current authority.
-- T3 complete locally: `tests/test_lab_client.py` added with 3 tests using `httpx.MockTransport`; observed RED on `TransportError` collection then GREEN after implementation (3 passed in 0.19s). Full suite `uv run pytest` passes (31 passed, 1 warning in 0.34s). `git diff --check` => exit 0.
-- Next: T3 work-unit commit; then T4.
+- T3 complete locally: `tests/test_lab_client.py` added with 3 tests using `httpx.MockTransport`; observed RED on `TransportError` collection then GREEN after implementation (3 passed in 0.19s). Full suite `uv run pytest` passes (31 passed, 1 warning in 0.34s). `git diff --check` => exit 0. Commit: `19ae172`.
+- T4 complete locally: `lab/runner.py` implemented with `SequenceResult` and `compare_sequence`; `tests/test_lab_runner.py` added with 3 tests covering match, mismatch stop and rate-limit stop; observed RED then GREEN (3 passed in 0.50s). Full suite `uv run pytest` passes (34 passed, 1 warning in 0.81s). `git diff --check` => exit 0.
+- Next: T4 work-unit commit; then T5.
