@@ -763,20 +763,20 @@
 {"id": 763, "seq": "sf_2026_44", "x_req": 673, "hipotesis": "Step 5: seqfuzz len=5 cmds=DEPOSITO,ALTA,TRANSFER,ALTA,ALTA mutations=ctrl_missing,ctrl_signed,lower_cmd", "request": {"m": "ALTA;  Bob  ;24"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
 {"id": 764, "seq": "sf_2026_45", "x_req": null, "hipotesis": "Reset sf_2026_45: seqfuzz len=5 cmds=TRANSFER,ALTA,TRANSFER,DEPOSITO,ALTA mutations=ctrl_fixed_bad", "request": {}, "status": 200, "response": {"ok": true}}
 {"id": 765, "seq": "sf_2026_45", "x_req": 674, "hipotesis": "Step 1: seqfuzz len=5 cmds=TRANSFER,ALTA,TRANSFER,DEPOSITO,ALTA mutations=ctrl_fixed_bad", "request": {"m": "TRANSFER;AC-0001;AC-0001 ;abc;99"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
-{"id": 765, "seq": "canary", "x_req": null, "hipotesis": "Canary check at 2026-10-10T19:19:49.664665+00:00", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3048, "seq": "canary", "x_req": null, "hipotesis": "Canary check at 2026-10-10T19:19:49.664665+00:00", "request": {}, "status": 200, "response": {"ok": true}}
 {"id": 766, "seq": "sf_2026_45", "x_req": 675, "hipotesis": "Step 2: seqfuzz len=5 cmds=TRANSFER,ALTA,TRANSFER,DEPOSITO,ALTA mutations=ctrl_fixed_bad", "request": {"m": "ALTA;名前;85"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
-{"id": 766, "seq": "canary", "x_req": 676, "hipotesis": "Canary probe PING;64", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
+{"id": 3049, "seq": "canary", "x_req": 676, "hipotesis": "Canary probe PING;64", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
 {"id": 767, "seq": "sf_2026_45", "x_req": 677, "hipotesis": "Step 3: seqfuzz len=5 cmds=TRANSFER,ALTA,TRANSFER,DEPOSITO,ALTA mutations=ctrl_fixed_bad", "request": {"m": "TRANSFER;AC-0001;AC-0001;100 ;100"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
-{"id": 767, "seq": "canary", "x_req": 678, "hipotesis": "Canary probe ALTA;Canario;30", "request": {"m": "ALTA;Canario;30"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 3050, "seq": "canary", "x_req": 678, "hipotesis": "Canary probe ALTA;Canario;30", "request": {"m": "ALTA;Canario;30"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
 {"id": 768, "seq": "sf_2026_45", "x_req": 679, "hipotesis": "Step 4: seqfuzz len=5 cmds=TRANSFER,ALTA,TRANSFER,DEPOSITO,ALTA mutations=ctrl_fixed_bad", "request": {"m": "DEPOSITO;AC-0001;43047;43"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
 {"id": 769, "seq": "sf_2026_45", "x_req": 680, "hipotesis": "Step 5: seqfuzz len=5 cmds=TRANSFER,ALTA,TRANSFER,DEPOSITO,ALTA mutations=ctrl_fixed_bad", "request": {"m": "ALTA;  Bob  ;24"}, "status": 201, "response": {"cuentaId": "AC-0003"}}
-{"id": 768, "seq": "canary", "x_req": 681, "hipotesis": "Canary probe CONSULTA;AC-0001;14", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": 43047}}
-{"id": 769, "seq": "canary", "x_req": 682, "hipotesis": "Canary probe DEPOSITO;AC-0001;50000;39", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
-{"id": 770, "seq": "canary", "x_req": 683, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-0001;1000;64", "request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
-{"id": 771, "seq": "canary", "x_req": 684, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-9999;1000;69", "request": {"m": "TRANSFER;AC-0001;AC-9999;1000;69"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
-{"id": 772, "seq": "canary", "x_req": 685, "hipotesis": "Canary probe DEPOSITO;AC-0001;0;31", "request": {"m": "DEPOSITO;AC-0001;0;31"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 3051, "seq": "canary", "x_req": 681, "hipotesis": "Canary probe CONSULTA;AC-0001;14", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": 43047}}
+{"id": 3052, "seq": "canary", "x_req": 682, "hipotesis": "Canary probe DEPOSITO;AC-0001;50000;39", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 3053, "seq": "canary", "x_req": 683, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-0001;1000;64", "request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
+{"id": 3054, "seq": "canary", "x_req": 684, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-9999;1000;69", "request": {"m": "TRANSFER;AC-0001;AC-9999;1000;69"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 3055, "seq": "canary", "x_req": 685, "hipotesis": "Canary probe DEPOSITO;AC-0001;0;31", "request": {"m": "DEPOSITO;AC-0001;0;31"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
 {"id": 770, "seq": "sf_2026_46", "x_req": null, "hipotesis": "Reset sf_2026_46: seqfuzz len=5 cmds=ALTA,CONSULTA,ANULA,DEPOSITO,ALTA mutations=ctrl_missing,ctrl_spaced", "request": {}, "status": 200, "response": {"ok": true}}
-{"id": 773, "seq": "canary", "x_req": 686, "hipotesis": "Canary probe ANULA;OP-0001;72", "request": {"m": "ANULA;OP-0001;72"}, "status": 404, "response": {"error": "E402", "mensaje": "operación inexistente"}}
+{"id": 3056, "seq": "canary", "x_req": 686, "hipotesis": "Canary probe ANULA;OP-0001;72", "request": {"m": "ANULA;OP-0001;72"}, "status": 404, "response": {"error": "E402", "mensaje": "operación inexistente"}}
 {"id": 771, "seq": "sf_2026_46", "x_req": 687, "hipotesis": "Step 1: seqfuzz len=5 cmds=ALTA,CONSULTA,ANULA,DEPOSITO,ALTA mutations=ctrl_missing,ctrl_spaced", "request": {"m": "ALTA;Peña;72"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
 {"id": 772, "seq": "sf_2026_46", "x_req": 688, "hipotesis": "Step 2: seqfuzz len=5 cmds=ALTA,CONSULTA,ANULA,DEPOSITO,ALTA mutations=ctrl_missing,ctrl_spaced", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": 0}}
 {"id": 773, "seq": "sf_2026_46", "x_req": 689, "hipotesis": "Step 3: seqfuzz len=5 cmds=ALTA,CONSULTA,ANULA,DEPOSITO,ALTA mutations=ctrl_missing,ctrl_spaced", "request": {"m": "ANULA;OP-0001; 72"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
@@ -2973,3 +2973,75 @@
 {"id": 2973, "seq": "bench_hard_004", "x_req": 1309, "hipotesis": "Step 8: chain:many_alta_then_old_ids", "request": {"m": "TRANSFER;AC-0001;AC-0005;49999;28"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
 {"id": 2974, "seq": "bench_hard_004", "x_req": 1310, "hipotesis": "Step 9: chain:many_alta_then_old_ids", "request": {"m": "CONSULTA;AC-0005;2"}, "status": 200, "response": {"cuenta_id": "AC-0005", "saldo": "499.99"}}
 {"id": 2975, "seq": "bench_hard_004", "x_req": 1311, "hipotesis": "Step 10: chain:many_alta_then_old_ids", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "0.01"}}
+{"id": 2976, "seq": "canary_check", "x_req": null, "hipotesis": "Initial reset for drift check", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2977, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e001", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2978, "seq": "canary_check", "x_req": null, "hipotesis": "Probe err_e001 POST /msg", "request": {"m": "PING;64"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}}
+{"id": 2979, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e100", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2980, "seq": "canary_check", "x_req": 1312, "hipotesis": "Probe err_e100 POST /msg", "request": {}, "status": 400, "response": {"error": "E100", "mensaje": "json inválido"}}
+{"id": 2981, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e102", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2982, "seq": "canary_check", "x_req": 1313, "hipotesis": "Probe err_e102 POST /msg", "request": {}, "status": 400, "response": {"error": "E102", "mensaje": "falta m"}}
+{"id": 2983, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e103", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2984, "seq": "canary_check", "x_req": 1314, "hipotesis": "Probe err_e103 POST /msg", "request": {"m": "PING"}, "status": 400, "response": {"error": "E103", "mensaje": "falta control"}}
+{"id": 2985, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e104", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2986, "seq": "canary_check", "x_req": 1315, "hipotesis": "Probe err_e104 POST /msg", "request": {"m": "PING;;64"}, "status": 400, "response": {"error": "E104", "mensaje": "segmento vacío"}}
+{"id": 2987, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e201", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2988, "seq": "canary_check", "x_req": 1316, "hipotesis": "Probe err_e201 POST /msg", "request": {"m": "ALTA;CtrlProbe;100"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 2989, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e202", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2990, "seq": "canary_check", "x_req": 1317, "hipotesis": "Probe err_e202 POST /msg", "request": {"m": "ALTA;CtrlProbe;1"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 2991, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e301", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2992, "seq": "canary_check", "x_req": 1318, "hipotesis": "Probe err_e301 POST /msg", "request": {"m": "UNKNOWNCMD;93"}, "status": 400, "response": {"error": "E301", "mensaje": "comando desconocido "}}
+{"id": 2993, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e302", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2994, "seq": "canary_check", "x_req": 1319, "hipotesis": "Probe err_e302 POST /msg", "request": {"m": "PING;extra;88"}, "status": 400, "response": {"error": "E302", "mensaje": "aridad inválida"}}
+{"id": 2995, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e303", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2996, "seq": "canary_check", "x_req": 1320, "hipotesis": "Setup for err_e303: ALTA;ProbeUser;13", "request": {"m": "ALTA;ProbeUser;13"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2997, "seq": "canary_check", "x_req": 1321, "hipotesis": "Probe err_e303 POST /msg", "request": {"m": "DEPOSITO;AC-0001;0;31"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 2998, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e304", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2999, "seq": "canary_check", "x_req": 1322, "hipotesis": "Setup for err_e304: ALTA;ProbeUser;13", "request": {"m": "ALTA;ProbeUser;13"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3000, "seq": "canary_check", "x_req": 1323, "hipotesis": "Probe err_e304 POST /msg", "request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
+{"id": 3001, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e401", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3002, "seq": "canary_check", "x_req": 1324, "hipotesis": "Probe err_e401 POST /msg", "request": {"m": "CONSULTA;AC-9999;90"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 3003, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e402", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3004, "seq": "canary_check", "x_req": 1325, "hipotesis": "Probe err_e402 POST /msg", "request": {"m": "ANULA;OP-9999;51"}, "status": 404, "response": {"error": "E402", "mensaje": "operación inexistente"}}
+{"id": 3005, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e404", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3006, "seq": "canary_check", "x_req": null, "hipotesis": "Probe err_e404 GET /nonexistent_route_404", "request": {}, "status": 404, "response": {"error": "E404", "mensaje": "ruta desconocida"}}
+{"id": 3007, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e506", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3008, "seq": "canary_check", "x_req": 1326, "hipotesis": "Setup for err_e506: ALTA;ProbeUserA;21", "request": {"m": "ALTA;ProbeUserA;21"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3009, "seq": "canary_check", "x_req": 1327, "hipotesis": "Setup for err_e506: ALTA;ProbeUserB;18", "request": {"m": "ALTA;ProbeUserB;18"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 3010, "seq": "canary_check", "x_req": 1328, "hipotesis": "Setup for err_e506: DEPOSITO;AC-0001;200000;27", "request": {"m": "DEPOSITO;AC-0001;200000;27"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 3011, "seq": "canary_check", "x_req": 1329, "hipotesis": "Probe err_e506 POST /msg", "request": {"m": "TRANSFER;AC-0001;AC-0002;50001;56"}, "status": 422, "response": {"error": "E506", "mensaje": "límite excedido"}}
+{"id": 3012, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e507", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3013, "seq": "canary_check", "x_req": 1330, "hipotesis": "Setup for err_e507: ALTA;ProbeUserA;21", "request": {"m": "ALTA;ProbeUserA;21"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3014, "seq": "canary_check", "x_req": 1331, "hipotesis": "Setup for err_e507: ALTA;ProbeUserB;18", "request": {"m": "ALTA;ProbeUserB;18"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 3015, "seq": "canary_check", "x_req": 1332, "hipotesis": "Probe err_e507 POST /msg", "request": {"m": "TRANSFER;AC-0001;AC-0002;1000;37"}, "status": 422, "response": {"error": "E507", "mensaje": "saldo insuficiente"}}
+{"id": 3016, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe err_e520", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3017, "seq": "canary_check", "x_req": 1333, "hipotesis": "Probe err_e520 POST /msg", "request": {"m": "HALT;NOW;48"}, "status": 409, "response": {"error": "E520", "mensaje": "operación destructiva: detiene el servicio; reenvía con confirmación"}}
+{"id": 3018, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe cmd_ping", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3019, "seq": "canary_check", "x_req": 1334, "hipotesis": "Probe cmd_ping POST /msg", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
+{"id": 3020, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe cmd_alta", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3021, "seq": "canary_check", "x_req": 1335, "hipotesis": "Probe cmd_alta POST /msg", "request": {"m": "ALTA;AltaSubject;89"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3022, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe cmd_consulta", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3023, "seq": "canary_check", "x_req": 1336, "hipotesis": "Setup for cmd_consulta: ALTA;ConsultUser;72", "request": {"m": "ALTA;ConsultUser;72"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3024, "seq": "canary_check", "x_req": 1337, "hipotesis": "Probe cmd_consulta POST /msg", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "0.00"}}
+{"id": 3025, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe cmd_deposito", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3026, "seq": "canary_check", "x_req": 1338, "hipotesis": "Setup for cmd_deposito: ALTA;DepUser;30", "request": {"m": "ALTA;DepUser;30"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3027, "seq": "canary_check", "x_req": 1339, "hipotesis": "Probe cmd_deposito POST /msg", "request": {"m": "DEPOSITO;AC-0001;5000;63"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 3028, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe cmd_transfer", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3029, "seq": "canary_check", "x_req": 1340, "hipotesis": "Setup for cmd_transfer: ALTA;TxA;91", "request": {"m": "ALTA;TxA;91"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3030, "seq": "canary_check", "x_req": 1341, "hipotesis": "Setup for cmd_transfer: ALTA;TxB;88", "request": {"m": "ALTA;TxB;88"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 3031, "seq": "canary_check", "x_req": 1342, "hipotesis": "Setup for cmd_transfer: DEPOSITO;AC-0001;50000;39", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 3032, "seq": "canary_check", "x_req": 1343, "hipotesis": "Probe cmd_transfer POST /msg", "request": {"m": "TRANSFER;AC-0001;AC-0002;10000;70"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 3033, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe cmd_anula", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3034, "seq": "canary_check", "x_req": 1344, "hipotesis": "Setup for cmd_anula: ALTA;AnUser;37", "request": {"m": "ALTA;AnUser;37"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3035, "seq": "canary_check", "x_req": 1345, "hipotesis": "Setup for cmd_anula: DEPOSITO;AC-0001;10000;50", "request": {"m": "DEPOSITO;AC-0001;10000;50"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 3036, "seq": "canary_check", "x_req": 1346, "hipotesis": "Probe cmd_anula POST /msg", "request": {"m": "ANULA;OP-0001;72"}, "status": 200, "response": {"ok": true, "anulada": "OP-0001"}}
+{"id": 3037, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe cmd_anula_already", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3038, "seq": "canary_check", "x_req": 1347, "hipotesis": "Setup for cmd_anula_already: ALTA;AnUser;37", "request": {"m": "ALTA;AnUser;37"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 3039, "seq": "canary_check", "x_req": 1348, "hipotesis": "Setup for cmd_anula_already: DEPOSITO;AC-0001;10000;50", "request": {"m": "DEPOSITO;AC-0001;10000;50"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 3040, "seq": "canary_check", "x_req": 1349, "hipotesis": "Setup for cmd_anula_already: ANULA;OP-0001;72", "request": {"m": "ANULA;OP-0001;72"}, "status": 200, "response": {"ok": true, "anulada": "OP-0001"}}
+{"id": 3041, "seq": "canary_check", "x_req": 1350, "hipotesis": "Probe cmd_anula_already POST /msg", "request": {"m": "ANULA;OP-0001;72"}, "status": 200, "response": {"ok": false, "motivo": "ya anulada"}}
+{"id": 3042, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe sugerencia_consulta", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3043, "seq": "canary_check", "x_req": 1351, "hipotesis": "Probe sugerencia_consulta POST /msg", "request": {"m": "CONSULTAR;AC-0001;66"}, "status": 400, "response": {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "CONSULTA"}}
+{"id": 3044, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe route_health", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3045, "seq": "canary_check", "x_req": null, "hipotesis": "Probe route_health GET /health", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3046, "seq": "canary_check", "x_req": null, "hipotesis": "Reset before probe route_reset", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3047, "seq": "canary_check", "x_req": null, "hipotesis": "Probe route_reset POST /__reset", "request": {}, "status": 200, "response": {"ok": true}}

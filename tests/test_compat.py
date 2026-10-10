@@ -298,9 +298,21 @@ def test_fullwidth_digit_is_not_a_control_digit(client):
     assert (r.status_code, r.json()) == (400, {"error": "E202", "mensaje": "control inválido"})
 
 
-def test_demo_dashboard_serves_html(client):
+def test_demo_is_not_served_by_evaluated_entrypoint(client):
+    # Any path outside the contract must answer like the original's unknown route.
     r = client.get("/demo")
+    assert (r.status_code, r.json()) == (404, {"error": "E404", "mensaje": "ruta desconocida"})
+
+
+def test_demo_app_serves_dashboard_and_delegates_to_replica(client):
+    from src import demo_app
+
+    demo = TestClient(demo_app.app)
+    r = demo.get("/demo")
     assert r.status_code == 200
     assert "text/html" in r.headers["content-type"]
     assert "BLACKBOX" in r.text
+    assert demo.head("/demo").status_code == 200
+    r = demo.post("/msg", headers=VALID_AUTH, json={"m": "PING;64"})
+    assert (r.status_code, r.json()) == (200, {"pong": True})
 
