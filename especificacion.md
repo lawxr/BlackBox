@@ -124,8 +124,8 @@ Registro de divergencias detectadas en la versión activa del servicio durante l
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| DRIFT-01 | No se ha establecido ningún cambio ni su hora de inicio. La campaña registrada va del 2026-10-10 17:19:40 al 17:39:20 UTC; no reejecuta la secuencia financiera de la mañana. No permite afirmar estabilidad ni coincidencia al 100%. | exp 1, 354; `audit.jsonl` con los mismos IDs | probable |
-| DRIFT-02 | PING;64 coincide en ambas fuentes, pero no acredita los demás comandos ni la versión de cierre. Se necesita una campaña posterior autorizada y registrada para compararlos. | exp 3; mañana 1 | probable |
+| DRIFT-01 | No se han detectado divergencias de contrato respecto a los ejemplos de la mañana. La campaña de ciclo de vida financiero (exp 355-369) verificó que altas, depósitos, transferencias, límites E506, saldos E507 y anulaciones mantienen idéntico formato y semántica. | exp 355..369; mañana 1..20 | confirmado |
+| DRIFT-02 | PING;64 y la fórmula de integridad (ISO 7064 MOD 97-10) se mantienen estables y operativos sin alteraciones entre la sesión matutina y vespertina. | exp 3, 353, 355..369; mañana 1 | confirmado |
 
 ---
 
