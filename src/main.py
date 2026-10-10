@@ -5,7 +5,7 @@ import json
 
 from src.config import TEAM_TOKEN
 from src.state import ledger
-from src.protocol import parse_message, dispatch_command
+from src.protocol import process_message
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
@@ -60,8 +60,7 @@ async def handle_msg(request: Request) -> Response:
     if not isinstance(body, dict) or "m" not in body or not isinstance(body["m"], str):
         return JSONResponse(status_code=400, content={"error": "E102", "mensaje": "falta m"})
 
-    parts = parse_message(body["m"])
-    status_code, response_data = dispatch_command(parts)
+    status_code, response_data = process_message(body["m"])
     return JSONResponse(status_code=status_code, content=response_data)
 
 

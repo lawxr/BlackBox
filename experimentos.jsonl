@@ -11,3 +11,344 @@
 {"id": 11, "seq": "s_auth_matrix", "x_req": null, "hipotesis": "Llamada con scheme Token en vez de Bearer devuelve 401 E001", "request": {"m": "PING;64"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}, "conclusion": "Responde 401 E001 no autorizado"}
 {"id": 12, "seq": "s_auth_matrix", "x_req": 5, "hipotesis": "Body no parseable como JSON devuelve 400 E100", "request": {}, "status": 400, "response": {"error": "E100", "mensaje": "json inválido"}, "conclusion": "Responde 400 E100 json inválido"}
 {"id": 13, "seq": "s_auth_matrix", "x_req": null, "hipotesis": "Ruta inexistente sin token devuelve 404 antes de evaluar auth", "request": {}, "status": 404, "response": {"error": "E404", "mensaje": "ruta desconocida"}, "conclusion": "Responde 404 E404; el router se evalua antes que auth"}
+{"id": 14, "seq": "s_ping_ctrl", "x_req": 6, "hipotesis": "PING con control 65 verifica si PING valida el control", "request": {"m": "PING;65"}, "status": 200, "response": {"pong": true}, "conclusion": ""}
+{"id": 15, "seq": "s_ping_ctrl", "x_req": 7, "hipotesis": "PING con control XX verifica si valida formato de control", "request": {"m": "PING;XX"}, "status": 200, "response": {"pong": true}, "conclusion": ""}
+{"id": 16, "seq": "s_ping_ctrl", "x_req": 8, "hipotesis": "PING sin punto y coma ni control", "request": {"m": "PING"}, "status": 400, "response": {"error": "E103", "mensaje": "falta control"}, "conclusion": ""}
+{"id": 17, "seq": "s_ping_ctrl", "x_req": 9, "hipotesis": "PING con campo extra", "request": {"m": "PING;64;extra"}, "status": 400, "response": {"error": "E302", "mensaje": "aridad inválida"}, "conclusion": ""}
+{"id": 18, "seq": "s_ctrl_format", "x_req": 10, "hipotesis": "ALTA con control 5X prueba formato de control", "request": {"m": "ALTA;Lucia;5X"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 19, "seq": "s_ctrl_format", "x_req": 11, "hipotesis": "ALTA con control negativo -5", "request": {"m": "ALTA;Lucia;-5"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 20, "seq": "s_ctrl_format", "x_req": 12, "hipotesis": "ALTA con control 150 fuera de rango", "request": {"m": "ALTA;Lucia;150"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 21, "seq": "s_ctrl_format", "x_req": 13, "hipotesis": "ALTA con control vacio", "request": {"m": "ALTA;Lucia;"}, "status": 400, "response": {"error": "E104", "mensaje": "segmento vacío"}}
+{"id": 22, "seq": "s_ctrl_bounds", "x_req": 14, "hipotesis": "ALTA con control 96 para determinar cota superior de E201 vs E202", "request": {"m": "ALTA;Lucia;96"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 23, "seq": "s_ctrl_bounds", "x_req": 15, "hipotesis": "ALTA con control 97 para determinar cota superior de E201 vs E202", "request": {"m": "ALTA;Lucia;97"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 24, "seq": "s_ctrl_bounds", "x_req": 16, "hipotesis": "ALTA con control 98 para determinar cota superior de E201 vs E202", "request": {"m": "ALTA;Lucia;98"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 25, "seq": "s_ctrl_bounds", "x_req": 17, "hipotesis": "ALTA con control 99 para determinar cota superior de E201 vs E202", "request": {"m": "ALTA;Lucia;99"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 26, "seq": "s_ctrl_bounds", "x_req": 18, "hipotesis": "ALTA con control 100", "request": {"m": "ALTA;Lucia;100"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 27, "seq": "s_ctrl_bounds", "x_req": 19, "hipotesis": "ALTA con control 0", "request": {"m": "ALTA;Lucia;0"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 28, "seq": "s_ctrl_bounds", "x_req": 20, "hipotesis": "ALTA con control 00", "request": {"m": "ALTA;Lucia;00"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 29, "seq": "crack_alta", "x_req": null, "hipotesis": "Reset antes de cracking ALTA;A", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 30, "seq": "crack_alta", "x_req": 21, "hipotesis": "Probar control 0 para ALTA;A", "request": {"m": "ALTA;A;0"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 31, "seq": "crack_alta", "x_req": 22, "hipotesis": "Probar control 1 para ALTA;A", "request": {"m": "ALTA;A;1"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 32, "seq": "crack_alta", "x_req": 23, "hipotesis": "Probar control 2 para ALTA;A", "request": {"m": "ALTA;A;2"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 33, "seq": "crack_alta", "x_req": 24, "hipotesis": "Probar control 3 para ALTA;A", "request": {"m": "ALTA;A;3"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 34, "seq": "crack_alta", "x_req": 25, "hipotesis": "Probar control 4 para ALTA;A", "request": {"m": "ALTA;A;4"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 35, "seq": "crack_alta", "x_req": 26, "hipotesis": "Probar control 5 para ALTA;A", "request": {"m": "ALTA;A;5"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 36, "seq": "crack_alta", "x_req": 27, "hipotesis": "Probar control 6 para ALTA;A", "request": {"m": "ALTA;A;6"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 37, "seq": "crack_alta", "x_req": 28, "hipotesis": "Probar control 7 para ALTA;A", "request": {"m": "ALTA;A;7"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 38, "seq": "crack_alta", "x_req": 29, "hipotesis": "Probar control 8 para ALTA;A", "request": {"m": "ALTA;A;8"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 39, "seq": "crack_alta", "x_req": 30, "hipotesis": "Probar control 9 para ALTA;A", "request": {"m": "ALTA;A;9"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 40, "seq": "crack_alta", "x_req": 31, "hipotesis": "Probar control 10 para ALTA;A", "request": {"m": "ALTA;A;10"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 41, "seq": "crack_alta", "x_req": 32, "hipotesis": "Probar control 11 para ALTA;A", "request": {"m": "ALTA;A;11"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 42, "seq": "crack_alta", "x_req": 33, "hipotesis": "Probar control 12 para ALTA;A", "request": {"m": "ALTA;A;12"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 43, "seq": "crack_alta", "x_req": 34, "hipotesis": "Probar control 13 para ALTA;A", "request": {"m": "ALTA;A;13"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 44, "seq": "crack_alta", "x_req": 35, "hipotesis": "Probar control 14 para ALTA;A", "request": {"m": "ALTA;A;14"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 45, "seq": "crack_alta", "x_req": 36, "hipotesis": "Probar control 15 para ALTA;A", "request": {"m": "ALTA;A;15"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 46, "seq": "crack_alta", "x_req": 37, "hipotesis": "Probar control 16 para ALTA;A", "request": {"m": "ALTA;A;16"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 47, "seq": "crack_alta", "x_req": 38, "hipotesis": "Probar control 17 para ALTA;A", "request": {"m": "ALTA;A;17"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 48, "seq": "crack_alta", "x_req": 39, "hipotesis": "Probar control 18 para ALTA;A", "request": {"m": "ALTA;A;18"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 49, "seq": "crack_alta", "x_req": 40, "hipotesis": "Probar control 19 para ALTA;A", "request": {"m": "ALTA;A;19"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 50, "seq": "crack_alta", "x_req": 41, "hipotesis": "Probar control 20 para ALTA;A", "request": {"m": "ALTA;A;20"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 51, "seq": "crack_alta", "x_req": 42, "hipotesis": "Probar control 21 para ALTA;A", "request": {"m": "ALTA;A;21"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 52, "seq": "crack_alta", "x_req": 43, "hipotesis": "Probar control 22 para ALTA;A", "request": {"m": "ALTA;A;22"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 53, "seq": "crack_alta", "x_req": 44, "hipotesis": "Probar control 23 para ALTA;A", "request": {"m": "ALTA;A;23"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 54, "seq": "crack_alta", "x_req": 45, "hipotesis": "Probar control 24 para ALTA;A", "request": {"m": "ALTA;A;24"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 55, "seq": "crack_alta", "x_req": 46, "hipotesis": "Probar control 25 para ALTA;A", "request": {"m": "ALTA;A;25"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 56, "seq": "crack_alta", "x_req": 47, "hipotesis": "Probar control 26 para ALTA;A", "request": {"m": "ALTA;A;26"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 57, "seq": "crack_alta", "x_req": 48, "hipotesis": "Probar control 27 para ALTA;A", "request": {"m": "ALTA;A;27"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 58, "seq": "crack_alta", "x_req": 49, "hipotesis": "Probar control 28 para ALTA;A", "request": {"m": "ALTA;A;28"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 59, "seq": "crack_alta", "x_req": 50, "hipotesis": "Probar control 29 para ALTA;A", "request": {"m": "ALTA;A;29"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 60, "seq": "crack_alta", "x_req": 51, "hipotesis": "Probar control 30 para ALTA;A", "request": {"m": "ALTA;A;30"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 61, "seq": "crack_alta", "x_req": 52, "hipotesis": "Probar control 31 para ALTA;A", "request": {"m": "ALTA;A;31"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 62, "seq": "crack_alta", "x_req": 53, "hipotesis": "Probar control 32 para ALTA;A", "request": {"m": "ALTA;A;32"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 63, "seq": "crack_alta", "x_req": 54, "hipotesis": "Probar control 33 para ALTA;A", "request": {"m": "ALTA;A;33"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 64, "seq": "crack_alta", "x_req": 55, "hipotesis": "Probar control 34 para ALTA;A", "request": {"m": "ALTA;A;34"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 65, "seq": "crack_alta", "x_req": 56, "hipotesis": "Probar control 35 para ALTA;A", "request": {"m": "ALTA;A;35"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 66, "seq": "crack_alta", "x_req": 57, "hipotesis": "Probar control 36 para ALTA;A", "request": {"m": "ALTA;A;36"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 67, "seq": "crack_alta", "x_req": 58, "hipotesis": "Probar control 37 para ALTA;A", "request": {"m": "ALTA;A;37"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 68, "seq": "crack_alta", "x_req": 59, "hipotesis": "Probar control 38 para ALTA;A", "request": {"m": "ALTA;A;38"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 69, "seq": "crack_alta", "x_req": 60, "hipotesis": "Probar control 39 para ALTA;A", "request": {"m": "ALTA;A;39"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 70, "seq": "crack_alta", "x_req": 61, "hipotesis": "Probar control 40 para ALTA;A", "request": {"m": "ALTA;A;40"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 71, "seq": "crack_alta", "x_req": 62, "hipotesis": "Probar control 41 para ALTA;A", "request": {"m": "ALTA;A;41"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 72, "seq": "crack_alta", "x_req": 63, "hipotesis": "Probar control 42 para ALTA;A", "request": {"m": "ALTA;A;42"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 73, "seq": "crack_alta", "x_req": 64, "hipotesis": "Probar control 43 para ALTA;A", "request": {"m": "ALTA;A;43"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 74, "seq": "crack_alta", "x_req": 65, "hipotesis": "Probar control 44 para ALTA;A", "request": {"m": "ALTA;A;44"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 75, "seq": "crack_alta", "x_req": 66, "hipotesis": "Probar control 45 para ALTA;A", "request": {"m": "ALTA;A;45"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 76, "seq": "crack_alta", "x_req": 67, "hipotesis": "Probar control 46 para ALTA;A", "request": {"m": "ALTA;A;46"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 77, "seq": "crack_alta", "x_req": 68, "hipotesis": "Probar control 47 para ALTA;A", "request": {"m": "ALTA;A;47"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 78, "seq": "crack_alta", "x_req": 69, "hipotesis": "Probar control 48 para ALTA;A", "request": {"m": "ALTA;A;48"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 79, "seq": "crack_alta", "x_req": 70, "hipotesis": "Probar control 49 para ALTA;A", "request": {"m": "ALTA;A;49"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 80, "seq": "crack_alta", "x_req": 71, "hipotesis": "Probar control 50 para ALTA;A", "request": {"m": "ALTA;A;50"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 81, "seq": "crack_alta", "x_req": 72, "hipotesis": "Probar control 51 para ALTA;A", "request": {"m": "ALTA;A;51"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 82, "seq": "crack_alta", "x_req": 73, "hipotesis": "Probar control 52 para ALTA;A", "request": {"m": "ALTA;A;52"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 83, "seq": "crack_alta", "x_req": 74, "hipotesis": "Probar control 53 para ALTA;A", "request": {"m": "ALTA;A;53"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 84, "seq": "crack_alta", "x_req": 75, "hipotesis": "Probar control 54 para ALTA;A", "request": {"m": "ALTA;A;54"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 85, "seq": "crack_alta", "x_req": 76, "hipotesis": "Probar control 55 para ALTA;A", "request": {"m": "ALTA;A;55"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 86, "seq": "crack_alta", "x_req": 77, "hipotesis": "Probar control 56 para ALTA;A", "request": {"m": "ALTA;A;56"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 87, "seq": "crack_alta", "x_req": 78, "hipotesis": "Probar control 57 para ALTA;A", "request": {"m": "ALTA;A;57"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 88, "seq": "crack_alta", "x_req": 79, "hipotesis": "Probar control 58 para ALTA;A", "request": {"m": "ALTA;A;58"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 89, "seq": "crack_alta", "x_req": 80, "hipotesis": "Probar control 59 para ALTA;A", "request": {"m": "ALTA;A;59"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 90, "seq": "crack_alta", "x_req": 81, "hipotesis": "Probar control 60 para ALTA;A", "request": {"m": "ALTA;A;60"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 91, "seq": "crack_alta", "x_req": 82, "hipotesis": "Probar control 61 para ALTA;A", "request": {"m": "ALTA;A;61"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 92, "seq": "crack_alta", "x_req": 83, "hipotesis": "Probar control 62 para ALTA;A", "request": {"m": "ALTA;A;62"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 93, "seq": "crack_alta", "x_req": null, "hipotesis": "Reset tras encontrar control", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 94, "seq": "crack_alta_b", "x_req": null, "hipotesis": "Reset antes de cracking ALTA;B", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 95, "seq": "crack_alta_b", "x_req": 84, "hipotesis": "Probar control 0 para ALTA;B", "request": {"m": "ALTA;B;0"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 96, "seq": "crack_alta_b", "x_req": 85, "hipotesis": "Probar control 1 para ALTA;B", "request": {"m": "ALTA;B;1"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 97, "seq": "crack_alta_b", "x_req": 86, "hipotesis": "Probar control 2 para ALTA;B", "request": {"m": "ALTA;B;2"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 98, "seq": "crack_alta_b", "x_req": 87, "hipotesis": "Probar control 3 para ALTA;B", "request": {"m": "ALTA;B;3"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 99, "seq": "crack_alta_b", "x_req": 88, "hipotesis": "Probar control 4 para ALTA;B", "request": {"m": "ALTA;B;4"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 100, "seq": "crack_alta_b", "x_req": 89, "hipotesis": "Probar control 5 para ALTA;B", "request": {"m": "ALTA;B;5"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 101, "seq": "crack_alta_b", "x_req": 90, "hipotesis": "Probar control 6 para ALTA;B", "request": {"m": "ALTA;B;6"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 102, "seq": "crack_alta_b", "x_req": 91, "hipotesis": "Probar control 7 para ALTA;B", "request": {"m": "ALTA;B;7"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 103, "seq": "crack_alta_b", "x_req": 92, "hipotesis": "Probar control 8 para ALTA;B", "request": {"m": "ALTA;B;8"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 104, "seq": "crack_alta_b", "x_req": 93, "hipotesis": "Probar control 9 para ALTA;B", "request": {"m": "ALTA;B;9"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 105, "seq": "crack_alta_b", "x_req": 94, "hipotesis": "Probar control 10 para ALTA;B", "request": {"m": "ALTA;B;10"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 106, "seq": "crack_alta_b", "x_req": 95, "hipotesis": "Probar control 11 para ALTA;B", "request": {"m": "ALTA;B;11"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 107, "seq": "crack_alta_b", "x_req": 96, "hipotesis": "Probar control 12 para ALTA;B", "request": {"m": "ALTA;B;12"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 108, "seq": "crack_alta_b", "x_req": 97, "hipotesis": "Probar control 13 para ALTA;B", "request": {"m": "ALTA;B;13"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 109, "seq": "crack_alta_b", "x_req": 98, "hipotesis": "Probar control 14 para ALTA;B", "request": {"m": "ALTA;B;14"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 110, "seq": "crack_alta_b", "x_req": 99, "hipotesis": "Probar control 15 para ALTA;B", "request": {"m": "ALTA;B;15"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 111, "seq": "crack_alta_b", "x_req": 100, "hipotesis": "Probar control 16 para ALTA;B", "request": {"m": "ALTA;B;16"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 112, "seq": "crack_alta_b", "x_req": 101, "hipotesis": "Probar control 17 para ALTA;B", "request": {"m": "ALTA;B;17"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 113, "seq": "crack_alta_b", "x_req": 102, "hipotesis": "Probar control 18 para ALTA;B", "request": {"m": "ALTA;B;18"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 114, "seq": "crack_alta_b", "x_req": 103, "hipotesis": "Probar control 19 para ALTA;B", "request": {"m": "ALTA;B;19"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 115, "seq": "crack_alta_b", "x_req": 104, "hipotesis": "Probar control 20 para ALTA;B", "request": {"m": "ALTA;B;20"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 116, "seq": "crack_alta_b", "x_req": 105, "hipotesis": "Probar control 21 para ALTA;B", "request": {"m": "ALTA;B;21"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 117, "seq": "crack_alta_b", "x_req": 106, "hipotesis": "Probar control 22 para ALTA;B", "request": {"m": "ALTA;B;22"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 118, "seq": "crack_alta_b", "x_req": 107, "hipotesis": "Probar control 23 para ALTA;B", "request": {"m": "ALTA;B;23"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 119, "seq": "crack_alta_b", "x_req": 108, "hipotesis": "Probar control 24 para ALTA;B", "request": {"m": "ALTA;B;24"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 120, "seq": "crack_alta_b", "x_req": 109, "hipotesis": "Probar control 25 para ALTA;B", "request": {"m": "ALTA;B;25"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 121, "seq": "crack_alta_b", "x_req": 110, "hipotesis": "Probar control 26 para ALTA;B", "request": {"m": "ALTA;B;26"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 122, "seq": "crack_alta_b", "x_req": 111, "hipotesis": "Probar control 27 para ALTA;B", "request": {"m": "ALTA;B;27"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 123, "seq": "crack_alta_b", "x_req": 112, "hipotesis": "Probar control 28 para ALTA;B", "request": {"m": "ALTA;B;28"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 124, "seq": "crack_alta_b", "x_req": 113, "hipotesis": "Probar control 29 para ALTA;B", "request": {"m": "ALTA;B;29"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 125, "seq": "crack_alta_b", "x_req": 114, "hipotesis": "Probar control 30 para ALTA;B", "request": {"m": "ALTA;B;30"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 126, "seq": "crack_alta_b", "x_req": 115, "hipotesis": "Probar control 31 para ALTA;B", "request": {"m": "ALTA;B;31"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 127, "seq": "crack_alta_b", "x_req": 116, "hipotesis": "Probar control 32 para ALTA;B", "request": {"m": "ALTA;B;32"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 128, "seq": "crack_alta_b", "x_req": 117, "hipotesis": "Probar control 33 para ALTA;B", "request": {"m": "ALTA;B;33"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 129, "seq": "crack_alta_b", "x_req": 118, "hipotesis": "Probar control 34 para ALTA;B", "request": {"m": "ALTA;B;34"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 130, "seq": "crack_alta_b", "x_req": 119, "hipotesis": "Probar control 35 para ALTA;B", "request": {"m": "ALTA;B;35"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 131, "seq": "crack_alta_b", "x_req": 120, "hipotesis": "Probar control 36 para ALTA;B", "request": {"m": "ALTA;B;36"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 132, "seq": "crack_alta_b", "x_req": 121, "hipotesis": "Probar control 37 para ALTA;B", "request": {"m": "ALTA;B;37"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 133, "seq": "crack_alta_b", "x_req": 122, "hipotesis": "Probar control 38 para ALTA;B", "request": {"m": "ALTA;B;38"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 134, "seq": "crack_alta_b", "x_req": 123, "hipotesis": "Probar control 39 para ALTA;B", "request": {"m": "ALTA;B;39"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 135, "seq": "crack_alta_b", "x_req": 124, "hipotesis": "Probar control 40 para ALTA;B", "request": {"m": "ALTA;B;40"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 136, "seq": "crack_alta_b", "x_req": 125, "hipotesis": "Probar control 41 para ALTA;B", "request": {"m": "ALTA;B;41"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 137, "seq": "crack_alta_b", "x_req": 126, "hipotesis": "Probar control 42 para ALTA;B", "request": {"m": "ALTA;B;42"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 138, "seq": "crack_alta_b", "x_req": 127, "hipotesis": "Probar control 43 para ALTA;B", "request": {"m": "ALTA;B;43"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 139, "seq": "crack_alta_b", "x_req": 128, "hipotesis": "Probar control 44 para ALTA;B", "request": {"m": "ALTA;B;44"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 140, "seq": "crack_alta_b", "x_req": 129, "hipotesis": "Probar control 45 para ALTA;B", "request": {"m": "ALTA;B;45"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 141, "seq": "crack_alta_b", "x_req": 130, "hipotesis": "Probar control 46 para ALTA;B", "request": {"m": "ALTA;B;46"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 142, "seq": "crack_alta_b", "x_req": 131, "hipotesis": "Probar control 47 para ALTA;B", "request": {"m": "ALTA;B;47"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 143, "seq": "crack_alta_b", "x_req": 132, "hipotesis": "Probar control 48 para ALTA;B", "request": {"m": "ALTA;B;48"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 144, "seq": "crack_alta_b", "x_req": 133, "hipotesis": "Probar control 49 para ALTA;B", "request": {"m": "ALTA;B;49"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 145, "seq": "crack_alta_b", "x_req": 134, "hipotesis": "Probar control 50 para ALTA;B", "request": {"m": "ALTA;B;50"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 146, "seq": "crack_alta_b", "x_req": 135, "hipotesis": "Probar control 51 para ALTA;B", "request": {"m": "ALTA;B;51"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 147, "seq": "crack_alta_b", "x_req": 136, "hipotesis": "Probar control 52 para ALTA;B", "request": {"m": "ALTA;B;52"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 148, "seq": "crack_alta_b", "x_req": 137, "hipotesis": "Probar control 53 para ALTA;B", "request": {"m": "ALTA;B;53"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 149, "seq": "crack_alta_b", "x_req": 138, "hipotesis": "Probar control 54 para ALTA;B", "request": {"m": "ALTA;B;54"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 150, "seq": "crack_alta_b", "x_req": 139, "hipotesis": "Probar control 55 para ALTA;B", "request": {"m": "ALTA;B;55"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 151, "seq": "crack_alta_b", "x_req": 140, "hipotesis": "Probar control 56 para ALTA;B", "request": {"m": "ALTA;B;56"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 152, "seq": "crack_alta_b", "x_req": 141, "hipotesis": "Probar control 57 para ALTA;B", "request": {"m": "ALTA;B;57"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 153, "seq": "crack_alta_b", "x_req": 142, "hipotesis": "Probar control 58 para ALTA;B", "request": {"m": "ALTA;B;58"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 154, "seq": "crack_alta_b", "x_req": 143, "hipotesis": "Probar control 59 para ALTA;B", "request": {"m": "ALTA;B;59"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 155, "seq": "crack_alta_b", "x_req": null, "hipotesis": "Reset tras encontrar control", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 156, "seq": "verify_c", "x_req": 144, "hipotesis": "ALTA;C;56 debe dar 201 si el paso por caracter es -3", "request": {"m": "ALTA;C;56"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 157, "seq": "crack_alta_aa", "x_req": null, "hipotesis": "Reset antes de cracking ALTA;AA", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 158, "seq": "crack_alta_aa", "x_req": 145, "hipotesis": "Probar control 0 para ALTA;AA", "request": {"m": "ALTA;AA;0"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 159, "seq": "crack_alta_aa", "x_req": 146, "hipotesis": "Probar control 1 para ALTA;AA", "request": {"m": "ALTA;AA;1"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 160, "seq": "crack_alta_aa", "x_req": 147, "hipotesis": "Probar control 2 para ALTA;AA", "request": {"m": "ALTA;AA;2"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 161, "seq": "crack_alta_aa", "x_req": 148, "hipotesis": "Probar control 3 para ALTA;AA", "request": {"m": "ALTA;AA;3"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 162, "seq": "crack_alta_aa", "x_req": 149, "hipotesis": "Probar control 4 para ALTA;AA", "request": {"m": "ALTA;AA;4"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 163, "seq": "crack_alta_aa", "x_req": 150, "hipotesis": "Probar control 5 para ALTA;AA", "request": {"m": "ALTA;AA;5"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 164, "seq": "crack_alta_aa", "x_req": 151, "hipotesis": "Probar control 6 para ALTA;AA", "request": {"m": "ALTA;AA;6"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 165, "seq": "crack_alta_aa", "x_req": 152, "hipotesis": "Probar control 7 para ALTA;AA", "request": {"m": "ALTA;AA;7"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 166, "seq": "crack_alta_aa", "x_req": 153, "hipotesis": "Probar control 8 para ALTA;AA", "request": {"m": "ALTA;AA;8"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 167, "seq": "crack_alta_aa", "x_req": 154, "hipotesis": "Probar control 9 para ALTA;AA", "request": {"m": "ALTA;AA;9"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 168, "seq": "crack_alta_aa", "x_req": 155, "hipotesis": "Probar control 10 para ALTA;AA", "request": {"m": "ALTA;AA;10"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 169, "seq": "crack_alta_aa", "x_req": 156, "hipotesis": "Probar control 11 para ALTA;AA", "request": {"m": "ALTA;AA;11"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 170, "seq": "crack_alta_aa", "x_req": 157, "hipotesis": "Probar control 12 para ALTA;AA", "request": {"m": "ALTA;AA;12"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 171, "seq": "crack_alta_aa", "x_req": 158, "hipotesis": "Probar control 13 para ALTA;AA", "request": {"m": "ALTA;AA;13"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 172, "seq": "crack_alta_aa", "x_req": 159, "hipotesis": "Probar control 14 para ALTA;AA", "request": {"m": "ALTA;AA;14"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 173, "seq": "crack_alta_aa", "x_req": 160, "hipotesis": "Probar control 15 para ALTA;AA", "request": {"m": "ALTA;AA;15"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 174, "seq": "crack_alta_aa", "x_req": 161, "hipotesis": "Probar control 16 para ALTA;AA", "request": {"m": "ALTA;AA;16"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 175, "seq": "crack_alta_aa", "x_req": 162, "hipotesis": "Probar control 17 para ALTA;AA", "request": {"m": "ALTA;AA;17"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 176, "seq": "crack_alta_aa", "x_req": 163, "hipotesis": "Probar control 18 para ALTA;AA", "request": {"m": "ALTA;AA;18"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 177, "seq": "crack_alta_aa", "x_req": 164, "hipotesis": "Probar control 19 para ALTA;AA", "request": {"m": "ALTA;AA;19"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 178, "seq": "crack_alta_aa", "x_req": 165, "hipotesis": "Probar control 20 para ALTA;AA", "request": {"m": "ALTA;AA;20"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 179, "seq": "crack_alta_aa", "x_req": 166, "hipotesis": "Probar control 21 para ALTA;AA", "request": {"m": "ALTA;AA;21"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 180, "seq": "crack_alta_aa", "x_req": 167, "hipotesis": "Probar control 22 para ALTA;AA", "request": {"m": "ALTA;AA;22"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 181, "seq": "crack_alta_aa", "x_req": 168, "hipotesis": "Probar control 23 para ALTA;AA", "request": {"m": "ALTA;AA;23"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 182, "seq": "crack_alta_aa", "x_req": 169, "hipotesis": "Probar control 24 para ALTA;AA", "request": {"m": "ALTA;AA;24"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 183, "seq": "crack_alta_aa", "x_req": 170, "hipotesis": "Probar control 25 para ALTA;AA", "request": {"m": "ALTA;AA;25"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 184, "seq": "crack_alta_aa", "x_req": 171, "hipotesis": "Probar control 26 para ALTA;AA", "request": {"m": "ALTA;AA;26"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 185, "seq": "crack_alta_aa", "x_req": null, "hipotesis": "Reset tras encontrar control", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 186, "seq": "crack_alta_ba", "x_req": null, "hipotesis": "Reset antes de cracking ALTA;BA", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 187, "seq": "crack_alta_ba", "x_req": 172, "hipotesis": "ALTA;AB;23 debe dar 201", "request": {"m": "ALTA;AB;23"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 188, "seq": "crack_alta_ba", "x_req": 173, "hipotesis": "Probar control 0 para ALTA;BA", "request": {"m": "ALTA;BA;0"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 189, "seq": "crack_alta_ba", "x_req": 174, "hipotesis": "Probar control 1 para ALTA;BA", "request": {"m": "ALTA;BA;1"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 190, "seq": "crack_alta_ba", "x_req": 175, "hipotesis": "Probar control 2 para ALTA;BA", "request": {"m": "ALTA;BA;2"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 191, "seq": "crack_alta_ba", "x_req": 176, "hipotesis": "Probar control 3 para ALTA;BA", "request": {"m": "ALTA;BA;3"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 192, "seq": "crack_alta_ba", "x_req": 177, "hipotesis": "Probar control 4 para ALTA;BA", "request": {"m": "ALTA;BA;4"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 193, "seq": "crack_alta_ba", "x_req": 178, "hipotesis": "Probar control 5 para ALTA;BA", "request": {"m": "ALTA;BA;5"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 194, "seq": "crack_alta_ba", "x_req": 179, "hipotesis": "Probar control 6 para ALTA;BA", "request": {"m": "ALTA;BA;6"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 195, "seq": "crack_alta_ba", "x_req": 180, "hipotesis": "Probar control 7 para ALTA;BA", "request": {"m": "ALTA;BA;7"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 196, "seq": "crack_alta_ba", "x_req": 181, "hipotesis": "Probar control 8 para ALTA;BA", "request": {"m": "ALTA;BA;8"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 197, "seq": "crack_alta_ba", "x_req": 182, "hipotesis": "Probar control 9 para ALTA;BA", "request": {"m": "ALTA;BA;9"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 198, "seq": "crack_alta_ba", "x_req": 183, "hipotesis": "Probar control 10 para ALTA;BA", "request": {"m": "ALTA;BA;10"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 199, "seq": "crack_alta_ba", "x_req": 184, "hipotesis": "Probar control 11 para ALTA;BA", "request": {"m": "ALTA;BA;11"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 200, "seq": "crack_alta_ba", "x_req": 185, "hipotesis": "Probar control 12 para ALTA;BA", "request": {"m": "ALTA;BA;12"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 201, "seq": "crack_alta_ba", "x_req": 186, "hipotesis": "Probar control 13 para ALTA;BA", "request": {"m": "ALTA;BA;13"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 202, "seq": "crack_alta_ba", "x_req": 187, "hipotesis": "Probar control 14 para ALTA;BA", "request": {"m": "ALTA;BA;14"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 203, "seq": "crack_alta_ba", "x_req": 188, "hipotesis": "Probar control 15 para ALTA;BA", "request": {"m": "ALTA;BA;15"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 204, "seq": "crack_alta_ba", "x_req": 189, "hipotesis": "Probar control 16 para ALTA;BA", "request": {"m": "ALTA;BA;16"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 205, "seq": "crack_alta_ba", "x_req": 190, "hipotesis": "Probar control 17 para ALTA;BA", "request": {"m": "ALTA;BA;17"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 206, "seq": "crack_alta_ba", "x_req": 191, "hipotesis": "Probar control 18 para ALTA;BA", "request": {"m": "ALTA;BA;18"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 207, "seq": "crack_alta_ba", "x_req": 192, "hipotesis": "Probar control 19 para ALTA;BA", "request": {"m": "ALTA;BA;19"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 208, "seq": "crack_alta_ba", "x_req": 193, "hipotesis": "Probar control 20 para ALTA;BA", "request": {"m": "ALTA;BA;20"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 209, "seq": "crack_alta_ba", "x_req": 194, "hipotesis": "Probar control 21 para ALTA;BA", "request": {"m": "ALTA;BA;21"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 210, "seq": "crack_alta_ba", "x_req": 195, "hipotesis": "Probar control 22 para ALTA;BA", "request": {"m": "ALTA;BA;22"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 211, "seq": "crack_alta_ba", "x_req": 196, "hipotesis": "Probar control 23 para ALTA;BA", "request": {"m": "ALTA;BA;23"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 212, "seq": "crack_alta_ba", "x_req": 197, "hipotesis": "Probar control 24 para ALTA;BA", "request": {"m": "ALTA;BA;24"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 213, "seq": "crack_alta_ba", "x_req": 198, "hipotesis": "Probar control 25 para ALTA;BA", "request": {"m": "ALTA;BA;25"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 214, "seq": "crack_alta_ba", "x_req": 199, "hipotesis": "Probar control 26 para ALTA;BA", "request": {"m": "ALTA;BA;26"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 215, "seq": "crack_alta_ba", "x_req": 200, "hipotesis": "Probar control 27 para ALTA;BA", "request": {"m": "ALTA;BA;27"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 216, "seq": "crack_alta_ba", "x_req": 201, "hipotesis": "Probar control 28 para ALTA;BA", "request": {"m": "ALTA;BA;28"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 217, "seq": "crack_alta_ba", "x_req": 202, "hipotesis": "Probar control 29 para ALTA;BA", "request": {"m": "ALTA;BA;29"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 218, "seq": "crack_alta_ba", "x_req": 203, "hipotesis": "Probar control 30 para ALTA;BA", "request": {"m": "ALTA;BA;30"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 219, "seq": "crack_alta_ba", "x_req": 204, "hipotesis": "Probar control 31 para ALTA;BA", "request": {"m": "ALTA;BA;31"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 220, "seq": "crack_alta_ba", "x_req": 205, "hipotesis": "Probar control 32 para ALTA;BA", "request": {"m": "ALTA;BA;32"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 221, "seq": "crack_alta_ba", "x_req": 206, "hipotesis": "Probar control 33 para ALTA;BA", "request": {"m": "ALTA;BA;33"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 222, "seq": "crack_alta_ba", "x_req": 207, "hipotesis": "Probar control 34 para ALTA;BA", "request": {"m": "ALTA;BA;34"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 223, "seq": "crack_alta_ba", "x_req": 208, "hipotesis": "Probar control 35 para ALTA;BA", "request": {"m": "ALTA;BA;35"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 224, "seq": "crack_alta_ba", "x_req": 209, "hipotesis": "Probar control 36 para ALTA;BA", "request": {"m": "ALTA;BA;36"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 225, "seq": "crack_alta_ba", "x_req": 210, "hipotesis": "Probar control 37 para ALTA;BA", "request": {"m": "ALTA;BA;37"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 226, "seq": "crack_alta_ba", "x_req": 211, "hipotesis": "Probar control 38 para ALTA;BA", "request": {"m": "ALTA;BA;38"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 227, "seq": "crack_alta_ba", "x_req": 212, "hipotesis": "Probar control 39 para ALTA;BA", "request": {"m": "ALTA;BA;39"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 228, "seq": "crack_alta_ba", "x_req": 213, "hipotesis": "Probar control 40 para ALTA;BA", "request": {"m": "ALTA;BA;40"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 229, "seq": "crack_alta_ba", "x_req": 214, "hipotesis": "Probar control 41 para ALTA;BA", "request": {"m": "ALTA;BA;41"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 230, "seq": "crack_alta_ba", "x_req": 215, "hipotesis": "Probar control 42 para ALTA;BA", "request": {"m": "ALTA;BA;42"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 231, "seq": "crack_alta_ba", "x_req": 216, "hipotesis": "Probar control 43 para ALTA;BA", "request": {"m": "ALTA;BA;43"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 232, "seq": "crack_alta_ba", "x_req": 217, "hipotesis": "Probar control 44 para ALTA;BA", "request": {"m": "ALTA;BA;44"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 233, "seq": "crack_alta_ba", "x_req": 218, "hipotesis": "Probar control 45 para ALTA;BA", "request": {"m": "ALTA;BA;45"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 234, "seq": "crack_alta_ba", "x_req": 219, "hipotesis": "Probar control 46 para ALTA;BA", "request": {"m": "ALTA;BA;46"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 235, "seq": "crack_alta_ba", "x_req": 220, "hipotesis": "Probar control 47 para ALTA;BA", "request": {"m": "ALTA;BA;47"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 236, "seq": "crack_alta_ba", "x_req": 221, "hipotesis": "Probar control 48 para ALTA;BA", "request": {"m": "ALTA;BA;48"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 237, "seq": "crack_alta_ba", "x_req": 222, "hipotesis": "Probar control 49 para ALTA;BA", "request": {"m": "ALTA;BA;49"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 238, "seq": "crack_alta_ba", "x_req": 223, "hipotesis": "Probar control 50 para ALTA;BA", "request": {"m": "ALTA;BA;50"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 239, "seq": "crack_alta_ba", "x_req": 224, "hipotesis": "Probar control 51 para ALTA;BA", "request": {"m": "ALTA;BA;51"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 240, "seq": "crack_alta_ba", "x_req": 225, "hipotesis": "Probar control 52 para ALTA;BA", "request": {"m": "ALTA;BA;52"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 241, "seq": "crack_alta_ba", "x_req": 226, "hipotesis": "Probar control 53 para ALTA;BA", "request": {"m": "ALTA;BA;53"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 242, "seq": "crack_alta_ba", "x_req": 227, "hipotesis": "Probar control 54 para ALTA;BA", "request": {"m": "ALTA;BA;54"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 243, "seq": "crack_alta_ba", "x_req": 228, "hipotesis": "Probar control 55 para ALTA;BA", "request": {"m": "ALTA;BA;55"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 244, "seq": "crack_alta_ba", "x_req": 229, "hipotesis": "Probar control 56 para ALTA;BA", "request": {"m": "ALTA;BA;56"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 245, "seq": "crack_alta_ba", "x_req": 230, "hipotesis": "Probar control 57 para ALTA;BA", "request": {"m": "ALTA;BA;57"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 246, "seq": "crack_alta_ba", "x_req": 231, "hipotesis": "Probar control 58 para ALTA;BA", "request": {"m": "ALTA;BA;58"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 247, "seq": "crack_alta_ba", "x_req": 232, "hipotesis": "Probar control 59 para ALTA;BA", "request": {"m": "ALTA;BA;59"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 248, "seq": "crack_alta_ba", "x_req": 233, "hipotesis": "Probar control 60 para ALTA;BA", "request": {"m": "ALTA;BA;60"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 249, "seq": "crack_alta_ba", "x_req": 234, "hipotesis": "Probar control 61 para ALTA;BA", "request": {"m": "ALTA;BA;61"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 250, "seq": "crack_alta_ba", "x_req": 235, "hipotesis": "Probar control 62 para ALTA;BA", "request": {"m": "ALTA;BA;62"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 251, "seq": "crack_alta_ba", "x_req": 236, "hipotesis": "Probar control 63 para ALTA;BA", "request": {"m": "ALTA;BA;63"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 252, "seq": "crack_alta_ba", "x_req": 237, "hipotesis": "Probar control 64 para ALTA;BA", "request": {"m": "ALTA;BA;64"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 253, "seq": "crack_alta_ba", "x_req": 238, "hipotesis": "Probar control 65 para ALTA;BA", "request": {"m": "ALTA;BA;65"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 254, "seq": "crack_alta_ba", "x_req": 239, "hipotesis": "Probar control 66 para ALTA;BA", "request": {"m": "ALTA;BA;66"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 255, "seq": "crack_alta_ba", "x_req": 240, "hipotesis": "Probar control 67 para ALTA;BA", "request": {"m": "ALTA;BA;67"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 256, "seq": "crack_alta_ba", "x_req": 241, "hipotesis": "Probar control 68 para ALTA;BA", "request": {"m": "ALTA;BA;68"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 257, "seq": "crack_alta_ba", "x_req": 242, "hipotesis": "Probar control 69 para ALTA;BA", "request": {"m": "ALTA;BA;69"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 258, "seq": "crack_alta_ba", "x_req": 243, "hipotesis": "Probar control 70 para ALTA;BA", "request": {"m": "ALTA;BA;70"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 259, "seq": "crack_alta_ba", "x_req": 244, "hipotesis": "Probar control 71 para ALTA;BA", "request": {"m": "ALTA;BA;71"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 260, "seq": "crack_alta_ba", "x_req": 245, "hipotesis": "Probar control 72 para ALTA;BA", "request": {"m": "ALTA;BA;72"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 261, "seq": "crack_alta_ba", "x_req": 246, "hipotesis": "Probar control 73 para ALTA;BA", "request": {"m": "ALTA;BA;73"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 262, "seq": "crack_alta_ba", "x_req": 247, "hipotesis": "Probar control 74 para ALTA;BA", "request": {"m": "ALTA;BA;74"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 263, "seq": "crack_alta_ba", "x_req": 248, "hipotesis": "Probar control 75 para ALTA;BA", "request": {"m": "ALTA;BA;75"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 264, "seq": "crack_alta_ba", "x_req": 249, "hipotesis": "Probar control 76 para ALTA;BA", "request": {"m": "ALTA;BA;76"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 265, "seq": "crack_alta_ba", "x_req": 250, "hipotesis": "Probar control 77 para ALTA;BA", "request": {"m": "ALTA;BA;77"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 266, "seq": "crack_alta_ba", "x_req": 251, "hipotesis": "Probar control 78 para ALTA;BA", "request": {"m": "ALTA;BA;78"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 267, "seq": "crack_alta_ba", "x_req": 252, "hipotesis": "Probar control 79 para ALTA;BA", "request": {"m": "ALTA;BA;79"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 268, "seq": "crack_alta_ba", "x_req": 253, "hipotesis": "Probar control 80 para ALTA;BA", "request": {"m": "ALTA;BA;80"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 269, "seq": "crack_alta_ba", "x_req": 254, "hipotesis": "Probar control 81 para ALTA;BA", "request": {"m": "ALTA;BA;81"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 270, "seq": "crack_alta_ba", "x_req": 255, "hipotesis": "Probar control 82 para ALTA;BA", "request": {"m": "ALTA;BA;82"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 271, "seq": "crack_alta_ba", "x_req": 256, "hipotesis": "Probar control 83 para ALTA;BA", "request": {"m": "ALTA;BA;83"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 272, "seq": "crack_alta_ba", "x_req": 257, "hipotesis": "Probar control 84 para ALTA;BA", "request": {"m": "ALTA;BA;84"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 273, "seq": "crack_alta_ba", "x_req": 258, "hipotesis": "Probar control 85 para ALTA;BA", "request": {"m": "ALTA;BA;85"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 274, "seq": "crack_alta_ba", "x_req": 259, "hipotesis": "Probar control 86 para ALTA;BA", "request": {"m": "ALTA;BA;86"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 275, "seq": "crack_alta_ba", "x_req": 260, "hipotesis": "Probar control 87 para ALTA;BA", "request": {"m": "ALTA;BA;87"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 276, "seq": "crack_alta_ba", "x_req": 261, "hipotesis": "Probar control 88 para ALTA;BA", "request": {"m": "ALTA;BA;88"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 277, "seq": "crack_alta_ba", "x_req": 262, "hipotesis": "Probar control 89 para ALTA;BA", "request": {"m": "ALTA;BA;89"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 278, "seq": "crack_alta_ba", "x_req": 263, "hipotesis": "Probar control 90 para ALTA;BA", "request": {"m": "ALTA;BA;90"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 279, "seq": "crack_alta_ba", "x_req": 264, "hipotesis": "Probar control 91 para ALTA;BA", "request": {"m": "ALTA;BA;91"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 280, "seq": "crack_alta_ba", "x_req": 265, "hipotesis": "Probar control 92 para ALTA;BA", "request": {"m": "ALTA;BA;92"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 281, "seq": "crack_alta_ba", "x_req": 266, "hipotesis": "Probar control 93 para ALTA;BA", "request": {"m": "ALTA;BA;93"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 282, "seq": "crack_alta_ba", "x_req": null, "hipotesis": "Reset final", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 283, "seq": "test_i", "x_req": 267, "hipotesis": "ALTA;I con control 38", "request": {"m": "ALTA;I;38"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 284, "seq": "test_j", "x_req": null, "hipotesis": "Reset antes de test J", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 285, "seq": "test_j", "x_req": 268, "hipotesis": "Probar 29 si J es 10", "request": {"m": "ALTA;J;29"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 286, "seq": "test_j", "x_req": null, "hipotesis": "Reset final", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 287, "seq": "test_digits", "x_req": null, "hipotesis": "Reset antes de test digits", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 288, "seq": "test_digits", "x_req": 269, "hipotesis": "Probar ALTA;0;0", "request": {"m": "ALTA;0;0"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 289, "seq": "test_digits", "x_req": 270, "hipotesis": "Probar ALTA;0;1", "request": {"m": "ALTA;0;1"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 290, "seq": "test_digits", "x_req": 271, "hipotesis": "Probar ALTA;0;2", "request": {"m": "ALTA;0;2"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 291, "seq": "test_digits", "x_req": 272, "hipotesis": "Probar ALTA;0;3", "request": {"m": "ALTA;0;3"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 292, "seq": "test_digits", "x_req": 273, "hipotesis": "Probar ALTA;0;4", "request": {"m": "ALTA;0;4"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 293, "seq": "test_digits", "x_req": 274, "hipotesis": "Probar ALTA;0;5", "request": {"m": "ALTA;0;5"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 294, "seq": "test_digits", "x_req": 275, "hipotesis": "Probar ALTA;0;6", "request": {"m": "ALTA;0;6"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 295, "seq": "test_digits", "x_req": 276, "hipotesis": "Probar ALTA;0;7", "request": {"m": "ALTA;0;7"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 296, "seq": "test_digits", "x_req": 277, "hipotesis": "Probar ALTA;0;8", "request": {"m": "ALTA;0;8"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 297, "seq": "test_digits", "x_req": 278, "hipotesis": "Probar ALTA;0;9", "request": {"m": "ALTA;0;9"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 298, "seq": "test_digits", "x_req": 279, "hipotesis": "Probar ALTA;0;10", "request": {"m": "ALTA;0;10"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 299, "seq": "test_digits", "x_req": 280, "hipotesis": "Probar ALTA;0;11", "request": {"m": "ALTA;0;11"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 300, "seq": "test_digits", "x_req": 281, "hipotesis": "Probar ALTA;0;12", "request": {"m": "ALTA;0;12"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 301, "seq": "test_digits", "x_req": 282, "hipotesis": "Probar ALTA;0;13", "request": {"m": "ALTA;0;13"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 302, "seq": "test_digits", "x_req": 283, "hipotesis": "Probar ALTA;0;14", "request": {"m": "ALTA;0;14"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 303, "seq": "test_digits", "x_req": 284, "hipotesis": "Probar ALTA;0;15", "request": {"m": "ALTA;0;15"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 304, "seq": "test_digits", "x_req": 285, "hipotesis": "Probar ALTA;0;16", "request": {"m": "ALTA;0;16"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 305, "seq": "test_digits", "x_req": 286, "hipotesis": "Probar ALTA;0;17", "request": {"m": "ALTA;0;17"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 306, "seq": "test_digits", "x_req": 287, "hipotesis": "Probar ALTA;0;18", "request": {"m": "ALTA;0;18"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 307, "seq": "test_digits", "x_req": 288, "hipotesis": "Probar ALTA;0;19", "request": {"m": "ALTA;0;19"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 308, "seq": "test_digits", "x_req": 289, "hipotesis": "Probar ALTA;0;20", "request": {"m": "ALTA;0;20"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 309, "seq": "test_digits", "x_req": 290, "hipotesis": "Probar ALTA;0;21", "request": {"m": "ALTA;0;21"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 310, "seq": "test_digits", "x_req": 291, "hipotesis": "Probar ALTA;0;22", "request": {"m": "ALTA;0;22"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 311, "seq": "test_digits", "x_req": 292, "hipotesis": "Probar ALTA;0;23", "request": {"m": "ALTA;0;23"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 312, "seq": "test_digits", "x_req": 293, "hipotesis": "Probar ALTA;0;24", "request": {"m": "ALTA;0;24"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 313, "seq": "test_digits", "x_req": 294, "hipotesis": "Probar ALTA;0;25", "request": {"m": "ALTA;0;25"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 314, "seq": "test_digits", "x_req": 295, "hipotesis": "Probar ALTA;0;26", "request": {"m": "ALTA;0;26"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 315, "seq": "test_digits", "x_req": 296, "hipotesis": "Probar ALTA;0;27", "request": {"m": "ALTA;0;27"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 316, "seq": "test_digits", "x_req": 297, "hipotesis": "Probar ALTA;0;28", "request": {"m": "ALTA;0;28"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 317, "seq": "test_digits", "x_req": 298, "hipotesis": "Probar ALTA;0;29", "request": {"m": "ALTA;0;29"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 318, "seq": "test_digits", "x_req": 299, "hipotesis": "Probar ALTA;0;30", "request": {"m": "ALTA;0;30"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 319, "seq": "test_digits", "x_req": 300, "hipotesis": "Probar ALTA;0;31", "request": {"m": "ALTA;0;31"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 320, "seq": "test_digits", "x_req": 301, "hipotesis": "Probar ALTA;0;32", "request": {"m": "ALTA;0;32"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 321, "seq": "test_digits", "x_req": 302, "hipotesis": "Probar ALTA;0;33", "request": {"m": "ALTA;0;33"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 322, "seq": "test_digits", "x_req": 303, "hipotesis": "Probar ALTA;0;34", "request": {"m": "ALTA;0;34"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 323, "seq": "test_digits", "x_req": 304, "hipotesis": "Probar ALTA;0;35", "request": {"m": "ALTA;0;35"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 324, "seq": "test_digits", "x_req": 305, "hipotesis": "Probar ALTA;0;36", "request": {"m": "ALTA;0;36"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 325, "seq": "test_digits", "x_req": 306, "hipotesis": "Probar ALTA;0;37", "request": {"m": "ALTA;0;37"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 326, "seq": "test_digits", "x_req": 307, "hipotesis": "Probar ALTA;0;38", "request": {"m": "ALTA;0;38"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 327, "seq": "test_digits", "x_req": 308, "hipotesis": "Probar ALTA;0;39", "request": {"m": "ALTA;0;39"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 328, "seq": "test_digits", "x_req": 309, "hipotesis": "Probar ALTA;0;40", "request": {"m": "ALTA;0;40"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 329, "seq": "test_digits", "x_req": 310, "hipotesis": "Probar ALTA;0;41", "request": {"m": "ALTA;0;41"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 330, "seq": "test_digits", "x_req": 311, "hipotesis": "Probar ALTA;0;42", "request": {"m": "ALTA;0;42"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 331, "seq": "test_digits", "x_req": 312, "hipotesis": "Probar ALTA;0;43", "request": {"m": "ALTA;0;43"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 332, "seq": "test_digits", "x_req": 313, "hipotesis": "Probar ALTA;0;44", "request": {"m": "ALTA;0;44"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 333, "seq": "test_digits", "x_req": 314, "hipotesis": "Probar ALTA;0;45", "request": {"m": "ALTA;0;45"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 334, "seq": "test_digits", "x_req": 315, "hipotesis": "Probar ALTA;0;46", "request": {"m": "ALTA;0;46"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 335, "seq": "test_digits", "x_req": 316, "hipotesis": "Probar ALTA;0;47", "request": {"m": "ALTA;0;47"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 336, "seq": "test_digits", "x_req": 317, "hipotesis": "Probar ALTA;0;48", "request": {"m": "ALTA;0;48"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 337, "seq": "test_digits", "x_req": 318, "hipotesis": "Probar ALTA;0;49", "request": {"m": "ALTA;0;49"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 338, "seq": "test_digits", "x_req": 319, "hipotesis": "Probar ALTA;0;50", "request": {"m": "ALTA;0;50"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 339, "seq": "test_digits", "x_req": 320, "hipotesis": "Probar ALTA;0;51", "request": {"m": "ALTA;0;51"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 340, "seq": "test_digits", "x_req": 321, "hipotesis": "Probar ALTA;0;52", "request": {"m": "ALTA;0;52"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 341, "seq": "test_digits", "x_req": 322, "hipotesis": "Probar ALTA;0;53", "request": {"m": "ALTA;0;53"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 342, "seq": "test_digits", "x_req": 323, "hipotesis": "Probar ALTA;0;54", "request": {"m": "ALTA;0;54"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 343, "seq": "test_digits", "x_req": 324, "hipotesis": "Probar ALTA;0;55", "request": {"m": "ALTA;0;55"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 344, "seq": "test_digits", "x_req": 325, "hipotesis": "Probar ALTA;0;56", "request": {"m": "ALTA;0;56"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 345, "seq": "test_digits", "x_req": 326, "hipotesis": "Probar ALTA;0;57", "request": {"m": "ALTA;0;57"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 346, "seq": "test_digits", "x_req": 327, "hipotesis": "Probar ALTA;0;58", "request": {"m": "ALTA;0;58"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 347, "seq": "test_digits", "x_req": 328, "hipotesis": "Probar ALTA;0;59", "request": {"m": "ALTA;0;59"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 348, "seq": "test_digits", "x_req": 329, "hipotesis": "Probar ALTA;0;60", "request": {"m": "ALTA;0;60"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 349, "seq": "test_digits", "x_req": 330, "hipotesis": "Probar ALTA;0;61", "request": {"m": "ALTA;0;61"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 350, "seq": "test_digits", "x_req": 331, "hipotesis": "Probar ALTA;0;62", "request": {"m": "ALTA;0;62"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 351, "seq": "test_digits", "x_req": 332, "hipotesis": "Probar ALTA;0;63", "request": {"m": "ALTA;0;63"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 352, "seq": "test_digits", "x_req": 333, "hipotesis": "Probar ALTA;0;64", "request": {"m": "ALTA;0;64"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 353, "seq": "test_digits", "x_req": 334, "hipotesis": "Probar ALTA;0;65", "request": {"m": "ALTA;0;65"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 354, "seq": "test_digits", "x_req": null, "hipotesis": "Reset final", "request": {}, "status": 200, "response": {"ok": true}}
