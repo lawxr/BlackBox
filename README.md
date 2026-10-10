@@ -91,7 +91,7 @@ uv run python -m lab.benchmark --live --budget 80
 
 #### B) Comparar Original en Vivo vs URL Remota Desplegada:
 ```bash
-uv run python -m lab.benchmark --live --replica-url https://tu-servicio.up.railway.app --budget 80
+uv run python -m lab.benchmark --live --replica-url https://blackbox.up.railway.app --budget 80
 ```
 
 #### C) Fast Testing Local Hermético (Cero consumo de red, <1s):
