@@ -2698,3 +2698,191 @@
 {"id": 2698, "seq": "bench_hard_002", "x_req": 1109, "hipotesis": "Step 6: chain:consult_after_annul", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "500.00"}}
 {"id": 2699, "seq": "bench_hard_002", "x_req": 1110, "hipotesis": "Step 7: chain:consult_after_annul", "request": {"m": "CONSULTA;AC-0002;11"}, "status": 200, "response": {"cuenta_id": "AC-0002", "saldo": "0.00"}}
 {"id": 2700, "seq": "bench_hard_002", "x_req": 1111, "hipotesis": "Step 8: chain:consult_after_annul", "request": {"m": "DEPOSITO;AC-0001;12500;19"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0003"}}
+{"id": 2701, "seq": "bench_easy_000", "x_req": null, "hipotesis": "Reset: http: http:content_type", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2702, "seq": "bench_easy_000", "x_req": 1112, "hipotesis": "Step 1: http: http:content_type", "request": {"m": "PING;val1"}, "status": 200, "response": {"pong": true}}
+{"id": 2703, "seq": "bench_easy_001", "x_req": null, "hipotesis": "Reset: auth: auth:empty_token", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2704, "seq": "bench_easy_001", "x_req": null, "hipotesis": "Step 1: auth: auth:empty_token", "request": {"m": "CONSULTA;val1;97"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}}
+{"id": 2705, "seq": "bench_easy_002", "x_req": null, "hipotesis": "Reset: body: body:non_object_null", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2706, "seq": "bench_easy_002", "x_req": 1113, "hipotesis": "Step 1: body: body:non_object_null", "request": {}, "status": 400, "response": {"error": "E102", "mensaje": "falta m"}}
+{"id": 2707, "seq": "bench_easy_003", "x_req": null, "hipotesis": "Reset: message: message:spaces_around_separator", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2708, "seq": "bench_easy_003", "x_req": 1114, "hipotesis": "Step 1: message: message:spaces_around_separator", "request": {"m": "ALTA ; val1;58"}, "status": 400, "response": {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "ALTA"}}
+{"id": 2709, "seq": "bench_easy_004", "x_req": null, "hipotesis": "Reset: http: http:content_type", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2710, "seq": "bench_easy_004", "x_req": 1115, "hipotesis": "Step 1: http: http:content_type", "request": {"m": "ANULA;val1;45"}, "status": 404, "response": {"error": "E402", "mensaje": "operación inexistente"}}
+{"id": 2711, "seq": "bench_easy_005", "x_req": null, "hipotesis": "Reset: auth: auth:empty_token", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2712, "seq": "bench_easy_005", "x_req": null, "hipotesis": "Step 1: auth: auth:empty_token", "request": {"m": "TRANSFER;val1;val2;100;98"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}}
+{"id": 2713, "seq": "bench_easy_006", "x_req": null, "hipotesis": "Reset: body: body:non_object_string", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2714, "seq": "bench_easy_006", "x_req": 1116, "hipotesis": "Step 1: body: body:non_object_string", "request": {}, "status": 400, "response": {"error": "E102", "mensaje": "falta m"}}
+{"id": 2715, "seq": "bench_easy_007", "x_req": null, "hipotesis": "Reset: message: message:arity_plus_one", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2716, "seq": "bench_easy_007", "x_req": 1117, "hipotesis": "Step 1: message: message:arity_plus_one", "request": {"m": "PING;extra;val1"}, "status": 400, "response": {"error": "E302", "mensaje": "aridad inválida"}}
+{"id": 2717, "seq": "bench_easy_008", "x_req": null, "hipotesis": "Reset: http: http:method", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2718, "seq": "bench_easy_008", "x_req": null, "hipotesis": "Step 1: http: http:method", "request": {"m": "ALTA;val1;58"}, "status": 404, "response": {"error": "E404", "mensaje": "ruta desconocida"}}
+{"id": 2719, "seq": "bench_easy_009", "x_req": null, "hipotesis": "Reset: auth: auth:token_whitespace", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2720, "seq": "bench_easy_009", "x_req": null, "hipotesis": "Step 1: auth: auth:token_whitespace", "request": {"m": "TRANSFER;val1;val2;100;98"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}}
+{"id": 2721, "seq": "bench_easy_010", "x_req": null, "hipotesis": "Reset: body: body:non_object_array", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2722, "seq": "bench_easy_010", "x_req": 1118, "hipotesis": "Step 1: body: body:non_object_array", "request": {}, "status": 400, "response": {"error": "E102", "mensaje": "falta m"}}
+{"id": 2723, "seq": "bench_easy_011", "x_req": null, "hipotesis": "Reset: message: message:spaces_around_separator", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2724, "seq": "bench_easy_011", "x_req": 1119, "hipotesis": "Step 1: message: message:spaces_around_separator", "request": {"m": "ANULA ; val1;45"}, "status": 400, "response": {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "ANULA"}}
+{"id": 2725, "seq": "bench_easy_012", "x_req": null, "hipotesis": "Reset: http: http:content_type", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2726, "seq": "bench_easy_012", "x_req": 1120, "hipotesis": "Step 1: http: http:content_type", "request": {"m": "TRANSFER;val1;val2;100;98"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 2727, "seq": "bench_easy_013", "x_req": null, "hipotesis": "Reset: auth: auth:extra_spaces", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2728, "seq": "bench_easy_013", "x_req": null, "hipotesis": "Step 1: auth: auth:extra_spaces", "request": {"m": "ALTA;val1;58"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}}
+{"id": 2729, "seq": "bench_easy_014", "x_req": null, "hipotesis": "Reset: body: body:nested_object", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2730, "seq": "bench_easy_014", "x_req": 1121, "hipotesis": "Step 1: body: body:nested_object", "request": {"m": {"nested_field": "TRANSFER;val1;val2;100;98"}}, "status": 400, "response": {"error": "E102", "mensaje": "falta m"}}
+{"id": 2731, "seq": "bench_reg_000", "x_req": null, "hipotesis": "Reset: chain:transfer_then_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2732, "seq": "bench_reg_000", "x_req": 1122, "hipotesis": "Step 1: chain:transfer_then_annul", "request": {"m": "ALTA;U45;45"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2733, "seq": "bench_reg_000", "x_req": 1123, "hipotesis": "Step 2: chain:transfer_then_annul", "request": {"m": "ALTA;U10;53"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2734, "seq": "bench_reg_000", "x_req": 1124, "hipotesis": "Step 3: chain:transfer_then_annul", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2735, "seq": "bench_reg_000", "x_req": 1125, "hipotesis": "Step 4: chain:transfer_then_annul", "request": {"m": "TRANSFER;AC-0001;AC-0002;22963;78"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2736, "seq": "bench_reg_000", "x_req": 1126, "hipotesis": "Step 5: chain:transfer_then_annul", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": true, "anulada": "OP-0002"}}
+{"id": 2737, "seq": "bench_reg_001", "x_req": null, "hipotesis": "Reset: chain:annul_twice", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2738, "seq": "bench_reg_001", "x_req": 1127, "hipotesis": "Step 1: chain:annul_twice", "request": {"m": "ALTA;U53;21"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2739, "seq": "bench_reg_001", "x_req": 1128, "hipotesis": "Step 2: chain:annul_twice", "request": {"m": "ALTA;U45;45"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2740, "seq": "bench_reg_001", "x_req": 1129, "hipotesis": "Step 3: chain:annul_twice", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2741, "seq": "bench_reg_002", "x_req": null, "hipotesis": "Reset: chain:consult_after_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2742, "seq": "bench_reg_002", "x_req": 1130, "hipotesis": "Step 1: chain:consult_after_annul", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2743, "seq": "bench_reg_002", "x_req": 1131, "hipotesis": "Step 2: chain:consult_after_annul", "request": {"m": "ALTA;Bob;24"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2744, "seq": "bench_reg_002", "x_req": 1132, "hipotesis": "Step 3: chain:consult_after_annul", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2745, "seq": "bench_reg_002", "x_req": 1133, "hipotesis": "Step 4: chain:consult_after_annul", "request": {"m": "TRANSFER;AC-0001;AC-0002;25000;78"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2746, "seq": "bench_reg_003", "x_req": null, "hipotesis": "Reset: chain:ops_after_failed_ops", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2747, "seq": "bench_reg_003", "x_req": 1134, "hipotesis": "Step 1: chain:ops_after_failed_ops", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2748, "seq": "bench_reg_003", "x_req": 1135, "hipotesis": "Step 2: chain:ops_after_failed_ops", "request": {"m": "DEPOSITO;AC-0001;-10;77"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 2749, "seq": "bench_reg_004", "x_req": null, "hipotesis": "Reset: chain:many_alta_then_old_ids", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2750, "seq": "bench_reg_004", "x_req": 1136, "hipotesis": "Step 1: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User1;9"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2751, "seq": "bench_reg_004", "x_req": 1137, "hipotesis": "Step 2: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User2;6"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2752, "seq": "bench_reg_005", "x_req": null, "hipotesis": "Reset: chain:boundary_values", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2753, "seq": "bench_reg_005", "x_req": 1138, "hipotesis": "Step 1: chain:boundary_values", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2754, "seq": "bench_reg_005", "x_req": 1139, "hipotesis": "Step 2: chain:boundary_values", "request": {"m": "ALTA;Bob;24"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2755, "seq": "bench_reg_005", "x_req": 1140, "hipotesis": "Step 3: chain:boundary_values", "request": {"m": "DEPOSITO;AC-0001;150000;65"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2756, "seq": "bench_reg_005", "x_req": 1141, "hipotesis": "Step 4: chain:boundary_values", "request": {"m": "TRANSFER;AC-0001;AC-0002;49999;62"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2757, "seq": "bench_reg_005", "x_req": 1142, "hipotesis": "Step 5: chain:boundary_values", "request": {"m": "TRANSFER;AC-0001;AC-0002;50000;59"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0003"}}
+{"id": 2758, "seq": "bench_reg_006", "x_req": null, "hipotesis": "Reset: chain:transfer_then_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2759, "seq": "bench_reg_006", "x_req": 1143, "hipotesis": "Step 1: chain:transfer_then_annul", "request": {"m": "ALTA;U22;17"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2760, "seq": "bench_reg_006", "x_req": 1144, "hipotesis": "Step 2: chain:transfer_then_annul", "request": {"m": "ALTA;U55;15"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2761, "seq": "bench_reg_006", "x_req": 1145, "hipotesis": "Step 3: chain:transfer_then_annul", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2762, "seq": "bench_reg_006", "x_req": 1146, "hipotesis": "Step 4: chain:transfer_then_annul", "request": {"m": "TRANSFER;AC-0001;AC-0002;35041;25"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2763, "seq": "bench_reg_007", "x_req": null, "hipotesis": "Reset: chain:annul_twice", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2764, "seq": "bench_reg_007", "x_req": 1147, "hipotesis": "Step 1: chain:annul_twice", "request": {"m": "ALTA;U15;38"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2765, "seq": "bench_reg_007", "x_req": 1148, "hipotesis": "Step 2: chain:annul_twice", "request": {"m": "ALTA;U68;73"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2766, "seq": "bench_reg_008", "x_req": null, "hipotesis": "Reset: chain:consult_after_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2767, "seq": "bench_reg_008", "x_req": 1149, "hipotesis": "Step 1: chain:consult_after_annul", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2768, "seq": "bench_reg_008", "x_req": 1150, "hipotesis": "Step 2: chain:consult_after_annul", "request": {"m": "ALTA;Bob;24"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2769, "seq": "bench_reg_008", "x_req": 1151, "hipotesis": "Step 3: chain:consult_after_annul", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2770, "seq": "bench_reg_008", "x_req": 1152, "hipotesis": "Step 4: chain:consult_after_annul", "request": {"m": "TRANSFER;AC-0001;AC-0002;25000;78"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2771, "seq": "bench_reg_008", "x_req": 1153, "hipotesis": "Step 5: chain:consult_after_annul", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": true, "anulada": "OP-0002"}}
+{"id": 2772, "seq": "bench_reg_009", "x_req": null, "hipotesis": "Reset: chain:ops_after_failed_ops", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2773, "seq": "bench_reg_009", "x_req": 1154, "hipotesis": "Step 1: chain:ops_after_failed_ops", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2774, "seq": "bench_reg_009", "x_req": 1155, "hipotesis": "Step 2: chain:ops_after_failed_ops", "request": {"m": "DEPOSITO;AC-0001;-10;77"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 2775, "seq": "bench_easy_000", "x_req": null, "hipotesis": "Reset: http: http:content_type", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2776, "seq": "bench_easy_000", "x_req": 1156, "hipotesis": "Step 1: http: http:content_type", "request": {"m": "PING;val1"}, "status": 200, "response": {"pong": true}}
+{"id": 2777, "seq": "bench_easy_001", "x_req": null, "hipotesis": "Reset: auth: auth:empty_token", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2778, "seq": "bench_easy_001", "x_req": null, "hipotesis": "Step 1: auth: auth:empty_token", "request": {"m": "CONSULTA;val1;97"}, "status": 401, "response": {"error": "E001", "mensaje": "no autorizado"}}
+{"id": 2779, "seq": "bench_easy_002", "x_req": null, "hipotesis": "Reset: body: body:non_object_null", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2780, "seq": "bench_easy_002", "x_req": 1157, "hipotesis": "Step 1: body: body:non_object_null", "request": {}, "status": 400, "response": {"error": "E102", "mensaje": "falta m"}}
+{"id": 2781, "seq": "bench_easy_003", "x_req": null, "hipotesis": "Reset: message: message:spaces_around_separator", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2782, "seq": "bench_easy_003", "x_req": 1158, "hipotesis": "Step 1: message: message:spaces_around_separator", "request": {"m": "ALTA ; val1;58"}, "status": 400, "response": {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "ALTA"}}
+{"id": 2783, "seq": "bench_easy_004", "x_req": null, "hipotesis": "Reset: http: http:content_type", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2784, "seq": "bench_easy_004", "x_req": 1159, "hipotesis": "Step 1: http: http:content_type", "request": {"m": "ANULA;val1;45"}, "status": 404, "response": {"error": "E402", "mensaje": "operación inexistente"}}
+{"id": 2785, "seq": "bench_reg_000", "x_req": null, "hipotesis": "Reset: chain:transfer_then_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2786, "seq": "bench_reg_000", "x_req": 1160, "hipotesis": "Step 1: chain:transfer_then_annul", "request": {"m": "ALTA;U79;40"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2787, "seq": "bench_reg_000", "x_req": 1161, "hipotesis": "Step 2: chain:transfer_then_annul", "request": {"m": "ALTA;U21;20"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2788, "seq": "bench_reg_001", "x_req": null, "hipotesis": "Reset: chain:annul_twice", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2789, "seq": "bench_reg_001", "x_req": 1162, "hipotesis": "Step 1: chain:annul_twice", "request": {"m": "ALTA;U13;44"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2790, "seq": "bench_reg_001", "x_req": 1163, "hipotesis": "Step 2: chain:annul_twice", "request": {"m": "ALTA;U21;20"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2791, "seq": "bench_reg_001", "x_req": 1164, "hipotesis": "Step 3: chain:annul_twice", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2792, "seq": "bench_reg_002", "x_req": null, "hipotesis": "Reset: chain:consult_after_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2793, "seq": "bench_reg_002", "x_req": 1165, "hipotesis": "Step 1: chain:consult_after_annul", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2794, "seq": "bench_reg_002", "x_req": 1166, "hipotesis": "Step 2: chain:consult_after_annul", "request": {"m": "ALTA;Bob;24"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2795, "seq": "bench_reg_003", "x_req": null, "hipotesis": "Reset: chain:ops_after_failed_ops", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2796, "seq": "bench_reg_003", "x_req": 1167, "hipotesis": "Step 1: chain:ops_after_failed_ops", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2797, "seq": "bench_reg_003", "x_req": 1168, "hipotesis": "Step 2: chain:ops_after_failed_ops", "request": {"m": "DEPOSITO;AC-0001;-10;77"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 2798, "seq": "bench_reg_003", "x_req": 1169, "hipotesis": "Step 3: chain:ops_after_failed_ops", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2799, "seq": "bench_reg_004", "x_req": null, "hipotesis": "Reset: chain:many_alta_then_old_ids", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2800, "seq": "bench_reg_004", "x_req": 1170, "hipotesis": "Step 1: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User1;9"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2801, "seq": "bench_reg_004", "x_req": 1171, "hipotesis": "Step 2: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User2;6"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2802, "seq": "bench_reg_004", "x_req": 1172, "hipotesis": "Step 3: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User3;3"}, "status": 201, "response": {"cuentaId": "AC-0003"}}
+{"id": 2803, "seq": "bench_reg_004", "x_req": 1173, "hipotesis": "Step 4: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User4;97"}, "status": 201, "response": {"cuentaId": "AC-0004"}}
+{"id": 2804, "seq": "bench_reg_004", "x_req": 1174, "hipotesis": "Step 5: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User5;94"}, "status": 201, "response": {"cuentaId": "AC-0005"}}
+{"id": 2805, "seq": "bench_hard_000", "x_req": null, "hipotesis": "Reset: chain:transfer_then_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2806, "seq": "bench_hard_000", "x_req": 1175, "hipotesis": "Step 1: chain:transfer_then_annul", "request": {"m": "ALTA;U38;66"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2807, "seq": "bench_hard_000", "x_req": 1176, "hipotesis": "Step 2: chain:transfer_then_annul", "request": {"m": "ALTA;U67;76"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2808, "seq": "bench_hard_000", "x_req": 1177, "hipotesis": "Step 3: chain:transfer_then_annul", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2809, "seq": "bench_hard_000", "x_req": 1178, "hipotesis": "Step 4: chain:transfer_then_annul", "request": {"m": "TRANSFER;AC-0001;AC-0002;30731;54"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2810, "seq": "bench_hard_000", "x_req": 1179, "hipotesis": "Step 5: chain:transfer_then_annul", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": true, "anulada": "OP-0002"}}
+{"id": 2811, "seq": "bench_hard_000", "x_req": 1180, "hipotesis": "Step 6: chain:transfer_then_annul", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "500.00"}}
+{"id": 2812, "seq": "bench_hard_000", "x_req": 1181, "hipotesis": "Step 7: chain:transfer_then_annul", "request": {"m": "CONSULTA;AC-0002;11"}, "status": 200, "response": {"cuenta_id": "AC-0002", "saldo": "0.00"}}
+{"id": 2813, "seq": "bench_hard_001", "x_req": null, "hipotesis": "Reset: chain:annul_twice", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2814, "seq": "bench_hard_001", "x_req": 1182, "hipotesis": "Step 1: chain:annul_twice", "request": {"m": "ALTA;U10;53"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2815, "seq": "bench_hard_001", "x_req": 1183, "hipotesis": "Step 2: chain:annul_twice", "request": {"m": "ALTA;U30;90"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2816, "seq": "bench_hard_001", "x_req": 1184, "hipotesis": "Step 3: chain:annul_twice", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2817, "seq": "bench_hard_001", "x_req": 1185, "hipotesis": "Step 4: chain:annul_twice", "request": {"m": "TRANSFER;AC-0001;AC-0002;40196;80"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2818, "seq": "bench_hard_001", "x_req": 1186, "hipotesis": "Step 5: chain:annul_twice", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": true, "anulada": "OP-0002"}}
+{"id": 2819, "seq": "bench_hard_001", "x_req": 1187, "hipotesis": "Step 6: chain:annul_twice", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": false, "motivo": "ya anulada"}}
+{"id": 2820, "seq": "bench_hard_002", "x_req": null, "hipotesis": "Reset: chain:consult_after_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2821, "seq": "bench_hard_002", "x_req": 1188, "hipotesis": "Step 1: chain:consult_after_annul", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2822, "seq": "bench_hard_002", "x_req": 1189, "hipotesis": "Step 2: chain:consult_after_annul", "request": {"m": "ALTA;Bob;24"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2823, "seq": "bench_hard_002", "x_req": 1190, "hipotesis": "Step 3: chain:consult_after_annul", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2824, "seq": "bench_hard_002", "x_req": 1191, "hipotesis": "Step 4: chain:consult_after_annul", "request": {"m": "TRANSFER;AC-0001;AC-0002;25000;78"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2825, "seq": "bench_hard_002", "x_req": 1192, "hipotesis": "Step 5: chain:consult_after_annul", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": true, "anulada": "OP-0002"}}
+{"id": 2826, "seq": "bench_hard_002", "x_req": 1193, "hipotesis": "Step 6: chain:consult_after_annul", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "500.00"}}
+{"id": 2827, "seq": "bench_hard_002", "x_req": 1194, "hipotesis": "Step 7: chain:consult_after_annul", "request": {"m": "CONSULTA;AC-0002;11"}, "status": 200, "response": {"cuenta_id": "AC-0002", "saldo": "0.00"}}
+{"id": 2828, "seq": "bench_hard_002", "x_req": 1195, "hipotesis": "Step 8: chain:consult_after_annul", "request": {"m": "DEPOSITO;AC-0001;12500;19"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0003"}}
+{"id": 2829, "seq": "bench_hard_003", "x_req": null, "hipotesis": "Reset: chain:ops_after_failed_ops", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2830, "seq": "bench_hard_003", "x_req": 1196, "hipotesis": "Step 1: chain:ops_after_failed_ops", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2831, "seq": "bench_hard_003", "x_req": 1197, "hipotesis": "Step 2: chain:ops_after_failed_ops", "request": {"m": "DEPOSITO;AC-0001;-10;77"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 2832, "seq": "bench_hard_003", "x_req": 1198, "hipotesis": "Step 3: chain:ops_after_failed_ops", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2833, "seq": "bench_hard_003", "x_req": 1199, "hipotesis": "Step 4: chain:ops_after_failed_ops", "request": {"m": "TRANSFER;AC-0001;AC-0001;25000;57"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
+{"id": 2834, "seq": "bench_hard_003", "x_req": 1200, "hipotesis": "Step 5: chain:ops_after_failed_ops", "request": {"m": "TRANSFER;AC-0001;AC-9999;25000;10"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 2835, "seq": "bench_hard_003", "x_req": 1201, "hipotesis": "Step 6: chain:ops_after_failed_ops", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "500.00"}}
+{"id": 2836, "seq": "bench_hard_003", "x_req": 1202, "hipotesis": "Step 7: chain:ops_after_failed_ops", "request": {"m": "CONSULTA;AC-9999;90"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 2837, "seq": "bench_hard_004", "x_req": null, "hipotesis": "Reset: chain:many_alta_then_old_ids", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2838, "seq": "bench_hard_004", "x_req": 1203, "hipotesis": "Step 1: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User1;9"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2839, "seq": "bench_hard_004", "x_req": 1204, "hipotesis": "Step 2: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User2;6"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2840, "seq": "bench_hard_004", "x_req": 1205, "hipotesis": "Step 3: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User3;3"}, "status": 201, "response": {"cuentaId": "AC-0003"}}
+{"id": 2841, "seq": "bench_hard_004", "x_req": 1206, "hipotesis": "Step 4: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User4;97"}, "status": 201, "response": {"cuentaId": "AC-0004"}}
+{"id": 2842, "seq": "bench_hard_004", "x_req": 1207, "hipotesis": "Step 5: chain:many_alta_then_old_ids", "request": {"m": "ALTA;User5;94"}, "status": 201, "response": {"cuentaId": "AC-0005"}}
+{"id": 2843, "seq": "bench_hard_004", "x_req": 1208, "hipotesis": "Step 6: chain:many_alta_then_old_ids", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "0.00"}}
+{"id": 2844, "seq": "bench_hard_004", "x_req": 1209, "hipotesis": "Step 7: chain:many_alta_then_old_ids", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2845, "seq": "bench_hard_004", "x_req": 1210, "hipotesis": "Step 8: chain:many_alta_then_old_ids", "request": {"m": "TRANSFER;AC-0001;AC-0005;49999;28"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2846, "seq": "bench_hard_004", "x_req": 1211, "hipotesis": "Step 9: chain:many_alta_then_old_ids", "request": {"m": "CONSULTA;AC-0005;2"}, "status": 200, "response": {"cuenta_id": "AC-0005", "saldo": "499.99"}}
+{"id": 2847, "seq": "bench_hard_004", "x_req": 1212, "hipotesis": "Step 10: chain:many_alta_then_old_ids", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "0.01"}}
+{"id": 2848, "seq": "bench_hard_005", "x_req": null, "hipotesis": "Reset: chain:boundary_values", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2849, "seq": "bench_hard_005", "x_req": 1213, "hipotesis": "Step 1: chain:boundary_values", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2850, "seq": "bench_hard_005", "x_req": 1214, "hipotesis": "Step 2: chain:boundary_values", "request": {"m": "ALTA;Bob;24"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2851, "seq": "bench_hard_005", "x_req": 1215, "hipotesis": "Step 3: chain:boundary_values", "request": {"m": "DEPOSITO;AC-0001;150000;65"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2852, "seq": "bench_hard_005", "x_req": 1216, "hipotesis": "Step 4: chain:boundary_values", "request": {"m": "TRANSFER;AC-0001;AC-0002;49999;62"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2853, "seq": "bench_hard_005", "x_req": 1217, "hipotesis": "Step 5: chain:boundary_values", "request": {"m": "TRANSFER;AC-0001;AC-0002;50000;59"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0003"}}
+{"id": 2854, "seq": "bench_hard_005", "x_req": 1218, "hipotesis": "Step 6: chain:boundary_values", "request": {"m": "TRANSFER;AC-0001;AC-0002;50001;56"}, "status": 422, "response": {"error": "E506", "mensaje": "límite excedido"}}
+{"id": 2855, "seq": "bench_hard_005", "x_req": 1219, "hipotesis": "Step 7: chain:boundary_values", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "500.01"}}
+{"id": 2856, "seq": "bench_hard_005", "x_req": 1220, "hipotesis": "Step 8: chain:boundary_values", "request": {"m": "CONSULTA;AC-0002;11"}, "status": 200, "response": {"cuenta_id": "AC-0002", "saldo": "999.99"}}
+{"id": 2857, "seq": "bench_hard_006", "x_req": null, "hipotesis": "Reset: chain:transfer_then_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2858, "seq": "bench_hard_006", "x_req": 1221, "hipotesis": "Step 1: chain:transfer_then_annul", "request": {"m": "ALTA;U53;21"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2859, "seq": "bench_hard_006", "x_req": 1222, "hipotesis": "Step 2: chain:transfer_then_annul", "request": {"m": "ALTA;U45;45"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2860, "seq": "bench_hard_006", "x_req": 1223, "hipotesis": "Step 3: chain:transfer_then_annul", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2861, "seq": "bench_hard_006", "x_req": 1224, "hipotesis": "Step 4: chain:transfer_then_annul", "request": {"m": "TRANSFER;AC-0001;AC-0002;22689;27"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2862, "seq": "bench_hard_006", "x_req": 1225, "hipotesis": "Step 5: chain:transfer_then_annul", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": true, "anulada": "OP-0002"}}
+{"id": 2863, "seq": "bench_hard_006", "x_req": 1226, "hipotesis": "Step 6: chain:transfer_then_annul", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "500.00"}}
+{"id": 2864, "seq": "bench_hard_006", "x_req": 1227, "hipotesis": "Step 7: chain:transfer_then_annul", "request": {"m": "CONSULTA;AC-0002;11"}, "status": 200, "response": {"cuenta_id": "AC-0002", "saldo": "0.00"}}
+{"id": 2865, "seq": "bench_hard_007", "x_req": null, "hipotesis": "Reset: chain:annul_twice", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2866, "seq": "bench_hard_007", "x_req": 1228, "hipotesis": "Step 1: chain:annul_twice", "request": {"m": "ALTA;U37;69"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2867, "seq": "bench_hard_007", "x_req": 1229, "hipotesis": "Step 2: chain:annul_twice", "request": {"m": "ALTA;U53;21"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2868, "seq": "bench_hard_007", "x_req": 1230, "hipotesis": "Step 3: chain:annul_twice", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2869, "seq": "bench_hard_007", "x_req": 1231, "hipotesis": "Step 4: chain:annul_twice", "request": {"m": "TRANSFER;AC-0001;AC-0002;19198;24"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2870, "seq": "bench_hard_007", "x_req": 1232, "hipotesis": "Step 5: chain:annul_twice", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": true, "anulada": "OP-0002"}}
+{"id": 2871, "seq": "bench_hard_007", "x_req": 1233, "hipotesis": "Step 6: chain:annul_twice", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": false, "motivo": "ya anulada"}}
+{"id": 2872, "seq": "bench_hard_008", "x_req": null, "hipotesis": "Reset: chain:consult_after_annul", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2873, "seq": "bench_hard_008", "x_req": 1234, "hipotesis": "Step 1: chain:consult_after_annul", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2874, "seq": "bench_hard_008", "x_req": 1235, "hipotesis": "Step 2: chain:consult_after_annul", "request": {"m": "ALTA;Bob;24"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 2875, "seq": "bench_hard_008", "x_req": 1236, "hipotesis": "Step 3: chain:consult_after_annul", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2876, "seq": "bench_hard_008", "x_req": 1237, "hipotesis": "Step 4: chain:consult_after_annul", "request": {"m": "TRANSFER;AC-0001;AC-0002;25000;78"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0002"}}
+{"id": 2877, "seq": "bench_hard_008", "x_req": 1238, "hipotesis": "Step 5: chain:consult_after_annul", "request": {"m": "ANULA;OP-0002;69"}, "status": 200, "response": {"ok": true, "anulada": "OP-0002"}}
+{"id": 2878, "seq": "bench_hard_008", "x_req": 1239, "hipotesis": "Step 6: chain:consult_after_annul", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "500.00"}}
+{"id": 2879, "seq": "bench_hard_008", "x_req": 1240, "hipotesis": "Step 7: chain:consult_after_annul", "request": {"m": "CONSULTA;AC-0002;11"}, "status": 200, "response": {"cuenta_id": "AC-0002", "saldo": "0.00"}}
+{"id": 2880, "seq": "bench_hard_008", "x_req": 1241, "hipotesis": "Step 8: chain:consult_after_annul", "request": {"m": "DEPOSITO;AC-0001;12500;19"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0003"}}
+{"id": 2881, "seq": "bench_hard_009", "x_req": null, "hipotesis": "Reset: chain:ops_after_failed_ops", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2882, "seq": "bench_hard_009", "x_req": 1242, "hipotesis": "Step 1: chain:ops_after_failed_ops", "request": {"m": "ALTA;Alice;54"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 2883, "seq": "bench_hard_009", "x_req": 1243, "hipotesis": "Step 2: chain:ops_after_failed_ops", "request": {"m": "DEPOSITO;AC-0001;-10;77"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 2884, "seq": "bench_hard_009", "x_req": 1244, "hipotesis": "Step 3: chain:ops_after_failed_ops", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 2885, "seq": "bench_hard_009", "x_req": 1245, "hipotesis": "Step 4: chain:ops_after_failed_ops", "request": {"m": "TRANSFER;AC-0001;AC-0001;25000;57"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
+{"id": 2886, "seq": "bench_hard_009", "x_req": 1246, "hipotesis": "Step 5: chain:ops_after_failed_ops", "request": {"m": "TRANSFER;AC-0001;AC-9999;25000;10"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 2887, "seq": "bench_hard_009", "x_req": 1247, "hipotesis": "Step 6: chain:ops_after_failed_ops", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": "500.00"}}
+{"id": 2888, "seq": "bench_hard_009", "x_req": 1248, "hipotesis": "Step 7: chain:ops_after_failed_ops", "request": {"m": "CONSULTA;AC-9999;90"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
