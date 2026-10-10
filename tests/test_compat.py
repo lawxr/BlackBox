@@ -296,3 +296,12 @@ def test_fullwidth_digit_is_not_a_control_digit(client):
     client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("ALTA;Probe")})
     r = client.post("/msg", headers=VALID_AUTH, json={"m": "DEPOSITO;AC-0001;１;28"})
     assert (r.status_code, r.json()) == (400, {"error": "E202", "mensaje": "control inválido"})
+
+
+def test_demo_dashboard_serves_html(client):
+    r = client.get("/demo")
+    assert r.status_code == 200
+    assert "text/html" in r.headers["content-type"]
+    assert "BlackBox" in r.text
+    assert "System Design" in r.text
+

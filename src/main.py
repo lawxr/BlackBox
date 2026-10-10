@@ -5,16 +5,23 @@ import json
 from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, Request, Response
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 from src import profile
 from src.config import TEAM_TOKEN
+from src.demo_page import DEMO_HTML
 from src.protocol import error_response, process_message
 from src.state import ledger
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 ALL_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+
+
+@app.get("/demo", response_class=HTMLResponse)
+@app.get("/demo/", response_class=HTMLResponse)
+async def demo_dashboard() -> HTMLResponse:
+    return HTMLResponse(content=DEMO_HTML)
 
 
 def _json(result) -> Response:
