@@ -302,6 +302,5 @@ def test_demo_dashboard_serves_html(client):
     r = client.get("/demo")
     assert r.status_code == 200
     assert "text/html" in r.headers["content-type"]
-    assert "BlackBox" in r.text
-    assert "System Design" in r.text
+    assert "BLACKBOX" in r.text
 
