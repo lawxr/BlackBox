@@ -88,10 +88,11 @@ Estado persistido entre solicitudes, identificadores secuenciales y saldos.
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| MEM-01 | AB y BA obtuvieron AC-0001 y AC-0002 sin reset intermedio; se infiere contador de altas exitosas, no de cada request. | exp 186, 187, 281 | probable |
-| MEM-02 | Operaciones exitosas obtienen identificadores secuenciales `OP-0001`, `OP-0002`... en depósitos y transferencias. Fallos posteriores no consumen el siguiente identificador correlativo. | exp 358, 361, 374; mañana 6, 7, 9, 10, 18 | confirmado |
+| MEM-01 | Altas independientes obtienen identificadores secuenciales correlativos (AC-0001..AC-0003) sin consumir IDs en errores intercalados ni resets intermedios. | exp 186, 187, 281, 445..486 | confirmado |
+| MEM-02 | Operaciones exitosas obtienen identificadores secuenciales `OP-0001`, `OP-0002`... en depósitos y transferencias. Fallos posteriores no consumen el siguiente identificador correlativo. | exp 358, 361, 374, 445..486; mañana 6, 7, 9, 10, 18 | confirmado |
 | MEM-03 | Después de varios resets, la siguiente alta vuelve a AC-0001. Esto no prueba borrado de saldos/operaciones, reinicio de X-Req ni aislamiento entre tokens. | exp 93, 94, 154, 155, 156, 282, 283, 284, 285, 355, 356, 370, 371 | confirmado |
 | MEM-04 | Réplica: un único ledger en memoria por proceso; reset vacía cuentas/operaciones y pone ambos contadores a cero. IDs con prefijo AC-/OP- y mínimo cuatro dígitos; no hay estado separado por token ni persistencia tras reinicio. | Réplica: `src/state.py` | supuesto |
+| MEM-05 | Consistencia contable integral en secuencias largas (hasta 12 pasos): los saldos reflejan con precisión exacta depósitos acumulados, transferencias cruzadas y reversiones por anulación en múltiples cuentas sin pérdida ni fuga de balance. | exp 445..486 | confirmado |
 
 ---
 
