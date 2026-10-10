@@ -76,6 +76,19 @@ graph TD
 
 ---
 
+## Panel Visual de Demostración y Video (`/demo`)
+
+Para auditorías visuales y grabaciones demostrativas del sistema, la réplica expone un panel interactivo completo en:
+👉 **[https://blackbox.up.railway.app/demo](https://blackbox.up.railway.app/demo)**
+
+El panel incluye:
+- **Arquitectura Dual-Plane**: Visualización del aislamiento entre el plano de ejecución y el plano de laboratorio.
+- **Resolución de Incidente #FR-0153**: Línea de tiempo interactiva con los 4 drifts de contrato (ISO 7064 MOD 97-10, límite de 8192 bytes, inversión de precedencia en `TRANSFER`, decimales en `CONSULTA`).
+- **Simulador Autónomo en Tiempo Real**: Reproducción visual del flujo de descubrimiento de `lab/explore/` y consolidación en perfiles.
+- **Consola Interactiva EFSM**: Emisión de comandos (`POST /msg`, `POST /__reset`) con cálculo en tiempo real del checksum ISO 7064 e inspección del libro mayor en memoria.
+
+---
+
 ## Guía Operativa: Fast Testing y Verificación de Mejoras
 
 Para iterar de forma rápida y contrastar la fidelidad del reemplazo contra el original, disponemos de tres herramientas automáticas:
