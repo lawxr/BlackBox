@@ -18,8 +18,8 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 ALL_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
 
 
-@app.get("/demo", response_class=HTMLResponse)
-@app.get("/demo/", response_class=HTMLResponse)
+@app.api_route("/demo", methods=["GET", "HEAD"], response_class=HTMLResponse)
+@app.api_route("/demo/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def demo_dashboard() -> HTMLResponse:
     return HTMLResponse(content=DEMO_HTML)
 
