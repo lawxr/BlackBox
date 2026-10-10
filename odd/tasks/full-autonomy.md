@@ -3,6 +3,11 @@
 ## Objective
 `uv run python -m lab.learn --live` discovers the original's contract from generic exploration, promotes a versioned profile only through gates, and the replica passes the hidden set. Secondary target: raise the hidden score from 84/100 (run 02, 16:23, v2) using the one remaining run only for the final check.
 
+## Evidence (run 03, 87/100)
+- Easy 40/40, regular 37/40, hard 10/20. Failures: 11 status, 2 body; 3 fail on the first request, 10 later in the sequence. Median 321 ms per case (5 s budget per request).
+- Delta vs run 02: +2 regular, +1 hard; first-request failures 5 -> 3. Hard sequences remain the main gap (10 of 13 failures are later in the sequence).
+- `/demo` was served by the evaluated app during run 03; it now lives in `src.demo_app` and the replica answers 404 E404 there like the original.
+
 ## Evidence (run 02, 84/100)
 - Easy 40/40, regular 35/40, hard (6-12 steps) 9/20. Failures: 14 status, 2 body; 5 fail on the first request, 11 later in the sequence.
 - Reading: the 11 later failures are state semantics over long chains (balances, ANULA effects, op/account ids after errors, TRANSFER with v2 limit/precedence). The 5 first-request failures are single-request input handling (routes, methods, auth variants, raw/malformed bodies, arity/control edge cases). This is inference from counts, not observed; the hidden cases are not visible.
