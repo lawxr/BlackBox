@@ -496,3 +496,32 @@
 {"id": 496, "seq": "s_ping", "x_req": 467, "hipotesis": "Test PING;0", "request": {"m": "PING;0"}, "status": 200, "response": {"pong": true}}
 {"id": 497, "seq": "s_ping", "x_req": 468, "hipotesis": "Test PING;abc", "request": {"m": "PING;abc"}, "status": 200, "response": {"pong": true}}
 {"id": 498, "seq": "s_ping", "x_req": 469, "hipotesis": "Test PING;100", "request": {"m": "PING;100"}, "status": 200, "response": {"pong": true}}
+{"id": 499, "seq": "autofuzz_1791658721", "x_req": null, "hipotesis": "Reset inicial para fuzzer autónomo", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 500, "seq": "autofuzz_1791658721", "x_req": 470, "hipotesis": "Setup ALTA;FuzzAlpha", "request": {"m": "ALTA;FuzzAlpha;25"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 501, "seq": "autofuzz_1791658721", "x_req": 471, "hipotesis": "Setup ALTA;FuzzBeta", "request": {"m": "ALTA;FuzzBeta;39"}, "status": 201, "response": {"cuentaId": "AC-0002"}}
+{"id": 502, "seq": "autofuzz_1791658721", "x_req": 472, "hipotesis": "Setup DEPOSITO;AC-0001;50000", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 503, "seq": "autofuzz_1791658721", "x_req": 473, "hipotesis": "Fuzz #1: PING", "request": {"m": "PING"}, "status": 400, "response": {"error": "E103", "mensaje": "falta control"}}
+{"id": 504, "seq": "autofuzz_1791658721", "x_req": 474, "hipotesis": "Fuzz #2: ALTA;Lucia;", "request": {"m": "ALTA;Lucia;"}, "status": 400, "response": {"error": "E104", "mensaje": "segmento vacío"}}
+{"id": 505, "seq": "autofuzz_1791658721", "x_req": 475, "hipotesis": "Fuzz #3: ;ALTA;Lucia", "request": {"m": ";ALTA;Lucia"}, "status": 400, "response": {"error": "E104", "mensaje": "segmento vacío"}}
+{"id": 506, "seq": "autofuzz_1791658721", "x_req": 476, "hipotesis": "Fuzz #4: ALTA;;Lucia;82", "request": {"m": "ALTA;;Lucia;82"}, "status": 400, "response": {"error": "E104", "mensaje": "segmento vacío"}}
+{"id": 507, "seq": "autofuzz_1791658721", "x_req": 477, "hipotesis": "Fuzz #5: PING;;64", "request": {"m": "PING;;64"}, "status": 400, "response": {"error": "E104", "mensaje": "segmento vacío"}}
+{"id": 508, "seq": "autofuzz_1791658721", "x_req": 478, "hipotesis": "Fuzz #6: ALTA;Lucia;-5", "request": {"m": "ALTA;Lucia;-5"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 509, "seq": "autofuzz_1791658721", "x_req": 479, "hipotesis": "Fuzz #7: ALTA;Lucia;5X", "request": {"m": "ALTA;Lucia;5X"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 510, "seq": "autofuzz_1791658721", "x_req": 480, "hipotesis": "Fuzz #8: ALTA;Lucia;150", "request": {"m": "ALTA;Lucia;150"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 511, "seq": "autofuzz_1791658721", "x_req": 481, "hipotesis": "Fuzz #9: ALTA;Lucia;003", "request": {"m": "ALTA;Lucia;003"}, "status": 400, "response": {"error": "E201", "mensaje": "control mal formado"}}
+{"id": 512, "seq": "autofuzz_1791658721", "x_req": 482, "hipotesis": "Fuzz #10: ALTA;Lucia;0", "request": {"m": "ALTA;Lucia;0"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 513, "seq": "autofuzz_1791658721", "x_req": 483, "hipotesis": "Fuzz #11: ALTA;Lucia;00", "request": {"m": "ALTA;Lucia;00"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 514, "seq": "autofuzz_1791658721", "x_req": 484, "hipotesis": "Fuzz #12: ALTA;Lucia;03", "request": {"m": "ALTA;Lucia;03"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 515, "seq": "autofuzz_1791658721", "x_req": 485, "hipotesis": "Fuzz #13: ALTA;Lucia;99", "request": {"m": "ALTA;Lucia;99"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 516, "seq": "autofuzz_1791658721", "x_req": 486, "hipotesis": "Fuzz #14: PING;64;extra", "request": {"m": "PING;64;extra"}, "status": 400, "response": {"error": "E302", "mensaje": "aridad inválida"}}
+{"id": 517, "seq": "autofuzz_1791658721", "x_req": 487, "hipotesis": "Fuzz #15: ALTA;Lucia;Perez;11", "request": {"m": "ALTA;Lucia;Perez;11"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 518, "seq": "autofuzz_1791658721", "x_req": 488, "hipotesis": "Fuzz #16: CONSULTA", "request": {"m": "CONSULTA"}, "status": 400, "response": {"error": "E103", "mensaje": "falta control"}}
+{"id": 519, "seq": "autofuzz_1791658721", "x_req": 489, "hipotesis": "Fuzz #17: CONSULTAR;AC-0001;14", "request": {"m": "CONSULTAR;AC-0001;14"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 520, "seq": "autofuzz_1791658721", "x_req": 490, "hipotesis": "Fuzz #18: DEPOSITAR;AC-0001;1000;25", "request": {"m": "DEPOSITAR;AC-0001;1000;25"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 521, "seq": "autofuzz_1791658721", "x_req": 491, "hipotesis": "Fuzz #19: TRANSFERIR;AC-0001;AC-0002;100", "request": {"m": "TRANSFERIR;AC-0001;AC-0002;1000;30"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 522, "seq": "autofuzz_1791658721", "x_req": 492, "hipotesis": "Fuzz #20: SALDOS;AC-0001;38", "request": {"m": "SALDOS;AC-0001;38"}, "status": 400, "response": {"error": "E301", "mensaje": "comando desconocido "}}
+{"id": 523, "seq": "autofuzz_1791658721", "x_req": 493, "hipotesis": "Fuzz #21: UNKNOWNCMD;AC-0001;50", "request": {"m": "UNKNOWNCMD;AC-0001;50"}, "status": 400, "response": {"error": "E202", "mensaje": "control inválido"}}
+{"id": 524, "seq": "autofuzz_1791658721", "x_req": 494, "hipotesis": "Fuzz #22: DEPOSITO;AC-0001;0;31", "request": {"m": "DEPOSITO;AC-0001;0;31"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 525, "seq": "autofuzz_1791658721", "x_req": 495, "hipotesis": "Fuzz #23: DEPOSITO;AC-0001;-100;82", "request": {"m": "DEPOSITO;AC-0001;-100;82"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 526, "seq": "autofuzz_1791658721", "x_req": 496, "hipotesis": "Fuzz #24: DEPOSITO;AC-0001;100.5;20", "request": {"m": "DEPOSITO;AC-0001;100.5;20"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 527, "seq": "autofuzz_1791658721", "x_req": 497, "hipotesis": "Fuzz #25: DEPOSITO;AC-0001;abc;13", "request": {"m": "DEPOSITO;AC-0001;abc;13"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
