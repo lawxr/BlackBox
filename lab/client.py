@@ -1,5 +1,7 @@
 from __future__ import annotations
+import atexit
 import json
+import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,6 +16,11 @@ AUDIT_PATH = Path("audit.jsonl")
 
 class TransportError(Exception):
     """Raised when an HTTP transport or network timeout error occurs."""
+    pass
+
+
+class LabLockError(RuntimeError):
+    """Raised when another LabClient already writes to the same experiments log."""
     pass
 
 
@@ -36,17 +43,65 @@ class LabClient:
         self.audit_path = Path(audit_path)
         self.transport = transport
         self._last_req_time: float = 0.0
+        self._lock_path = self.experiments_path.with_name(self.experiments_path.name + ".lock")
+        self._locked = False
+        self._acquire_lock()
         self._next_id: int = self._get_next_experiment_id()
 
+    def _acquire_lock(self) -> None:
+        """Single writer per log: create the lock file atomically or fail fast."""
+        self._lock_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            fd = os.open(self._lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError:
+            raise LabLockError(
+                f"{self._lock_path} exists: another LabClient is writing to "
+                f"{self.experiments_path}. Stop it, or delete the stale lock if no writer runs."
+            ) from None
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(f"{os.getpid()}\n")
+        self._locked = True
+        atexit.register(self.close)
+
+    def close(self) -> None:
+        """Release the writer lock (idempotent)."""
+        if not self._locked:
+            return
+        self._locked = False
+        atexit.unregister(self.close)
+        try:
+            self._lock_path.unlink()
+        except FileNotFoundError:
+            pass
+
+    def __enter__(self) -> "LabClient":
+        return self
+
+    def __exit__(self, *exc: Any) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
     def _get_next_experiment_id(self) -> int:
+        """Next id = max recorded id + 1 (robust to duplicates and gaps)."""
         if not self.experiments_path.exists():
             return 1
-        count = 0
+        max_id = 0
         with open(self.experiments_path, "r", encoding="utf-8") as f:
             for line in f:
-                if line.strip():
-                    count += 1
-        return count + 1
+                if not line.strip():
+                    continue
+                try:
+                    rec_id = json.loads(line).get("id")
+                except (ValueError, AttributeError):
+                    continue
+                if isinstance(rec_id, int) and rec_id > max_id:
+                    max_id = rec_id
+        return max_id + 1
 
     def _throttle(self) -> None:
         elapsed = time.time() - self._last_req_time
