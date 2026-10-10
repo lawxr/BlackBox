@@ -1,0 +1,3 @@
+{"id": 1, "timestamp": "2026-10-10T17:19:40.644512+00:00", "method": "GET", "path": "/health", "latency_ms": 331.33, "status": 200, "x_infra": null}
+{"id": 2, "timestamp": "2026-10-10T17:19:40.943230+00:00", "method": "POST", "path": "/__reset", "latency_ms": 297.71, "status": 200, "x_infra": null}
+{"id": 3, "timestamp": "2026-10-10T17:19:41.245958+00:00", "method": "POST", "path": "/msg", "latency_ms": 301.66, "status": 200, "x_infra": null}

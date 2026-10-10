@@ -12,13 +12,13 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 @app.get("/health")
 async def health(request: Request) -> Response:
-    return JSONResponse(status_code=200, content={"status": "ok"})
+    return JSONResponse(status_code=200, content={"ok": True})
 
 
 @app.post("/__reset")
 async def reset(request: Request) -> Response:
     ledger.reset()
-    return JSONResponse(status_code=200, content={"reset": True})
+    return JSONResponse(status_code=200, content={"ok": True})
 
 
 @app.post("/msg")

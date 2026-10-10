@@ -14,9 +14,9 @@ Rutas, métodos, autenticación, forma del cuerpo y límites observados.
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| ENT-01 | `GET /health` responde `200` cuando está listo | TBD | supuesto |
-| ENT-02 | `POST /__reset` reinicia el estado lógico completo | TBD | supuesto |
-| ENT-03 | `POST /msg` recibe `{"m": "..."}` | TBD | supuesto |
+| ENT-01 | `GET /health` responde `200` y cuerpo `{"ok": true}` | 1 | confirmado |
+| ENT-02 | `POST /__reset` reinicia el estado lógico completo y responde `200 {"ok": true}` | 2 | confirmado |
+| ENT-03 | `POST /msg` recibe `{"m": "..."}` | 3 | confirmado |
 | ENT-04 | Rutas inexistentes responden formato del original | TBD | supuesto |
 | ENT-05 | Validación de cabecera `Authorization: Bearer <token>` | TBD | supuesto |
 
@@ -37,7 +37,7 @@ Comandos soportados, argumentos, efecto y respuesta.
 
 | ID | Comportamiento | Evidencia | Confianza |
 |---|---|---|---|
-| CMD-01 | `PING;...` responde `{"pong": true}` | TBD | supuesto |
+| CMD-01 | `PING;...` responde `{"pong": true}` | 3 | confirmado |
 | CMD-02 | `ALTA;<NOMBRE>;<CTRL>` registra una nueva cuenta | TBD | supuesto |
 | CMD-03 | `DEPOSITO;<CTA>;<MONTO>;<CTRL>` añade saldo a una cuenta | TBD | supuesto |
 | CMD-04 | `TRANSFER;<ORIGEN>;<DESTINO>;<MONTO>;<CTRL>` transfiere saldo | TBD | supuesto |

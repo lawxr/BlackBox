@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 import httpx
 
-from src.config import ORIGINAL_URL, TEAM_TOKEN
+from src.config import ORIGINAL_URL, TEAM_TOKEN, USER_TOKEN
 
 EXPERIMENTS_PATH = Path("experimentos.jsonl")
 AUDIT_PATH = Path("audit.jsonl")
@@ -18,7 +18,7 @@ class LabClient:
     def __init__(
         self,
         base_url: str = ORIGINAL_URL,
-        token: str = TEAM_TOKEN,
+        token: str = USER_TOKEN or TEAM_TOKEN,
         rate_limit_delay: float = 0.15,  # ~6-7 req/s safe throttle
     ) -> None:
         self.base_url = base_url.rstrip("/")

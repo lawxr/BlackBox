@@ -1,0 +1,3 @@
+{"id": 1, "seq": "probe-0", "x_req": null, "hipotesis": "GET /health responde 200 y JSON de salud", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 2, "seq": "probe-0", "x_req": null, "hipotesis": "POST /__reset reinicia estado del token", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 3, "seq": "probe-0", "x_req": 1, "hipotesis": "PING con control 64 responde pong", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
