@@ -393,3 +393,12 @@
 {"id": 393, "seq": "s_prec", "x_req": 370, "hipotesis": "Precedencia E506 vs E401", "request": {"m": "TRANSFER;AC-9999;AC-8888;120000;46"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
 {"id": 394, "seq": "s_prec", "x_req": 371, "hipotesis": "Precedencia E506 vs E507 cuando ambas cuentas existen", "request": {"m": "TRANSFER;AC-0001;AC-0002;120000;55"}, "status": 422, "response": {"error": "E507", "mensaje": "saldo insuficiente"}}
 {"id": 395, "seq": "s_prec", "x_req": 372, "hipotesis": "Precedencia E303 vs E401 en DEPOSITO", "request": {"m": "DEPOSITO;AC-9999;0;15"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 396, "seq": "canary", "x_req": null, "hipotesis": "Canary check at 2026-10-10T18:23:46.788766+00:00", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 397, "seq": "canary", "x_req": 373, "hipotesis": "Canary probe PING;64", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
+{"id": 398, "seq": "canary", "x_req": 374, "hipotesis": "Canary probe ALTA;Canario;30", "request": {"m": "ALTA;Canario;30"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 399, "seq": "canary", "x_req": 375, "hipotesis": "Canary probe CONSULTA;AC-0001;14", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": 0}}
+{"id": 400, "seq": "canary", "x_req": 376, "hipotesis": "Canary probe DEPOSITO;AC-0001;50000;39", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 401, "seq": "canary", "x_req": 377, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-0001;1000;64", "request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
+{"id": 402, "seq": "canary", "x_req": 378, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-9999;1000;69", "request": {"m": "TRANSFER;AC-0001;AC-9999;1000;69"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 403, "seq": "canary", "x_req": 379, "hipotesis": "Canary probe DEPOSITO;AC-0001;0;31", "request": {"m": "DEPOSITO;AC-0001;0;31"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 404, "seq": "canary", "x_req": 380, "hipotesis": "Canary probe ANULA;OP-0001;72", "request": {"m": "ANULA;OP-0001;72"}, "status": 200, "response": {"ok": true, "anulada": "OP-0001"}}

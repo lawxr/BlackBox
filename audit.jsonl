@@ -393,3 +393,12 @@
 {"id": 393, "timestamp": "2026-10-10T18:20:43.418147+00:00", "method": "POST", "path": "/msg", "latency_ms": 309.52, "status": 404, "x_infra": null}
 {"id": 394, "timestamp": "2026-10-10T18:20:50.260536+00:00", "method": "POST", "path": "/msg", "latency_ms": 421.01, "status": 422, "x_infra": null}
 {"id": 395, "timestamp": "2026-10-10T18:20:56.711255+00:00", "method": "POST", "path": "/msg", "latency_ms": 312.43, "status": 400, "x_infra": null}
+{"id": 396, "timestamp": "2026-10-10T18:23:47.198242+00:00", "method": "POST", "path": "/__reset", "latency_ms": 408.68, "status": 200, "x_infra": null}
+{"id": 397, "timestamp": "2026-10-10T18:23:47.490862+00:00", "method": "POST", "path": "/msg", "latency_ms": 291.79, "status": 200, "x_infra": null}
+{"id": 398, "timestamp": "2026-10-10T18:23:47.785590+00:00", "method": "POST", "path": "/msg", "latency_ms": 294.27, "status": 201, "x_infra": null}
+{"id": 399, "timestamp": "2026-10-10T18:23:48.085034+00:00", "method": "POST", "path": "/msg", "latency_ms": 298.59, "status": 200, "x_infra": null}
+{"id": 400, "timestamp": "2026-10-10T18:23:48.383339+00:00", "method": "POST", "path": "/msg", "latency_ms": 297.07, "status": 200, "x_infra": null}
+{"id": 401, "timestamp": "2026-10-10T18:23:48.687390+00:00", "method": "POST", "path": "/msg", "latency_ms": 302.8, "status": 400, "x_infra": null}
+{"id": 402, "timestamp": "2026-10-10T18:23:48.992742+00:00", "method": "POST", "path": "/msg", "latency_ms": 304.3, "status": 404, "x_infra": null}
+{"id": 403, "timestamp": "2026-10-10T18:23:49.284599+00:00", "method": "POST", "path": "/msg", "latency_ms": 291.14, "status": 400, "x_infra": null}
+{"id": 404, "timestamp": "2026-10-10T18:23:49.582373+00:00", "method": "POST", "path": "/msg", "latency_ms": 296.76, "status": 200, "x_infra": null}
