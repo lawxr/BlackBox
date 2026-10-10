@@ -141,4 +141,35 @@ def dispatch_command(cmd: str, args: list[str]) -> Tuple[int, Dict[str, Any]]:
         op["annulled"] = True
         return 200, {"ok": True, "anulada": op_id}
 
-    return 400, {"error": "E301", "mensaje": "comando desconocido "}
+    # Unknown command handling with Levenshtein distance <= 2 suggestions
+    known_commands = ["PING", "ALTA", "CONSULTA", "DEPOSITO", "TRANSFER", "ANULA"]
+    best_cmd = None
+    min_dist = 3  # Suggest only when distance is <= 2
+    for candidate in known_commands:
+        dist = compute_levenshtein(cmd, candidate)
+        if dist < min_dist:
+            min_dist = dist
+            best_cmd = candidate
+
+    err_payload: Dict[str, Any] = {"error": "E301", "mensaje": "comando desconocido "}
+    if best_cmd is not None:
+        err_payload["sugerencia"] = best_cmd
+    return 400, err_payload
+
+
+def compute_levenshtein(s1: str, s2: str) -> int:
+    """Calculate the Levenshtein edit distance between two strings."""
+    if len(s1) < len(s2):
+        return compute_levenshtein(s2, s1)
+    if len(s2) == 0:
+        return len(s1)
+    previous_row = list(range(len(s2) + 1))
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1
+            deletions = current_row[j] + 1
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+    return previous_row[-1]

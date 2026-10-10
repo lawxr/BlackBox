@@ -107,7 +107,7 @@ Códigos de error observados, cuerpo exacto y orden de evaluación.
 | ERR-04 | `400 {"error":"E104","mensaje":"segmento vacío"}` para `ALTA;Lucia;`. | exp 21 | probable |
 | ERR-05 | `400 {"error":"E201","mensaje":"control mal formado"}` para controles ALTA `5X`, `-5`, `150`, `100`. | exp 18, 19, 20, 26 | probable |
 | ERR-06 | `400 {"error":"E202","mensaje":"control inválido"}` para controles ALTA;Lucia 96..99, 0 y 00; controles 0..61 de ALTA;A también rechazados. | exp 22, 23, 24, 25, 27, 28, 30-91 | probable |
-| ERR-07 | `400 {"error":"E301","mensaje":"comando desconocido "}` para SALDOS; conservar el espacio final. | mañana 12 | probable |
+| ERR-07 | `400 {"error":"E301","mensaje":"comando desconocido "}` para cualquier comando fuera de los 6 conocidos; si la distancia Levenshtein respecto a un comando conocido es <= 2, incluye `"sugerencia": "<COMANDO>"`. Conserva el espacio final en `mensaje`. | exp 429, 431-438; mañana 12 | confirmado |
 | ERR-08 | `400 {"error":"E302","mensaje":"aridad inválida"}` para `PING;64;extra`; también para ALTA con nombre separado en dos campos en la mañana. | exp 17; mañana 20 | probable |
 | ERR-08a | `400 {"error":"E303","mensaje":"monto inválido"}` para montos no enteros, cero o negativos en DEPOSITO y TRANSFER. | exp 379, 380, 383, 384, 388, 395 | confirmado |
 | ERR-08b | `400 {"error":"E304","mensaje":"origen y destino iguales"}` al intentar transferir fondos hacia la misma cuenta de origen. | exp 382, 391, 392 | confirmado |

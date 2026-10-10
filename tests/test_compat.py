@@ -166,3 +166,38 @@ def test_edge_cases_deposit_and_transfer_validation(client):
     # TRANSFER to self with amount > 100000 still gives E304 (precedence)
     r = client.post("/msg", headers=VALID_AUTH, json={"m": "TRANSFER;AC-0001;AC-0001;120000;39"})
     assert r.status_code == 400 and r.json() == {"error": "E304", "mensaje": "origen y destino iguales"}
+
+
+def test_unknown_command_levenshtein_suggestions(client):
+    """Test verified E301 behavior: suggestion field added when edit distance <= 2."""
+    from src.protocol import compute_control
+
+    # Dist 1 from ALTA -> ALTA
+    ctrl = compute_control("ALTAA")
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": f"ALTAA;{ctrl}"})
+    assert r.status_code == 400 and r.json() == {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "ALTA"}
+
+    # Dist 1 from CONSULTA -> CONSULTA
+    ctrl = compute_control("CONSULTAR")
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": f"CONSULTAR;{ctrl}"})
+    assert r.status_code == 400 and r.json() == {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "CONSULTA"}
+
+    # Dist 2 from ANULA -> ANULA
+    ctrl = compute_control("AYUDA")
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": f"AYUDA;{ctrl}"})
+    assert r.status_code == 400 and r.json() == {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "ANULA"}
+
+    # Dist 2 from PING -> PING
+    ctrl = compute_control("PINGUI")
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": f"PINGUI;{ctrl}"})
+    assert r.status_code == 400 and r.json() == {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "PING"}
+
+    # Dist 3 from PING -> no suggestion
+    ctrl = compute_control("PINGUIN")
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": f"PINGUIN;{ctrl}"})
+    assert r.status_code == 400 and r.json() == {"error": "E301", "mensaje": "comando desconocido "}
+
+    # Dist >= 3 (SALDOS) -> no suggestion
+    ctrl = compute_control("SALDOS;AC-0001")
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": f"SALDOS;AC-0001;{ctrl}"})
+    assert r.status_code == 400 and r.json() == {"error": "E301", "mensaje": "comando desconocido "}
