@@ -28,6 +28,7 @@ EXCLUSION_RULES = {
     "contaminated": "another seq's entries appear between the segment's first and last line "
                     "(concurrent writers shared the original's state)",
     "no_reset": "entries recorded before any reset of their seq; initial state unknown",
+    "canary_probe": "declarative probe checks, not a stateful sequence",
 }
 KNOWN_CONTAMINATED = {"sf_2026_45", "sf_2026_46", "canary@766"}
 
@@ -73,6 +74,9 @@ def split_segments(log: List[Tuple[int, Dict[str, Any]]]):
     excluded: Dict[str, str] = {}
     for n, entry in log:
         seq = entry["seq"]
+        if seq == "canary_check":
+            excluded.setdefault(seq, "canary_probe")
+            continue
         if _is_reset(entry):
             seg = Segment(seq, n)
             open_seg[seq] = seg
@@ -115,6 +119,11 @@ def _parse(resp) -> Any:
 def replay(tc: TestClient, seg: Segment, only: Optional[set] = None,
            skip: Optional[set] = None) -> List[str]:
     """Replay a segment from a fresh reset; compare only lines in `only` (if given)."""
+    from src import profile
+    v1_prof = Path(__file__).resolve().parents[1] / "src" / "profile.v1.json"
+    v2_prof = Path(__file__).resolve().parents[1] / "src" / "profile.json"
+    profile.reload(v1_prof if seg.start <= 1248 else v2_prof)
+
     mismatches = []
     tc.post("/__reset", headers=AUTH)
     for n, entry in zip(seg.lines, seg.entries):
@@ -142,6 +151,10 @@ def tc(monkeypatch, tmp_path):
     monkeypatch.setenv("TEAM_TOKEN", TEST_TOKEN)
     monkeypatch.setenv("USER_TOKEN", "")
     monkeypatch.setenv("TOKEN", "")
+    v1_prof = Path(__file__).resolve().parents[1] / "src" / "profile.v1.json"
+    monkeypatch.setenv("BLACKBOX_PROFILE", str(v1_prof))
+    from src import profile
+    profile.reload(v1_prof)
     with monkeypatch.context() as ctx:
         ctx.chdir(tmp_path)
         from src import main
@@ -150,6 +163,7 @@ def tc(monkeypatch, tmp_path):
     with TestClient(main.app) as client:
         yield client
     main.ledger.reset()
+    profile.reload()
 
 
 def test_segmentation_excludes_known_contamination():

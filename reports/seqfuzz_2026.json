@@ -1,0 +1,1451 @@
+{
+  "requests_used": 451,
+  "sequences_run": 100,
+  "stop_reason": "completed",
+  "divergences": [
+    {
+      "seq_id": "sf_2026_45",
+      "hipotesis": "seqfuzz len=5 cmds=TRANSFER,ALTA,TRANSFER,DEPOSITO,ALTA mutations=ctrl_fixed_bad",
+      "step": 5,
+      "steps": [
+        {
+          "m": "TRANSFER;AC-0001;AC-0001 ;abc;99"
+        },
+        {
+          "m": "ALTA;名前;85"
+        },
+        {
+          "m": "TRANSFER;AC-0001;AC-0001;100 ;100"
+        },
+        {
+          "m": "DEPOSITO;AC-0001;43047;43"
+        },
+        {
+          "m": "ALTA;  Bob  ;24"
+        }
+      ],
+      "original": [
+        [
+          400,
+          {
+            "error": "E202",
+            "mensaje": "control inválido"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          200,
+          {
+            "status": "recieved",
+            "operacionId": "OP-0001"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0003"
+          }
+        ]
+      ],
+      "replica": [
+        [
+          400,
+          {
+            "error": "E202",
+            "mensaje": "control inválido"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          200,
+          {
+            "status": "recieved",
+            "operacionId": "OP-0001"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0002"
+          }
+        ]
+      ],
+      "signature": [
+        "ALTA",
+        201,
+        null,
+        201,
+        null
+      ]
+    },
+    {
+      "seq_id": "sf_2026_46",
+      "hipotesis": "seqfuzz len=5 cmds=ALTA,CONSULTA,ANULA,DEPOSITO,ALTA mutations=ctrl_missing,ctrl_spaced",
+      "step": 4,
+      "steps": [
+        {
+          "m": "ALTA;Peña;72"
+        },
+        {
+          "m": "CONSULTA;AC-0001;14"
+        },
+        {
+          "m": "ANULA;OP-0001; 72"
+        },
+        {
+          "m": "DEPOSITO;AC-0001;01000;84"
+        },
+        {
+          "m": "ALTA;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      ],
+      "original": [
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          200,
+          {
+            "cuenta_id": "AC-0001",
+            "saldo": 0
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E303",
+            "mensaje": "monto inválido"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ]
+      ],
+      "replica": [
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          200,
+          {
+            "cuenta_id": "AC-0001",
+            "saldo": 0
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          200,
+          {
+            "status": "recieved",
+            "operacionId": "OP-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ]
+      ],
+      "signature": [
+        "DEPOSITO",
+        400,
+        "E303",
+        200,
+        null
+      ]
+    },
+    {
+      "seq_id": "sf_2026_53",
+      "hipotesis": "seqfuzz len=5 cmds=ALTA,ALTA,ALTA,DEPOSITO,DEPOSITO mutations=ctrl_missing,ctrl_off_by_one,mixed_cmd,space_field",
+      "step": 5,
+      "steps": [
+        {
+          "m": "ALTA;Lucia"
+        },
+        {
+          "m": "ALTA;User4;97"
+        },
+        {
+          "m": " ALTA ;User53;49"
+        },
+        {
+          "m": "Deposito;AC-0001;1841;35"
+        },
+        {
+          "m": "DEPOSITO;ac-0001; 100;82"
+        }
+      ],
+      "original": [
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E301",
+            "mensaje": "comando desconocido ",
+            "sugerencia": "ALTA"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E202",
+            "mensaje": "control inválido"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E303",
+            "mensaje": "monto inválido"
+          }
+        ]
+      ],
+      "replica": [
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E301",
+            "mensaje": "comando desconocido ",
+            "sugerencia": "ALTA"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E202",
+            "mensaje": "control inválido"
+          }
+        ],
+        [
+          404,
+          {
+            "error": "E401",
+            "mensaje": "cuenta inexistente"
+          }
+        ]
+      ],
+      "signature": [
+        "DEPOSITO",
+        400,
+        "E303",
+        404,
+        "E401"
+      ]
+    },
+    {
+      "seq_id": "sf_2026_78",
+      "hipotesis": "seqfuzz len=5 cmds=HELP,CONSULTA,ALTA,<raw>,ALTA mutations=ctrl_fixed_bad,malformed_body,mixed_cmd,typo_cmd",
+      "step": 1,
+      "steps": [
+        {
+          "m": "HELP;User61;68"
+        },
+        {
+          "m": "CONSULTA;AC-1;5"
+        },
+        {
+          "m": "ALTA;User59;31"
+        },
+        {
+          "__raw__": "[\"m\"]"
+        },
+        {
+          "m": "Alta;User83;98"
+        }
+      ],
+      "original": [
+        [
+          400,
+          {
+            "error": "E301",
+            "mensaje": "comando desconocido ",
+            "sugerencia": "HALT"
+          }
+        ],
+        [
+          404,
+          {
+            "error": "E401",
+            "mensaje": "cuenta inexistente"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E102",
+            "mensaje": "falta m"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E202",
+            "mensaje": "control inválido"
+          }
+        ]
+      ],
+      "replica": [
+        [
+          400,
+          {
+            "error": "E301",
+            "mensaje": "comando desconocido "
+          }
+        ],
+        [
+          404,
+          {
+            "error": "E401",
+            "mensaje": "cuenta inexistente"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E102",
+            "mensaje": "falta m"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E202",
+            "mensaje": "control inválido"
+          }
+        ]
+      ],
+      "signature": [
+        "HELP",
+        400,
+        "E301",
+        400,
+        "E301"
+      ]
+    },
+    {
+      "seq_id": "sf_2026_84",
+      "hipotesis": "seqfuzz len=5 cmds=ALTA,TRANSFER,DEPOSITO,DEPOSITO,CONSULTA mutations=ctrl_leading_zero,ctrl_spaced",
+      "step": 4,
+      "steps": [
+        {
+          "m": "ALTA;José María;55"
+        },
+        {
+          "m": "TRANSFER;AC-0001;AC-0001;11356;055"
+        },
+        {
+          "m": "DEPOSITO;AC-0001;0; 31"
+        },
+        {
+          "m": "DEPOSITO;AC-0001;99999999999999999999;4"
+        },
+        {
+          "m": "CONSULTA;AC-0001;14"
+        }
+      ],
+      "original": [
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E303",
+            "mensaje": "monto inválido"
+          }
+        ],
+        [
+          200,
+          {
+            "cuenta_id": "AC-0001",
+            "saldo": 0
+          }
+        ]
+      ],
+      "replica": [
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          200,
+          {
+            "status": "recieved",
+            "operacionId": "OP-0001"
+          }
+        ],
+        [
+          200,
+          {
+            "cuenta_id": "AC-0001",
+            "saldo": 99999999999999999999
+          }
+        ]
+      ],
+      "signature": [
+        "DEPOSITO",
+        400,
+        "E303",
+        200,
+        null
+      ]
+    },
+    {
+      "seq_id": "sf_2026_88",
+      "hipotesis": "seqfuzz len=10 cmds=ALTA,TRANSFER,ALTA,<empty>,ANULA,CONSULTA,PING,TRANSFER,<raw>,DEPOSITO mutations=ctrl_missing,ctrl_signed,drop_arg,empty_seg,malformed_body",
+      "step": 8,
+      "steps": [
+        {
+          "m": "ALTA;User2;6"
+        },
+        {
+          "m": "TRANSFER;AC-0001;ac-0001;+18"
+        },
+        {
+          "m": "ALTA;x;84"
+        },
+        {
+          "m": ";ALTA;名前"
+        },
+        {
+          "m": "ANULA;OP-00001;59"
+        },
+        {
+          "m": "CONSULTA;AC-0002;11"
+        },
+        {
+          "m": "PING;64"
+        },
+        {
+          "m": "TRANSFER;AC-0002;AC-0002;100 ;19"
+        },
+        {
+          "__raw__": "[\"m\"]"
+        },
+        {
+          "m": "DEPOSITO;AC-0001;1.0;77"
+        }
+      ],
+      "original": [
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0002"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E104",
+            "mensaje": "segmento vacío"
+          }
+        ],
+        [
+          404,
+          {
+            "error": "E402",
+            "mensaje": "operación inexistente"
+          }
+        ],
+        [
+          200,
+          {
+            "cuenta_id": "AC-0002",
+            "saldo": 0
+          }
+        ],
+        [
+          200,
+          {
+            "pong": true
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E303",
+            "mensaje": "monto inválido"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E102",
+            "mensaje": "falta m"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E303",
+            "mensaje": "monto inválido"
+          }
+        ]
+      ],
+      "replica": [
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0002"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E104",
+            "mensaje": "segmento vacío"
+          }
+        ],
+        [
+          404,
+          {
+            "error": "E402",
+            "mensaje": "operación inexistente"
+          }
+        ],
+        [
+          200,
+          {
+            "cuenta_id": "AC-0002",
+            "saldo": 0
+          }
+        ],
+        [
+          200,
+          {
+            "pong": true
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E304",
+            "mensaje": "origen y destino iguales"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E102",
+            "mensaje": "falta m"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E303",
+            "mensaje": "monto inválido"
+          }
+        ]
+      ],
+      "signature": [
+        "TRANSFER",
+        400,
+        "E303",
+        400,
+        "E304"
+      ]
+    },
+    {
+      "seq_id": "sf_2026_96",
+      "hipotesis": "seqfuzz len=6 cmds=CONSULTA,DEPOSITO,ANULA,ALTA,PING,ALTA mutations=ctrl_leading_zero,empty_seg,lower_cmd",
+      "step": 2,
+      "steps": [
+        {
+          "m": "CONSULTA;AC-9999;90"
+        },
+        {
+          "m": "deposito;AC-0000; 100;75"
+        },
+        {
+          "m": "ANULA;OP-00001;059"
+        },
+        {
+          "m": "ALTA;User30;;21"
+        },
+        {
+          "m": "PING;64"
+        },
+        {
+          "m": "ALTA;User44;76"
+        }
+      ],
+      "original": [
+        [
+          404,
+          {
+            "error": "E401",
+            "mensaje": "cuenta inexistente"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E303",
+            "mensaje": "monto inválido"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E104",
+            "mensaje": "segmento vacío"
+          }
+        ],
+        [
+          200,
+          {
+            "pong": true
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ]
+      ],
+      "replica": [
+        [
+          404,
+          {
+            "error": "E401",
+            "mensaje": "cuenta inexistente"
+          }
+        ],
+        [
+          404,
+          {
+            "error": "E401",
+            "mensaje": "cuenta inexistente"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E201",
+            "mensaje": "control mal formado"
+          }
+        ],
+        [
+          400,
+          {
+            "error": "E104",
+            "mensaje": "segmento vacío"
+          }
+        ],
+        [
+          200,
+          {
+            "pong": true
+          }
+        ],
+        [
+          201,
+          {
+            "cuentaId": "AC-0001"
+          }
+        ]
+      ],
+      "signature": [
+        "DEPOSITO",
+        400,
+        "E303",
+        404,
+        "E401"
+      ]
+    }
+  ],
+  "seed": 2026,
+  "clusters": [
+    {
+      "signature": [
+        "DEPOSITO",
+        400,
+        "E303",
+        200,
+        null
+      ],
+      "count": 2,
+      "example": {
+        "seq_id": "sf_2026_46",
+        "hipotesis": "seqfuzz len=5 cmds=ALTA,CONSULTA,ANULA,DEPOSITO,ALTA mutations=ctrl_missing,ctrl_spaced",
+        "step": 4,
+        "steps": [
+          {
+            "m": "ALTA;Peña;72"
+          },
+          {
+            "m": "CONSULTA;AC-0001;14"
+          },
+          {
+            "m": "ANULA;OP-0001; 72"
+          },
+          {
+            "m": "DEPOSITO;AC-0001;01000;84"
+          },
+          {
+            "m": "ALTA;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          }
+        ],
+        "original": [
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            200,
+            {
+              "cuenta_id": "AC-0001",
+              "saldo": 0
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E303",
+              "mensaje": "monto inválido"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ]
+        ],
+        "replica": [
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            200,
+            {
+              "cuenta_id": "AC-0001",
+              "saldo": 0
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ],
+          [
+            200,
+            {
+              "status": "recieved",
+              "operacionId": "OP-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ]
+        ],
+        "signature": [
+          "DEPOSITO",
+          400,
+          "E303",
+          200,
+          null
+        ]
+      }
+    },
+    {
+      "signature": [
+        "DEPOSITO",
+        400,
+        "E303",
+        404,
+        "E401"
+      ],
+      "count": 2,
+      "example": {
+        "seq_id": "sf_2026_53",
+        "hipotesis": "seqfuzz len=5 cmds=ALTA,ALTA,ALTA,DEPOSITO,DEPOSITO mutations=ctrl_missing,ctrl_off_by_one,mixed_cmd,space_field",
+        "step": 5,
+        "steps": [
+          {
+            "m": "ALTA;Lucia"
+          },
+          {
+            "m": "ALTA;User4;97"
+          },
+          {
+            "m": " ALTA ;User53;49"
+          },
+          {
+            "m": "Deposito;AC-0001;1841;35"
+          },
+          {
+            "m": "DEPOSITO;ac-0001; 100;82"
+          }
+        ],
+        "original": [
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E301",
+              "mensaje": "comando desconocido ",
+              "sugerencia": "ALTA"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E202",
+              "mensaje": "control inválido"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E303",
+              "mensaje": "monto inválido"
+            }
+          ]
+        ],
+        "replica": [
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E301",
+              "mensaje": "comando desconocido ",
+              "sugerencia": "ALTA"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E202",
+              "mensaje": "control inválido"
+            }
+          ],
+          [
+            404,
+            {
+              "error": "E401",
+              "mensaje": "cuenta inexistente"
+            }
+          ]
+        ],
+        "signature": [
+          "DEPOSITO",
+          400,
+          "E303",
+          404,
+          "E401"
+        ]
+      }
+    },
+    {
+      "signature": [
+        "ALTA",
+        201,
+        null,
+        201,
+        null
+      ],
+      "count": 1,
+      "example": {
+        "seq_id": "sf_2026_45",
+        "hipotesis": "seqfuzz len=5 cmds=TRANSFER,ALTA,TRANSFER,DEPOSITO,ALTA mutations=ctrl_fixed_bad",
+        "step": 5,
+        "steps": [
+          {
+            "m": "TRANSFER;AC-0001;AC-0001 ;abc;99"
+          },
+          {
+            "m": "ALTA;名前;85"
+          },
+          {
+            "m": "TRANSFER;AC-0001;AC-0001;100 ;100"
+          },
+          {
+            "m": "DEPOSITO;AC-0001;43047;43"
+          },
+          {
+            "m": "ALTA;  Bob  ;24"
+          }
+        ],
+        "original": [
+          [
+            400,
+            {
+              "error": "E202",
+              "mensaje": "control inválido"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ],
+          [
+            200,
+            {
+              "status": "recieved",
+              "operacionId": "OP-0001"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0003"
+            }
+          ]
+        ],
+        "replica": [
+          [
+            400,
+            {
+              "error": "E202",
+              "mensaje": "control inválido"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ],
+          [
+            200,
+            {
+              "status": "recieved",
+              "operacionId": "OP-0001"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0002"
+            }
+          ]
+        ],
+        "signature": [
+          "ALTA",
+          201,
+          null,
+          201,
+          null
+        ]
+      }
+    },
+    {
+      "signature": [
+        "HELP",
+        400,
+        "E301",
+        400,
+        "E301"
+      ],
+      "count": 1,
+      "example": {
+        "seq_id": "sf_2026_78",
+        "hipotesis": "seqfuzz len=5 cmds=HELP,CONSULTA,ALTA,<raw>,ALTA mutations=ctrl_fixed_bad,malformed_body,mixed_cmd,typo_cmd",
+        "step": 1,
+        "steps": [
+          {
+            "m": "HELP;User61;68"
+          },
+          {
+            "m": "CONSULTA;AC-1;5"
+          },
+          {
+            "m": "ALTA;User59;31"
+          },
+          {
+            "__raw__": "[\"m\"]"
+          },
+          {
+            "m": "Alta;User83;98"
+          }
+        ],
+        "original": [
+          [
+            400,
+            {
+              "error": "E301",
+              "mensaje": "comando desconocido ",
+              "sugerencia": "HALT"
+            }
+          ],
+          [
+            404,
+            {
+              "error": "E401",
+              "mensaje": "cuenta inexistente"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E102",
+              "mensaje": "falta m"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E202",
+              "mensaje": "control inválido"
+            }
+          ]
+        ],
+        "replica": [
+          [
+            400,
+            {
+              "error": "E301",
+              "mensaje": "comando desconocido "
+            }
+          ],
+          [
+            404,
+            {
+              "error": "E401",
+              "mensaje": "cuenta inexistente"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E102",
+              "mensaje": "falta m"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E202",
+              "mensaje": "control inválido"
+            }
+          ]
+        ],
+        "signature": [
+          "HELP",
+          400,
+          "E301",
+          400,
+          "E301"
+        ]
+      }
+    },
+    {
+      "signature": [
+        "TRANSFER",
+        400,
+        "E303",
+        400,
+        "E304"
+      ],
+      "count": 1,
+      "example": {
+        "seq_id": "sf_2026_88",
+        "hipotesis": "seqfuzz len=10 cmds=ALTA,TRANSFER,ALTA,<empty>,ANULA,CONSULTA,PING,TRANSFER,<raw>,DEPOSITO mutations=ctrl_missing,ctrl_signed,drop_arg,empty_seg,malformed_body",
+        "step": 8,
+        "steps": [
+          {
+            "m": "ALTA;User2;6"
+          },
+          {
+            "m": "TRANSFER;AC-0001;ac-0001;+18"
+          },
+          {
+            "m": "ALTA;x;84"
+          },
+          {
+            "m": ";ALTA;名前"
+          },
+          {
+            "m": "ANULA;OP-00001;59"
+          },
+          {
+            "m": "CONSULTA;AC-0002;11"
+          },
+          {
+            "m": "PING;64"
+          },
+          {
+            "m": "TRANSFER;AC-0002;AC-0002;100 ;19"
+          },
+          {
+            "__raw__": "[\"m\"]"
+          },
+          {
+            "m": "DEPOSITO;AC-0001;1.0;77"
+          }
+        ],
+        "original": [
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0002"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E104",
+              "mensaje": "segmento vacío"
+            }
+          ],
+          [
+            404,
+            {
+              "error": "E402",
+              "mensaje": "operación inexistente"
+            }
+          ],
+          [
+            200,
+            {
+              "cuenta_id": "AC-0002",
+              "saldo": 0
+            }
+          ],
+          [
+            200,
+            {
+              "pong": true
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E303",
+              "mensaje": "monto inválido"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E102",
+              "mensaje": "falta m"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E303",
+              "mensaje": "monto inválido"
+            }
+          ]
+        ],
+        "replica": [
+          [
+            201,
+            {
+              "cuentaId": "AC-0001"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E201",
+              "mensaje": "control mal formado"
+            }
+          ],
+          [
+            201,
+            {
+              "cuentaId": "AC-0002"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E104",
+              "mensaje": "segmento vacío"
+            }
+          ],
+          [
+            404,
+            {
+              "error": "E402",
+              "mensaje": "operación inexistente"
+            }
+          ],
+          [
+            200,
+            {
+              "cuenta_id": "AC-0002",
+              "saldo": 0
+            }
+          ],
+          [
+            200,
+            {
+              "pong": true
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E304",
+              "mensaje": "origen y destino iguales"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E102",
+              "mensaje": "falta m"
+            }
+          ],
+          [
+            400,
+            {
+              "error": "E303",
+              "mensaje": "monto inválido"
+            }
+          ]
+        ],
+        "signature": [
+          "TRANSFER",
+          400,
+          "E303",
+          400,
+          "E304"
+        ]
+      }
+    }
+  ]
+}

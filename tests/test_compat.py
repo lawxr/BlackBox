@@ -102,25 +102,31 @@ def test_replica_unauthorized_reset_preserves_state(client, headers):
     assert reset.json() == UNAUTHORIZED
     balance = client.post("/msg", headers=VALID_AUTH, json={"m": "CONSULTA;AC-0001;14"})
     assert balance.status_code == 200
-    assert balance.json() == {"cuenta_id": "AC-0001", "saldo": 0}
+    assert balance.json() == {"cuenta_id": "AC-0001", "saldo": "0.00"}
 
 
 def test_replay_20_historical_examples(client):
     """Replay morning evidence in order; this does not prove the current original."""
-    examples_file = Path(__file__).resolve().parents[1] / "pruebas" / "ejemplos.jsonl"
-    with examples_file.open(encoding="utf-8") as source:
-        examples = [json.loads(line) for line in source if line.strip()]
-    assert len(examples) == 20
-    assert [item["n"] for item in examples] == list(range(1, 21))
+    from src import profile
+    v1_prof = Path(__file__).resolve().parents[1] / "src" / "profile.v1.json"
+    profile.reload(v1_prof)
+    try:
+        examples_file = Path(__file__).resolve().parents[1] / "pruebas" / "ejemplos.jsonl"
+        with examples_file.open(encoding="utf-8") as source:
+            examples = [json.loads(line) for line in source if line.strip()]
+        assert len(examples) == 20
+        assert [item["n"] for item in examples] == list(range(1, 21))
 
-    reset = client.post("/__reset", headers=VALID_AUTH)
-    assert reset.status_code == 200
-    assert reset.json() == {"ok": True}
-    for item in examples:
-        response = client.post("/msg", headers=VALID_AUTH, json=item["request"])
-        context = f"Historical step {item['n']}: {item['request']}"
-        assert response.status_code == item["status"], context
-        assert response.json() == item["response"], context
+        reset = client.post("/__reset", headers=VALID_AUTH)
+        assert reset.status_code == 200
+        assert reset.json() == {"ok": True}
+        for item in examples:
+            response = client.post("/msg", headers=VALID_AUTH, json=item["request"])
+            context = f"Historical step {item['n']}: {item['request']}"
+            assert response.status_code == item["status"], context
+            assert response.json() == item["response"], context
+    finally:
+        profile.reload()
 
 
 def test_edge_cases_deposit_and_transfer_validation(client):
@@ -142,7 +148,7 @@ def test_edge_cases_deposit_and_transfer_validation(client):
     assert r.status_code == 200 and r.json() == {"ok": True, "anulada": "OP-0001"}
 
     r = client.post("/msg", headers=VALID_AUTH, json={"m": "CONSULTA;AC-0001;14"})
-    assert r.status_code == 200 and r.json()["saldo"] == 0
+    assert r.status_code == 200 and r.json()["saldo"] == "0.00"
 
     # Repeating annulment -> 200 ok: false
     r = client.post("/msg", headers=VALID_AUTH, json={"m": "ANULA;OP-0001;72"})

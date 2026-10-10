@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "error_keys": {"code": "error", "message": "mensaje"},
   "errors": {
     "E001": {"status": 401, "mensaje": "no autorizado"},
@@ -47,7 +47,7 @@
     "suggestion": {"key": "sugerencia", "max_distance": 2}
   },
   "amount_pattern": "[1-9][0-9]{0,9}",
-  "transfer_limit": 100000,
+  "transfer_limit": 50000,
   "id_formats": {"account": "AC-{n:04d}", "operation": "OP-{n:04d}"},
   "commands": {
     "PING": {
@@ -59,7 +59,7 @@
       "response": {"status": 201, "body": {"cuentaId": "{account}"}}
     },
     "CONSULTA": {
-      "kind": "query_account", "segments": 3, "account_arg": 1,
+      "kind": "query_account", "segments": 3, "account_arg": 1, "balance_format": "decimal",
       "checks": [{"check": "account_exists", "args": [1], "error": "E401"}],
       "response": {"status": 200, "body": {"cuenta_id": "{account}", "saldo": "{balance}"}}
     },
@@ -77,8 +77,8 @@
         {"check": "amount", "args": [3], "error": "E303"},
         {"check": "distinct", "args": [1, 2], "error": "E304"},
         {"check": "account_exists", "args": [1, 2], "error": "E401"},
-        {"check": "sufficient_balance", "args": [1, 3], "error": "E507"},
-        {"check": "max_amount", "args": [3], "limit": "transfer_limit", "error": "E506"}
+        {"check": "max_amount", "args": [3], "limit": "transfer_limit", "error": "E506"},
+        {"check": "sufficient_balance", "args": [1, 3], "error": "E507"}
       ],
       "response": {"status": 200, "body": {"status": "recieved", "operacionId": "{operation}"}}
     },

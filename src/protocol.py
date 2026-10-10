@@ -196,7 +196,9 @@ def _h_create_account(cmd, args):
 def _h_query_account(cmd, args):
     acct_id = args[cmd["account_arg"]]
     balance = ledger.accounts[acct_id]["balance"]
-    return _render(cmd["response"], {"account": acct_id, "balance": balance})
+    fmt = cmd.get("balance_format", "decimal")
+    val = f"{balance / 100:.2f}" if fmt == "decimal" else balance
+    return _render(cmd["response"], {"account": acct_id, "balance": val})
 
 
 def _h_credit(cmd, args):
