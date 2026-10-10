@@ -30,20 +30,44 @@ MALFORMED = [{}, {"m": 5}, {"m": None}, {"m": ["PING;1"]}, {"x": "PING;1"},
 
 
 # --- payload mutation operators: (rng, parts) -> parts -------------------------
-def mut_lower_cmd(rng, parts): return [parts[0].lower()] + parts[1:]
-def mut_mixed_cmd(rng, parts): return [parts[0][:1] + parts[0][1:].lower()] + parts[1:]
-def mut_space_field(rng, parts):
+def mut_lower_cmd(rng: random.Random, parts: List[str]) -> List[str]:
+    return [parts[0].lower()] + parts[1:]
+
+
+def mut_mixed_cmd(rng: random.Random, parts: List[str]) -> List[str]:
+    return [parts[0][:1] + parts[0][1:].lower()] + parts[1:]
+
+
+def mut_space_field(rng: random.Random, parts: List[str]) -> List[str]:
     i = rng.randrange(len(parts))
-    return parts[:i] + [rng.choice([" ", "  "]) + parts[i] + rng.choice(["", " "])] + parts[i + 1:]
-def mut_extra_arg(rng, parts): return parts + [rng.choice(["extra", "1", "AC-0001"])]
-def mut_drop_arg(rng, parts): return parts[:-1] if len(parts) > 1 else parts
-def mut_typo_cmd(rng, parts): return [rng.choice(TYPOS)] + parts[1:]
-def mut_empty_seg(rng, parts): return parts + [""] if rng.random() < 0.5 else [""] + parts
+    prefix = rng.choice([" ", "  "])
+    suffix = rng.choice(["", " "])
+    return parts[:i] + [prefix + parts[i] + suffix] + parts[i + 1:]
+
+
+def mut_extra_arg(rng: random.Random, parts: List[str]) -> List[str]:
+    return parts + [rng.choice(["extra", "1", "AC-0001"])]
+
+
+def mut_drop_arg(rng: random.Random, parts: List[str]) -> List[str]:
+    return parts[:-1] if len(parts) > 1 else parts
+
+
+def mut_typo_cmd(rng: random.Random, parts: List[str]) -> List[str]:
+    return [rng.choice(TYPOS)] + parts[1:]
+
+
+def mut_empty_seg(rng: random.Random, parts: List[str]) -> List[str]:
+    return parts + [""] if rng.random() < 0.5 else [""] + parts
 
 
 PAYLOAD_MUTATIONS: List[Tuple[str, Callable]] = [
-    ("lower_cmd", mut_lower_cmd), ("mixed_cmd", mut_mixed_cmd), ("space_field", mut_space_field),
-    ("extra_arg", mut_extra_arg), ("drop_arg", mut_drop_arg), ("typo_cmd", mut_typo_cmd),
+    ("lower_cmd", mut_lower_cmd),
+    ("mixed_cmd", mut_mixed_cmd),
+    ("space_field", mut_space_field),
+    ("extra_arg", mut_extra_arg),
+    ("drop_arg", mut_drop_arg),
+    ("typo_cmd", mut_typo_cmd),
     ("empty_seg", mut_empty_seg),
 ]
 
@@ -58,6 +82,20 @@ CTRL_MUTATIONS: List[Tuple[str, Callable]] = [
 ]
 
 
+def _parse_entity_index(raw_id: str) -> int:
+    """Extract zero-based index from 'AC-XXXX' or 'OP-XXXX' string, or -1 if invalid."""
+    if len(raw_id) == 7 and raw_id[3:].isdigit() and raw_id[:3] in ("AC-", "OP-"):
+        return int(raw_id[3:]) - 1
+    return -1
+
+
+def _parse_amount(raw_amount: str) -> int:
+    """Parse positive integer amount without leading zero, or 0 if invalid."""
+    if raw_amount.isdigit() and not raw_amount.startswith("0"):
+        return int(raw_amount)
+    return 0
+
+
 class _Model:
     """Approximate ledger tracking plausible successes of the generated steps."""
 
@@ -65,46 +103,51 @@ class _Model:
         self.balances: List[int] = []
         self.ops: List[Dict[str, Any]] = []  # {"kind","src","dst","amount","annulled"}
 
-    def account(self, rng) -> str:
+    def account(self, rng: random.Random) -> str:
         if self.balances and rng.random() < 0.8:
             return f"AC-{rng.randrange(len(self.balances)) + 1:04d}"
         return rng.choice(NEAR_ACCOUNTS + [f"AC-{len(self.balances) + 1:04d}"])
 
-    def op(self, rng) -> str:
+    def op(self, rng: random.Random) -> str:
         if self.ops and rng.random() < 0.8:
             return f"OP-{rng.randrange(len(self.ops)) + 1:04d}"
         return rng.choice(NEAR_OPS + [f"OP-{len(self.ops) + 1:04d}"])
 
     def apply(self, parts: List[str]) -> None:
         cmd, args = parts[0], parts[1:]
-        idx = lambda a: int(a[3:]) - 1 if len(a) == 7 and a[3:].isdigit() and a[:3] in ("AC-", "OP-") else -1
-        amt = lambda a: int(a) if a.isdigit() and not a.startswith("0") else 0
         if cmd == "ALTA":
             self.balances.append(0)
-        elif cmd == "DEPOSITO" and 0 <= idx(args[0]) < len(self.balances) and amt(args[1]) > 0:
-            self.balances[idx(args[0])] += amt(args[1])
-            self.ops.append({"src": None, "dst": idx(args[0]), "amount": amt(args[1]), "annulled": False})
+        elif cmd == "DEPOSITO":
+            idx = _parse_entity_index(args[0])
+            amt = _parse_amount(args[1])
+            if 0 <= idx < len(self.balances) and amt > 0:
+                self.balances[idx] += amt
+                self.ops.append({"src": None, "dst": idx, "amount": amt, "annulled": False})
         elif cmd == "TRANSFER":
-            s, d, a = idx(args[0]), idx(args[1]), amt(args[2])
-            ok = 0 <= s < len(self.balances) and 0 <= d < len(self.balances) and s != d
-            if ok and 0 < a <= min(self.balances[s], 100000):
-                self.balances[s] -= a
-                self.balances[d] += a
-                self.ops.append({"src": s, "dst": d, "amount": a, "annulled": False})
-        elif cmd == "ANULA" and 0 <= idx(args[0]) < len(self.ops):
-            op = self.ops[idx(args[0])]
-            if not op["annulled"]:
-                op["annulled"] = True
-                self.balances[op["dst"]] -= op["amount"]
-                if op["src"] is not None:
-                    self.balances[op["src"]] += op["amount"]
+            src = _parse_entity_index(args[0])
+            dst = _parse_entity_index(args[1])
+            amt = _parse_amount(args[2])
+            is_valid = 0 <= src < len(self.balances) and 0 <= dst < len(self.balances) and src != dst
+            if is_valid and 0 < amt <= min(self.balances[src], 100000):
+                self.balances[src] -= amt
+                self.balances[dst] += amt
+                self.ops.append({"src": src, "dst": dst, "amount": amt, "annulled": False})
+        elif cmd == "ANULA":
+            idx = _parse_entity_index(args[0])
+            if 0 <= idx < len(self.ops):
+                op = self.ops[idx]
+                if not op["annulled"]:
+                    op["annulled"] = True
+                    self.balances[op["dst"]] -= op["amount"]
+                    if op["src"] is not None:
+                        self.balances[op["src"]] += op["amount"]
 
 
 def _amount(rng, model: _Model, src: Optional[str] = None) -> str:
     if rng.random() < 0.3:
         return rng.choice(WEIRD_AMOUNTS)
     if src and model.balances and rng.random() < 0.3:  # transfer over balance
-        i = int(src[3:]) - 1 if src[3:].isdigit() and len(src) == 7 else 0
+        i = _parse_entity_index(src)
         if 0 <= i < len(model.balances):
             return str(model.balances[i] + rng.randint(1, 1000))
     return str(rng.randint(1, 60000))

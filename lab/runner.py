@@ -17,17 +17,13 @@ class SequenceResult:
     error_detail: Optional[str] = None
 
 
-def load_ejemplos(path: str = "pruebas/ejemplos.jsonl") -> List[Dict[str, Any]]:
+def load_ejemplos(path: Path | str = "pruebas/ejemplos.jsonl") -> List[Dict[str, Any]]:
     """Load reference examples recorded from the morning service."""
     file_path = Path(path)
     if not file_path.exists():
         return []
-    examples = []
-    with open(file_path, "r", encoding="utf-8") as f:
-        for line in f:
-            if line.strip():
-                examples.append(json.loads(line))
-    return examples
+    with file_path.open("r", encoding="utf-8") as f:
+        return [json.loads(line) for line in f if line.strip()]
 
 
 def json_equal(actual: Any, expected: Any) -> bool:
@@ -54,27 +50,25 @@ def compare_sequence(
     total_steps = len(steps)
     passed_steps = 0
 
+    def _fail(reason: str, detail: Optional[str] = None, step: Optional[int] = None) -> SequenceResult:
+        return SequenceResult(
+            matched=False,
+            total_steps=total_steps,
+            passed_steps=passed_steps,
+            mismatch_step=step,
+            stop_reason=reason,
+            error_detail=detail,
+        )
+
     # 1. Reset state
     try:
         reset_res = client.reset(seq=seq_id, hipotesis=f"Reset para secuencia {seq_id}")
     except TransportError as te:
-        return SequenceResult(
-            matched=False,
-            total_steps=total_steps,
-            passed_steps=0,
-            stop_reason="transport_error",
-            error_detail=str(te),
-        )
+        return _fail("transport_error", str(te))
 
     # Check if reset hit rate-limit
     if reset_res.get("status") == 429:
-        return SequenceResult(
-            matched=False,
-            total_steps=total_steps,
-            passed_steps=0,
-            stop_reason="infra_rate_limit",
-            error_detail="Rate limit hit on reset",
-        )
+        return _fail("infra_rate_limit", "Rate limit hit on reset")
 
     # 2. Iterate steps
     for step in steps:
@@ -92,25 +86,11 @@ def compare_sequence(
                 payload=req_payload,
             )
         except TransportError as te:
-            return SequenceResult(
-                matched=False,
-                total_steps=total_steps,
-                passed_steps=passed_steps,
-                mismatch_step=step_n,
-                stop_reason="transport_error",
-                error_detail=str(te),
-            )
+            return _fail("transport_error", str(te), step_n)
 
         # Check rate-limit
         if res.get("status") == 429:
-            return SequenceResult(
-                matched=False,
-                total_steps=total_steps,
-                passed_steps=passed_steps,
-                mismatch_step=step_n,
-                stop_reason="infra_rate_limit",
-                error_detail="Rate limit hit during step",
-            )
+            return _fail("infra_rate_limit", "Rate limit hit during step", step_n)
 
         actual_status = res.get("status")
         actual_response = res.get("response")
@@ -119,13 +99,10 @@ def compare_sequence(
         body_ok = json_equal(actual_response, expected_response)
 
         if not (status_ok and body_ok):
-            return SequenceResult(
-                matched=False,
-                total_steps=total_steps,
-                passed_steps=passed_steps,
-                mismatch_step=step_n,
-                stop_reason="mismatch",
-                error_detail=f"Expected {expected_status} {expected_response}, got {actual_status} {actual_response}",
+            return _fail(
+                "mismatch",
+                f"Expected {expected_status} {expected_response}, got {actual_status} {actual_response}",
+                step_n,
             )
 
         passed_steps += 1

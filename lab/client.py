@@ -29,18 +29,19 @@ class LabClient:
 
     def __init__(
         self,
-        base_url: str = ORIGINAL_URL,
-        token: str = USER_TOKEN or TEAM_TOKEN,
+        base_url: Optional[str] = None,
+        token: Optional[str] = None,
         rate_limit_delay: float = 0.15,  # ~6-7 req/s safe throttle
-        experiments_path: Path = EXPERIMENTS_PATH,
-        audit_path: Path = AUDIT_PATH,
+        experiments_path: Optional[Path] = None,
+        audit_path: Optional[Path] = None,
         transport: Optional[httpx.BaseTransport] = None,
     ) -> None:
-        self.base_url = base_url.rstrip("/")
-        self.token = token
+        from src import config
+        self.base_url = (base_url or config.ORIGINAL_URL).rstrip("/")
+        self.token = token if token is not None else (config.USER_TOKEN or config.TEAM_TOKEN)
         self.rate_limit_delay = rate_limit_delay
-        self.experiments_path = Path(experiments_path)
-        self.audit_path = Path(audit_path)
+        self.experiments_path = Path(experiments_path or EXPERIMENTS_PATH)
+        self.audit_path = Path(audit_path or AUDIT_PATH)
         self.transport = transport
         self._last_req_time: float = 0.0
         self._lock_path = self.experiments_path.with_name(self.experiments_path.name + ".lock")
@@ -109,6 +110,10 @@ class LabClient:
             time.sleep(self.rate_limit_delay - elapsed)
         self._last_req_time = time.time()
 
+    def _append_jsonl(self, path: Path, entry: Dict[str, Any]) -> None:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
     def send(
         self,
         method: str,
@@ -158,7 +163,7 @@ class LabClient:
 
         # Handle uncertain transport outcomes (timeout / transport error)
         if resp is None:
-            audit_entry = {
+            self._append_jsonl(self.audit_path, {
                 "id": record_id,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "method": method,
@@ -167,11 +172,8 @@ class LabClient:
                 "status": None,
                 "error": err_kind,
                 "x_infra": None,
-            }
-            with open(self.audit_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(audit_entry, ensure_ascii=False) + "\n")
-
-            experiment_entry = {
+            })
+            self._append_jsonl(self.experiments_path, {
                 "id": record_id,
                 "seq": seq,
                 "x_req": None,
@@ -180,10 +182,7 @@ class LabClient:
                 "status": None,
                 "response": None,
                 "conclusion": err_kind,
-            }
-            with open(self.experiments_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(experiment_entry, ensure_ascii=False) + "\n")
-
+            })
             raise TransportError(f"HTTP {err_kind}: {err_msg}")
 
         # Normal response handling
@@ -196,7 +195,7 @@ class LabClient:
         except Exception:
             body = resp.text
 
-        experiment_entry = {
+        experiment_entry: Dict[str, Any] = {
             "id": record_id,
             "seq": seq,
             "x_req": x_req_val,
@@ -208,10 +207,8 @@ class LabClient:
         if conclusion is not None:
             experiment_entry["conclusion"] = conclusion
 
-        with open(self.experiments_path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(experiment_entry, ensure_ascii=False) + "\n")
-
-        audit_entry = {
+        self._append_jsonl(self.experiments_path, experiment_entry)
+        self._append_jsonl(self.audit_path, {
             "id": record_id,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "method": method,
@@ -219,9 +216,7 @@ class LabClient:
             "latency_ms": latency_ms,
             "status": resp.status_code,
             "x_infra": x_infra,
-        }
-        with open(self.audit_path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(audit_entry, ensure_ascii=False) + "\n")
+        })
 
         return experiment_entry
 

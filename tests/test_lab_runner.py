@@ -4,7 +4,7 @@ import pytest
 import httpx
 
 from lab.client import LabClient
-from lab.runner import compare_sequence, SequenceResult
+from lab.runner import compare_sequence, SequenceResult, load_ejemplos
 
 
 def test_compare_sequence_all_match(tmp_path):
@@ -108,3 +108,43 @@ def test_compare_sequence_stops_on_infra_rate_limit(tmp_path):
 
     assert result.matched is False
     assert result.stop_reason == "infra_rate_limit"
+
+
+def test_compare_sequence_stops_on_transport_error(tmp_path):
+    exp_path = tmp_path / "exp.jsonl"
+    audit_path = tmp_path / "audit.jsonl"
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("Connection refused")
+
+    transport = httpx.MockTransport(handler)
+    client = LabClient(
+        base_url="https://fake.url",
+        experiments_path=exp_path,
+        audit_path=audit_path,
+        transport=transport,
+    )
+
+    steps = [
+        {"n": 1, "request": {"m": "PING;64"}, "status": 200, "response": {"pong": True}},
+    ]
+
+    result = compare_sequence(client, steps, seq_id="test-transport-error")
+
+    assert result.matched is False
+    assert result.stop_reason == "transport_error"
+    assert "Connection refused" in (result.error_detail or "")
+
+
+def test_load_ejemplos(tmp_path):
+    # Non-existing path
+    assert load_ejemplos(tmp_path / "non_existing.jsonl") == []
+
+    # Valid JSONL
+    sample_file = tmp_path / "sample.jsonl"
+    sample_file.write_text('{"n": 1, "request": {"m": "PING;64"}}\n\n{"n": 2}\n', encoding="utf-8")
+
+    loaded = load_ejemplos(sample_file)
+    assert len(loaded) == 2
+    assert loaded[0]["n"] == 1
+    assert loaded[1]["n"] == 2

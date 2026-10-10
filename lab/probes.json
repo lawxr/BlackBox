@@ -1,0 +1,239 @@
+[
+  {
+    "id": "err_e001",
+    "description": "Probe unauthorized access on /msg",
+    "setup": [],
+    "request": {
+      "method": "POST",
+      "path": "/msg",
+      "headers": {"Authorization": "Bearer invalid_token"},
+      "body": {"m": "PING;64"}
+    },
+    "observes": "errors.E001.mensaje"
+  },
+  {
+    "id": "err_e100",
+    "description": "Probe malformed JSON payload",
+    "setup": [],
+    "request": {
+      "method": "POST",
+      "path": "/msg",
+      "raw": "{"
+    },
+    "observes": "errors.E100.mensaje"
+  },
+  {
+    "id": "err_e102",
+    "description": "Probe missing message field 'm'",
+    "setup": [],
+    "request": {
+      "method": "POST",
+      "path": "/msg",
+      "body": {}
+    },
+    "observes": "errors.E102.mensaje"
+  },
+  {
+    "id": "err_e103",
+    "description": "Probe missing control delimiter in message",
+    "setup": [],
+    "request": "PING",
+    "observes": "errors.E103.mensaje"
+  },
+  {
+    "id": "err_e104",
+    "description": "Probe empty segment delimiter",
+    "setup": [],
+    "request": "PING;;64",
+    "observes": "errors.E104.mensaje"
+  },
+  {
+    "id": "err_e201",
+    "description": "Probe malformed control digits",
+    "setup": [],
+    "request": "ALTA;CtrlProbe;100",
+    "observes": "errors.E201.mensaje"
+  },
+  {
+    "id": "err_e202",
+    "description": "Probe invalid control checksum value",
+    "setup": [],
+    "request": "ALTA;CtrlProbe;{bad_ctrl}",
+    "observes": "errors.E202.mensaje"
+  },
+  {
+    "id": "err_e301",
+    "description": "Probe completely unknown command",
+    "setup": [],
+    "request": "UNKNOWNCMD;{ctrl}",
+    "observes": "errors.E301.mensaje"
+  },
+  {
+    "id": "err_e302",
+    "description": "Probe invalid arity for PING",
+    "setup": [],
+    "request": "PING;extra;{ctrl}",
+    "observes": "errors.E302.mensaje"
+  },
+  {
+    "id": "err_e303",
+    "description": "Probe invalid zero amount in DEPOSITO",
+    "setup": [
+      "ALTA;ProbeUser;{ctrl}"
+    ],
+    "request": "DEPOSITO;AC-0001;0;{ctrl}",
+    "observes": "errors.E303.mensaje"
+  },
+  {
+    "id": "err_e304",
+    "description": "Probe identical source and destination accounts in TRANSFER",
+    "setup": [
+      "ALTA;ProbeUser;{ctrl}"
+    ],
+    "request": "TRANSFER;AC-0001;AC-0001;1000;{ctrl}",
+    "observes": "errors.E304.mensaje"
+  },
+  {
+    "id": "err_e401",
+    "description": "Probe non-existent account in CONSULTA",
+    "setup": [],
+    "request": "CONSULTA;AC-9999;{ctrl}",
+    "observes": "errors.E401.mensaje"
+  },
+  {
+    "id": "err_e402",
+    "description": "Probe non-existent operation in ANULA",
+    "setup": [],
+    "request": "ANULA;OP-9999;{ctrl}",
+    "observes": "errors.E402.mensaje"
+  },
+  {
+    "id": "err_e404",
+    "description": "Probe unknown route on HTTP server",
+    "setup": [],
+    "request": {
+      "method": "GET",
+      "path": "/nonexistent_route_404"
+    },
+    "observes": "errors.E404.mensaje"
+  },
+  {
+    "id": "err_e506",
+    "description": "Probe amount exceeding transfer limit (50000)",
+    "setup": [
+      "ALTA;ProbeUserA;{ctrl}",
+      "ALTA;ProbeUserB;{ctrl}",
+      "DEPOSITO;AC-0001;200000;{ctrl}"
+    ],
+    "request": "TRANSFER;AC-0001;AC-0002;50001;{ctrl}",
+    "observes": "errors.E506.mensaje"
+  },
+  {
+    "id": "err_e507",
+    "description": "Probe insufficient balance in TRANSFER",
+    "setup": [
+      "ALTA;ProbeUserA;{ctrl}",
+      "ALTA;ProbeUserB;{ctrl}"
+    ],
+    "request": "TRANSFER;AC-0001;AC-0002;1000;{ctrl}",
+    "observes": "errors.E507.mensaje"
+  },
+  {
+    "id": "err_e520",
+    "description": "Probe destructive operation HALT",
+    "setup": [],
+    "request": "HALT;NOW;{ctrl}",
+    "observes": "errors.E520.mensaje"
+  },
+  {
+    "id": "cmd_ping",
+    "description": "Probe PING command response and pong key",
+    "setup": [],
+    "request": "PING;{ctrl}",
+    "observes": "commands.PING.response.body.pong"
+  },
+  {
+    "id": "cmd_alta",
+    "description": "Probe ALTA command response and cuentaId key",
+    "setup": [],
+    "request": "ALTA;AltaSubject;{ctrl}",
+    "observes": "commands.ALTA.response.body.cuentaId"
+  },
+  {
+    "id": "cmd_consulta",
+    "description": "Probe CONSULTA command response and saldo key",
+    "setup": [
+      "ALTA;ConsultUser;{ctrl}"
+    ],
+    "request": "CONSULTA;AC-0001;{ctrl}",
+    "observes": "commands.CONSULTA.response.body.saldo"
+  },
+  {
+    "id": "cmd_deposito",
+    "description": "Probe DEPOSITO command response, status and operacionId keys",
+    "setup": [
+      "ALTA;DepUser;{ctrl}"
+    ],
+    "request": "DEPOSITO;AC-0001;5000;{ctrl}",
+    "observes": "commands.DEPOSITO.response.body.operacionId"
+  },
+  {
+    "id": "cmd_transfer",
+    "description": "Probe TRANSFER command response, status and operacionId keys",
+    "setup": [
+      "ALTA;TxA;{ctrl}",
+      "ALTA;TxB;{ctrl}",
+      "DEPOSITO;AC-0001;50000;{ctrl}"
+    ],
+    "request": "TRANSFER;AC-0001;AC-0002;10000;{ctrl}",
+    "observes": "commands.TRANSFER.response.body.operacionId"
+  },
+  {
+    "id": "cmd_anula",
+    "description": "Probe ANULA command response, ok and anulada keys",
+    "setup": [
+      "ALTA;AnUser;{ctrl}",
+      "DEPOSITO;AC-0001;10000;{ctrl}"
+    ],
+    "request": "ANULA;OP-0001;{ctrl}",
+    "observes": "commands.ANULA.response.body.anulada"
+  },
+  {
+    "id": "cmd_anula_already",
+    "description": "Probe already annulled operation response and motivo key",
+    "setup": [
+      "ALTA;AnUser;{ctrl}",
+      "DEPOSITO;AC-0001;10000;{ctrl}",
+      "ANULA;OP-0001;{ctrl}"
+    ],
+    "request": "ANULA;OP-0001;{ctrl}",
+    "observes": "commands.ANULA.already_annulled.body.motivo"
+  },
+  {
+    "id": "sugerencia_consulta",
+    "description": "Probe typo command with edit distance suggestion",
+    "setup": [],
+    "request": "CONSULTAR;AC-0001;{ctrl}",
+    "observes": "message.suggestion.key"
+  },
+  {
+    "id": "route_health",
+    "description": "Probe health route",
+    "setup": [],
+    "request": {
+      "method": "GET",
+      "path": "/health"
+    },
+    "observes": "http.routes.health.body.ok"
+  },
+  {
+    "id": "route_reset",
+    "description": "Probe reset route",
+    "setup": [],
+    "request": {
+      "method": "POST",
+      "path": "/__reset"
+    },
+    "observes": "http.routes.reset.body.ok"
+  }
+]

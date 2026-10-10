@@ -12,36 +12,29 @@ import sys
 from pathlib import Path
 
 
+from typing import Any
+
+
+def _read_jsonl_ids(file_path: Path, key: str) -> set[int]:
+    """Extract integer ID set from a jsonl file for a given property key."""
+    ids: set[int] = set()
+    if file_path.exists():
+        with file_path.open("r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    obj = json.loads(line)
+                    if key in obj:
+                        ids.add(int(obj[key]))
+                except Exception:
+                    pass
+    return ids
+
+
 def load_known_ids(experimentos_path: Path, ejemplos_path: Path) -> tuple[set[int], set[int]]:
-    exp_ids = set()
-    if experimentos_path.exists():
-        with experimentos_path.open("r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    obj = json.loads(line)
-                    if "id" in obj:
-                        exp_ids.add(int(obj["id"]))
-                except Exception:
-                    pass
-
-    ejemplos_ids = set()
-    if ejemplos_path.exists():
-        with ejemplos_path.open("r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    obj = json.loads(line)
-                    if "n" in obj:
-                        ejemplos_ids.add(int(obj["n"]))
-                except Exception:
-                    pass
-
-    return exp_ids, ejemplos_ids
+    return _read_jsonl_ids(experimentos_path, "id"), _read_jsonl_ids(ejemplos_path, "n")
 
 
 def parse_ranges_and_numbers(segment: str) -> set[int]:
@@ -75,44 +68,31 @@ def parse_ranges_and_numbers(segment: str) -> set[int]:
 
 def audit_spec_file(
     spec_path: Path, known_exps: set[int], known_ejemplos: set[int]
-) -> dict[str, any]:
+) -> dict[str, Any]:
     """Scan especificacion.md and verify all citations."""
     cited_exps: dict[int, list[int]] = {}  # exp_id -> list of line numbers
     cited_ejemplos: dict[int, list[int]] = {}  # mañana_id -> list of line numbers
-    broken_citations: list[dict] = []
+    broken_citations: list[dict[str, Any]] = []
+
+    scan_targets = [
+        (r"\bexp\s+([0-9\s,\.\-]+)", "experimento", known_exps, cited_exps),
+        (r"\bmañana\s+([0-9\s,\.\-]+)", "mañana", known_ejemplos, cited_ejemplos),
+    ]
 
     with spec_path.open("r", encoding="utf-8") as f:
         for line_num, line in enumerate(f, start=1):
-            # 1. Match `exp <citations>` pattern
-            # Matches "exp 1", "exp 2, 4, 29", "exp 445..486", etc.
-            exp_matches = re.finditer(r"\bexp\s+([0-9\s,\.\-]+)", line, flags=re.IGNORECASE)
-            for m in exp_matches:
-                raw_chunk = m.group(1).strip()
-                ids = parse_ranges_and_numbers(raw_chunk)
-                for eid in ids:
-                    cited_exps.setdefault(eid, []).append(line_num)
-                    if eid not in known_exps:
-                        broken_citations.append({
-                            "type": "experimento",
-                            "id": eid,
-                            "line": line_num,
-                            "raw": m.group(0),
-                        })
-
-            # 2. Match `mañana <citations>` pattern
-            mañana_matches = re.finditer(r"\bmañana\s+([0-9\s,\.\-]+)", line, flags=re.IGNORECASE)
-            for m in mañana_matches:
-                raw_chunk = m.group(1).strip()
-                ids = parse_ranges_and_numbers(raw_chunk)
-                for mid in ids:
-                    cited_ejemplos.setdefault(mid, []).append(line_num)
-                    if mid not in known_ejemplos:
-                        broken_citations.append({
-                            "type": "mañana",
-                            "id": mid,
-                            "line": line_num,
-                            "raw": m.group(0),
-                        })
+            for pattern, cite_type, known, cited_dict in scan_targets:
+                for m in re.finditer(pattern, line, flags=re.IGNORECASE):
+                    ids = parse_ranges_and_numbers(m.group(1).strip())
+                    for cid in ids:
+                        cited_dict.setdefault(cid, []).append(line_num)
+                        if cid not in known:
+                            broken_citations.append({
+                                "type": cite_type,
+                                "id": cid,
+                                "line": line_num,
+                                "raw": m.group(0),
+                            })
 
     return {
         "total_exp_cited": len(cited_exps),
