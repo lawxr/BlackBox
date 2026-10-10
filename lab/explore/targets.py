@@ -162,3 +162,51 @@ class ScopedTarget:
         trace = self.parent.run(steps, seq=seq, note=note)
         self.used_requests += needed
         return trace
+
+
+class RemoteTarget:
+    """Remote HTTP target hitting any external URL (e.g. deployed replica or localhost)."""
+
+    def __init__(self, base_url: str, token: Optional[str] = None, timeout: float = 5.0) -> None:
+        self.base_url = base_url.rstrip("/")
+        self.token = token
+        self.timeout = timeout
+        self._last_ids: List[int] = []
+
+    def last_exp_ids(self) -> List[int]:
+        return self._last_ids
+
+    def run(self, steps: List[Step], seq: str, note: str) -> List[tuple]:
+        import httpx
+
+        auth_headers = {"Authorization": f"Bearer {self.token}"} if self.token else {}
+        self._last_ids = []
+
+        with httpx.Client(base_url=self.base_url, timeout=self.timeout) as client:
+            client.post("/__reset", headers=auth_headers)
+            trace = []
+            for step in steps:
+                method = step.get("__method__", "POST")
+                path = step.get("__path__", "/msg")
+                headers = dict(auth_headers)
+                if "__headers__" in step and step["__headers__"] is not None:
+                    for k, v in step["__headers__"].items():
+                        if v is None:
+                            headers.pop(k, None)
+                        else:
+                            headers[k] = v
+
+                if "__raw__" in step:
+                    raw = step["__raw__"]
+                    content = raw.encode("utf-8") if isinstance(raw, str) else raw
+                    r = client.request(method, path, headers=headers, content=content)
+                else:
+                    payload = {k: v for k, v in step.items() if not k.startswith("__")}
+                    r = client.request(method, path, headers=headers, json=payload)
+
+                try:
+                    body = r.json()
+                except Exception:
+                    body = r.text
+                trace.append((r.status_code, body))
+            return trace
