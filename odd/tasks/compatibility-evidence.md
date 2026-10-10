@@ -46,12 +46,15 @@ Make local compatibility checks independent of ambient credentials and align the
 - T1 verification: `env -u TEAM_TOKEN -u USER_TOKEN -u TOKEN UV_OFFLINE=1 UV_CACHE_DIR=/private/tmp/blackbox-inspect-uv PYTHONDONTWRITEBYTECODE=1 uv run --no-sync pytest -p no:cacheprovider` => 28 passed, 1 dependency deprecation warning.
 - T1 verification: `env TEAM_TOKEN=inspection-local-test-token USER_TOKEN= TOKEN= UV_OFFLINE=1 UV_CACHE_DIR=/private/tmp/blackbox-inspect-uv PYTHONDONTWRITEBYTECODE=1 uv run --no-sync pytest -p no:cacheprovider` => 28 passed, 1 dependency deprecation warning.
 - T1 verification: `git diff --check` => exit 0.
-- Engram mirror: pending; project lookup/write fails with `unknown_project` despite current-project detection resolving `blackbox`. No session identity supplied.
+- Engram: initial project writes failed with `unknown_project`; writes now succeed. No authoritative session identity supplied, so mutation calls omit session_id.
 - T1 work-unit commit: `2399326`; parent reran the synthetic-token pytest command => 28 passed, 1 warning.
 - T1 native assessment against `d246edc`: medium, 188 authored changed lines, `review_due=false`, reason `under_budget`; pending review slice boundary remains `d246edc`.
 - An initial assessment before staging failed on untracked inventory after sandbox blocked Git writes; it was not treated as low risk. Git write escalation succeeded, and assessment of the committed candidate above completed normally.
 - T2 complete locally: specification separates experiment IDs, historical example IDs and replica-only defaults. Missing raw payload in experiment 12, reset/sequence gaps, absent current financial evidence and unverified drift are explicitly disclosed.
 - T2 verification: `git diff --check` => exit 0; seven required section tables and six command blocks confirmed. Tests not rerun for this passive documentation-only task; T1 checks remain the runtime evidence.
 - T2 specification diff: 78 additions + 38 deletions = 116 authored changed lines; tracker changes recorded separately by parent before commit.
-- Engram recovery: discovery save succeeded without a session ID (observation 714, resolved project `blackbox`); full tracker mirror remains pending parent retry.
-- Next: parent structural review, tracker mirror and T2 work-unit commit. Remote experiments and deployment require explicit destination/credential authorization later.
+- T2 work-unit commit: `f9f72e7`; parent read back the complete specification and confirmed the seven sections, six command blocks and explicit evidence limitations.
+- T2 native assessment against `d246edc`: medium, 314 authored changed lines, `review_due=false`, reason `under_budget`. Initial sandbox denial of its temporary Git index was resolved through approved escalation; no review approval is claimed.
+- Engram recovery: discovery saves succeeded (714 and 716); full current tracker is mirrored under `odd/compatibility-evidence/tasks` and must be read back before closing.
+- Remaining: original financial behavior has no current successful experiment coverage; raw logging and reset/sequence gaps remain; public deployment is unverified. Production TDD mode remains unresolved.
+- Next: obtain explicit authorization to use the documented participant token for logged experiments and resets at the supplied original URL. Deployment authorization follows separately. No remote requests, token reads, runtime changes, push or deployment occurred in this slice.
