@@ -29,3 +29,6 @@ scratch/
 .DS_Store
 .idea/
 .vscode/
+
+# LabClient single-writer lock
+*.jsonl.lock

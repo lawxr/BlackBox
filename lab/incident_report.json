@@ -1,0 +1,33 @@
+{
+  "ticket": "#FR-0153",
+  "priority": "ALTA",
+  "title": "Incident FR-0153: BlackBox Provider v2 Behavioral Changes",
+  "timestamp": "2026-10-10T21:06:30Z",
+  "total_changes": 3,
+  "changes": [
+    {
+      "id": "CHANGE-1",
+      "behavior": "CONSULTA balance format",
+      "v1": "saldo returned integer amount (e.g. 0)",
+      "v2": "saldo returns two-decimal monetary string representation of cents (e.g. '0.00')",
+      "experiments": [1307, 1308, 1309],
+      "verification": "ALTA initial balance returns '0.00'; DEPOSITO of 1000 cents returns '10.00'"
+    },
+    {
+      "id": "CHANGE-2",
+      "behavior": "TRANSFER maximum amount limit",
+      "v1": "transfer_limit was 100000 cents ($1,000.00)",
+      "v2": "transfer_limit lowered to 50000 cents ($500.00)",
+      "experiments": [1313, 1314, 1315],
+      "verification": "TRANSFER 50000 returns 200; TRANSFER 50001 returns 422 E506 'límite excedido'"
+    },
+    {
+      "id": "CHANGE-3",
+      "behavior": "TRANSFER error validation precedence",
+      "v1": "sufficient_balance (E507) evaluated before max_amount (E506)",
+      "v2": "max_amount (E506) evaluated before sufficient_balance (E507)",
+      "experiments": [1316, 1317, 1318, 1319],
+      "verification": "When account balance is 0 and transfer is 60000 (>50000 limit and >0 balance), v2 responds with 422 E506 'límite excedido' instead of E507"
+    }
+  ]
+}

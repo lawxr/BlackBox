@@ -1,70 +1,70 @@
+"""HTTP layer: routes, auth and body validation, all taken from the active profile."""
 from __future__ import annotations
+
+import json
+from typing import Any, Dict, Optional
+
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
-import json
 
+from src import profile
 from src.config import TEAM_TOKEN
+from src.protocol import error_response, process_message
 from src.state import ledger
-from src.protocol import process_message
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
+ALL_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
 
-from typing import Optional
+
+def _json(result) -> Response:
+    status, body = result
+    return JSONResponse(status_code=status, content=body)
+
 
 def check_auth(request: Request) -> Optional[Response]:
     if not TEAM_TOKEN:
         return None
-    auth_header = request.headers.get("Authorization")
-    if auth_header != f"Bearer {TEAM_TOKEN}":
-        return JSONResponse(status_code=401, content={"error": "E001", "mensaje": "no autorizado"})
+    auth = profile.get()["http"]["auth"]
+    if request.headers.get("Authorization") != f"{auth['scheme']} {TEAM_TOKEN}":
+        return _json(error_response(auth["error"]))
     return None
 
 
-@app.get("/health")
-async def health(request: Request) -> Response:
-    auth_err = check_auth(request)
-    if auth_err:
-        return auth_err
-    return JSONResponse(status_code=200, content={"ok": True})
+def _find_route(method: str, path: str) -> Optional[Dict[str, Any]]:
+    for route in profile.get()["http"]["routes"]:
+        if route["method"] == method and route["path"] == "/" + path:
+            return route
+    return None
 
 
-@app.post("/__reset")
-async def reset(request: Request) -> Response:
-    auth_err = check_auth(request)
-    if auth_err:
-        return auth_err
-    ledger.reset()
-    return JSONResponse(status_code=200, content={"ok": True})
-
-
-@app.post("/msg")
-async def handle_msg(request: Request) -> Response:
-    auth_err = check_auth(request)
-    if auth_err:
-        return auth_err
-
+async def _message(request: Request) -> Response:
+    http = profile.get()["http"]
+    invalid = object()  # sentinel: a JSON `null` body is valid JSON, not invalid
     try:
         raw_body = await request.body()
+        body = json.loads(raw_body) if raw_body else invalid
     except Exception:
-        return JSONResponse(status_code=400, content={"error": "E100", "mensaje": "json inválido"})
-
-    if not raw_body:
-        return JSONResponse(status_code=400, content={"error": "E100", "mensaje": "json inválido"})
-
-    try:
-        body = json.loads(raw_body)
-    except Exception:
-        return JSONResponse(status_code=400, content={"error": "E100", "mensaje": "json inválido"})
-
-    if not isinstance(body, dict) or "m" not in body or not isinstance(body["m"], str):
-        return JSONResponse(status_code=400, content={"error": "E102", "mensaje": "falta m"})
-
-    status_code, response_data = process_message(body["m"])
-    return JSONResponse(status_code=status_code, content=response_data)
+        body = invalid
+    if body is invalid:
+        return _json(error_response(http["invalid_json_error"]))
+    field = http["message_field"]
+    if not isinstance(body, dict) or not isinstance(body.get(field), str):
+        return _json(error_response(http["missing_message_error"]))
+    return _json(process_message(body[field]))
 
 
-# Fallback catch-all route for any undefined path/method
-@app.api_route("/{path_name:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
-async def catch_all(request: Request, path_name: str) -> Response:
-    return JSONResponse(status_code=404, content={"error": "E404", "mensaje": "ruta desconocida"})
+# One catch-all dispatcher: unknown routes answer before auth is evaluated.
+@app.api_route("/{path_name:path}", methods=ALL_METHODS)
+async def dispatch(request: Request, path_name: str) -> Response:
+    route = _find_route(request.method, path_name)
+    if route is None:
+        return _json(error_response(profile.get()["http"]["unknown_route_error"]))
+    auth_err = check_auth(request)
+    if auth_err:
+        return auth_err
+    if route["kind"] == "message":
+        return await _message(request)
+    if route["kind"] == "reset":
+        ledger.reset()
+    return JSONResponse(status_code=route["status"], content=route["body"])

@@ -63,6 +63,9 @@ Cada forma incluye el control como último campo. Los cuerpos de éxito siguient
 |---|---|---|---|
 | CMD-03 | `DEPOSITO;<CUENTA>;<MONTO>;<CONTROL>` acepta depósito válido (ej. 250000, 10000), crea operación correlativa `OP-XXXX`, responde `200 {"status":"recieved","operacionId":"<ID>"}` e incrementa inmediatamente el saldo en CONSULTA. Montos <= 0 o decimales dan E303. | exp 358, 359, 374, 375, 379, 380, 388, 395; mañana 6, 18 | confirmado |
 | CMD-03a | Valida formato y positividad del monto (E303) antes de comprobar la existencia de la cuenta (E401). | exp 395 | confirmado |
+| CMD-03b | El monto debe ser un entero decimal canónico de 1 a 10 dígitos sin cero a la izquierda: `[1-9][0-9]{0,9}`. Se aceptan 1, 2147483648 y 9999999999; se rechazan con E303 10000000000, 99999999999999999999, `01`, `01000`, `+5`, ` 1`, `1 `, `1_000` y `1.0`. El saldo acumulado no tiene ese tope (CONSULTA devolvió 199601488657). | exp 774, 954, 998, 1125, 1126, 1127, 1187, 1189, 1190, 1191, 1192, 1193, 1194, 1195, 1197 | confirmado |
+| CMD-03c | El formato del monto (E303) se evalúa antes que la existencia de la cuenta (E401) y que origen=destino (E304): `DEPOSITO;ac-0001; 100` y `TRANSFER;AC-0002;AC-0002;100 ` dan E303. | exp 802, 996, 1074 | confirmado |
+| CMD-03d | Los dígitos no ASCII (por ejemplo `１`, U+FF11) no cuentan como dígitos para el control. `DEPOSITO;AC-0001;１;28` da 400 E202, no E303. | exp 1196 | confirmado |
 
 ### TRANSFER
 | ID | Comportamiento | Evidencia | Confianza |
@@ -80,6 +83,13 @@ Cada forma incluye el control como último campo. Los cuerpos de éxito siguient
 |---|---|---|---|
 | CMD-06 | `ANULA;<OPERACION>;<CONTROL>` sobre una TRANSFER activa responde `200 {"ok":true,"anulada":"<OP-ID>"}` y revierte contablemente ambos saldos (restituye al origen y deduce del destino). Repetir la anulación sobre la misma operación responde `200 {"ok":false,"motivo":"ya anulada"}` sin volver a alterar saldos. | exp 364, 365, 366, 367; mañana 13, 14 | confirmado |
 | CMD-06a | Anular un `DEPOSITO` revierte el saldo deduciéndolo de la cuenta destino y marca la operación anulada; anular un identificador inexistente (ej. OP-9999) responde `404 {"error":"E402","mensaje":"operación inexistente"}`. | exp 376, 377, 378, 389 | confirmado |
+
+### HALT
+| ID | Comportamiento | Evidencia | Confianza |
+|---|---|---|---|
+| CMD-07 | Comando oculto `HALT;<ARG>;<CONTROL>` (con un argumento cualquiera y control válido) responde `409 {"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}` y no detiene el servicio: PING posterior responde 200. Se descubrió porque `HELP` sugiere `HALT`. | exp 420, 1134, 1135, 1202 | confirmado |
+| CMD-07a | `HALT` sin argumento o con dos argumentos responde 400 E302; con control incorrecto 400 E202; con argumento vacío 400 E104. El comando no distingue mayúsculas (`halt;71` → E302). | exp 1133, 1136, 1199, 1200, 1201 | confirmado |
+| CMD-07b | No se probó ninguna forma de "confirmación". La réplica nunca se detiene y responde E520 a toda forma válida de HALT. | — | supuesto |
 
 ---
 
@@ -108,7 +118,7 @@ Códigos de error observados, cuerpo exacto y orden de evaluación.
 | ERR-04 | `400 {"error":"E104","mensaje":"segmento vacío"}` para `ALTA;Lucia;`. | exp 21 | probable |
 | ERR-05 | `400 {"error":"E201","mensaje":"control mal formado"}` para controles ALTA `5X`, `-5`, `150`, `100`. | exp 18, 19, 20, 26 | probable |
 | ERR-06 | `400 {"error":"E202","mensaje":"control inválido"}` para controles ALTA;Lucia 96..99, 0 y 00; controles 0..61 de ALTA;A también rechazados. | exp 22, 23, 24, 25, 27, 28, 30-91 | probable |
-| ERR-07 | `400 {"error":"E301","mensaje":"comando desconocido "}` para cualquier comando fuera de los 6 conocidos; si la distancia Levenshtein respecto a un comando conocido es <= 2, incluye `"sugerencia": "<COMANDO>"`. Conserva el espacio final en `mensaje`. | exp 429, 431-438; mañana 12 | confirmado |
+| ERR-07 | `400 {"error":"E301","mensaje":"comando desconocido "}` para cualquier comando fuera de los 7 conocidos (incluido `HALT`); si la distancia Levenshtein respecto a un comando conocido es <= 2, incluye `"sugerencia": "<COMANDO>"`. Conserva el espacio final en `mensaje`. | exp 429, 431-438; mañana 12 | confirmado |
 | ERR-08 | `400 {"error":"E302","mensaje":"aridad inválida"}` para `PING;64;extra`; también para ALTA con nombre separado en dos campos en la mañana. | exp 17; mañana 20 | probable |
 | ERR-08a | `400 {"error":"E303","mensaje":"monto inválido"}` para montos no enteros, cero o negativos en DEPOSITO y TRANSFER. | exp 379, 380, 383, 384, 388, 395 | confirmado |
 | ERR-08b | `400 {"error":"E304","mensaje":"origen y destino iguales"}` al intentar transferir fondos hacia la misma cuenta de origen. | exp 382, 391, 392 | confirmado |
@@ -118,6 +128,7 @@ Códigos de error observados, cuerpo exacto y orden de evaluación.
 | ERR-11 | `422 {"error":"E506","mensaje":"límite excedido"}` al transferir >100000 con saldo suficiente. Evaluado tras comprobar saldo suficiente. | exp 369; mañana 9 | confirmado |
 | ERR-12 | `422 {"error":"E507","mensaje":"saldo insuficiente"}` al intentar transferir sin saldo suficiente. Se evalúa antes que E506 cuando ambos aplican. | exp 368, 394; mañana 8, 16 | confirmado |
 | ERR-14 | Precedencia observada: `PING;64;extra` da aridad aunque `extra` no sea numérico; control vacío de ALTA da segmento vacío. | exp 17, 21 | probable |
+| ERR-16 | `409 {"error":"E520","mensaje":"operación destructiva: detiene el servicio; reenvía con confirmación"}` para HALT con aridad y control válidos; se evalúa después de E104, E202 y E302. | exp 1134, 1135, 1199, 1200, 1201 | confirmado |
 | ERR-15 | Precedencia total comprobada: Rutas conocidas → Auth (401 E001) → JSON (400 E100/E102) → Delimitador (400 E103) → Segmentos vacíos (400 E104) → Control (400 E201/E202) → Comando/Aridad (400 E301/E302) → Formato monto (400 E303) → Origen/Destino iguales (400 E304) → Existencia de cuenta/operación (404 E401/E402) → Saldo suficiente (422 E507) → Límite excedido (422 E506). | exp 382, 391, 392, 393, 394, 395 | confirmado |
 
 ---
@@ -129,6 +140,7 @@ Registro de divergencias detectadas en la versión activa del servicio durante l
 |---|---|---|---|
 | DRIFT-01 | No se han detectado divergencias de contrato respecto a los ejemplos de la mañana. La campaña de ciclo de vida financiero (exp 355-369) verificó que altas, depósitos, transferencias, límites E506, saldos E507 y anulaciones mantienen idéntico formato y semántica. | exp 355..369; mañana 1..20 | confirmado |
 | DRIFT-02 | PING;64 y la fórmula de integridad (ISO 7064 MOD 97-10) se mantienen estables y operativos sin alteraciones entre la sesión matutina y vespertina. | exp 3, 353, 355..369; mañana 1 | confirmado |
+| DRIFT-03 | Fuzzer diferencial propio con semilla (`lab/seqfuzz.py`, semilla 2026) generó 100 secuencias con la forma del set (40 de 1, 45 de 2-5, 15 de 6-12) contra original y réplica; 451 requests, 7 divergencias, todas explicadas por CMD-03b, CMD-03c y CMD-07 salvo una contaminada por un canary concurrente con el mismo token. | exp 764-1121 | confirmado |
 
 ---
 
@@ -140,4 +152,4 @@ Comportamientos anómalos o peligrosos del servicio original que no deberían he
 | RSK-01 | `"status":"recieved"` y espacio final de E301 forman parte del contrato histórico. En un cliente nuevo, encapsularlos en un adaptador y normalizar solo el modelo interno, sin alterar la réplica. | mañana 6, 7, 10, 12, 18 | probable |
 | RSK-02 | PING acepta XX como control; no usarlo como prueba de integridad de mensajes financieros. Un protocolo nuevo debería definir validación uniforme. | exp 14, 15 | confirmado |
 | RSK-03 | Idempotencia de TRANSFER y DEPOSITO no probada: no hubo replay del mismo mensaje financiero exitoso. La réplica ejecuta cada repetición; para un contrato nuevo, añadir clave idempotente y transacción atómica. No atribuir esta carencia al original sin evidencia. | Réplica: `src/protocol.py` | supuesto |
-| RSK-04 | La réplica permite montos negativos, anulación de depósito sin reversión y arranque sin autenticación si falta token. Para un servicio nuevo, validar montos, fijar semántica de reversión y fallar al iniciar sin credencial; no cambiar aquí por razones de compatibilidad sin probar antes. | Réplica: `src/protocol.py`, `src/main.py` | supuesto |
+| RSK-04 | (Montos ya validados de forma estricta, ver CMD-03b.) La réplica permite anulación de depósito sin reversión y arranque sin autenticación si falta token. Para un servicio nuevo, validar montos, fijar semántica de reversión y fallar al iniciar sin credencial; no cambiar aquí por razones de compatibilidad sin probar antes. | Réplica: `src/protocol.py`, `src/main.py` | supuesto |

@@ -102,25 +102,31 @@ def test_replica_unauthorized_reset_preserves_state(client, headers):
     assert reset.json() == UNAUTHORIZED
     balance = client.post("/msg", headers=VALID_AUTH, json={"m": "CONSULTA;AC-0001;14"})
     assert balance.status_code == 200
-    assert balance.json() == {"cuenta_id": "AC-0001", "saldo": 0}
+    assert balance.json() == {"cuenta_id": "AC-0001", "saldo": "0.00"}
 
 
 def test_replay_20_historical_examples(client):
     """Replay morning evidence in order; this does not prove the current original."""
-    examples_file = Path(__file__).resolve().parents[1] / "pruebas" / "ejemplos.jsonl"
-    with examples_file.open(encoding="utf-8") as source:
-        examples = [json.loads(line) for line in source if line.strip()]
-    assert len(examples) == 20
-    assert [item["n"] for item in examples] == list(range(1, 21))
+    from src import profile
+    v1_prof = Path(__file__).resolve().parents[1] / "src" / "profile.v1.json"
+    profile.reload(v1_prof)
+    try:
+        examples_file = Path(__file__).resolve().parents[1] / "pruebas" / "ejemplos.jsonl"
+        with examples_file.open(encoding="utf-8") as source:
+            examples = [json.loads(line) for line in source if line.strip()]
+        assert len(examples) == 20
+        assert [item["n"] for item in examples] == list(range(1, 21))
 
-    reset = client.post("/__reset", headers=VALID_AUTH)
-    assert reset.status_code == 200
-    assert reset.json() == {"ok": True}
-    for item in examples:
-        response = client.post("/msg", headers=VALID_AUTH, json=item["request"])
-        context = f"Historical step {item['n']}: {item['request']}"
-        assert response.status_code == item["status"], context
-        assert response.json() == item["response"], context
+        reset = client.post("/__reset", headers=VALID_AUTH)
+        assert reset.status_code == 200
+        assert reset.json() == {"ok": True}
+        for item in examples:
+            response = client.post("/msg", headers=VALID_AUTH, json=item["request"])
+            context = f"Historical step {item['n']}: {item['request']}"
+            assert response.status_code == item["status"], context
+            assert response.json() == item["response"], context
+    finally:
+        profile.reload()
 
 
 def test_edge_cases_deposit_and_transfer_validation(client):
@@ -142,7 +148,7 @@ def test_edge_cases_deposit_and_transfer_validation(client):
     assert r.status_code == 200 and r.json() == {"ok": True, "anulada": "OP-0001"}
 
     r = client.post("/msg", headers=VALID_AUTH, json={"m": "CONSULTA;AC-0001;14"})
-    assert r.status_code == 200 and r.json()["saldo"] == 0
+    assert r.status_code == 200 and r.json()["saldo"] == "0.00"
 
     # Repeating annulment -> 200 ok: false
     r = client.post("/msg", headers=VALID_AUTH, json={"m": "ANULA;OP-0001;72"})
@@ -223,3 +229,70 @@ def test_control_edge_cases_iso7064(client):
     # Length > 2 rejected with E201
     r = client.post("/msg", headers=VALID_AUTH, json={"m": "ALTA;Mateo;003"})
     assert r.status_code == 400 and r.json() == {"error": "E201", "mensaje": "control mal formado"}
+
+
+def _ctrl(payload):
+    from src.protocol import compute_control
+    return f"{payload};{compute_control(payload)}"
+
+
+@pytest.mark.parametrize(
+    "amount,status",
+    [
+        ("1", 200),
+        ("9999999999", 200),  # exp seq s_amount_bound: largest accepted
+        ("10000000000", 400),
+        ("99999999999999999999", 400),  # exp 954
+        ("01000", 400),  # seqfuzz sf_2026_46
+        ("01", 400),
+        ("+5", 400),
+        (" 1", 400),
+        ("1 ", 400),
+        ("1_000", 400),
+    ],
+)
+def test_deposit_amount_syntax_is_strict(client, amount, status):
+    client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("ALTA;Probe")})
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl(f"DEPOSITO;AC-0001;{amount}")})
+    assert r.status_code == status
+    if status == 400:
+        assert r.json() == {"error": "E303", "mensaje": "monto inválido"}
+
+
+def test_invalid_amount_precedes_unknown_account_and_same_account(client):
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("DEPOSITO;ac-0001; 100")})
+    assert (r.status_code, r.json()) == (400, {"error": "E303", "mensaje": "monto inválido"})
+    client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("ALTA;A")})
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("TRANSFER;AC-0001;AC-0001;100 ")})
+    assert (r.status_code, r.json()) == (400, {"error": "E303", "mensaje": "monto inválido"})
+
+
+HALT_REFUSED = {
+    "error": "E520",
+    "mensaje": "operación destructiva: detiene el servicio; reenvía con confirmación",
+}
+
+
+@pytest.mark.parametrize(
+    "message,status,body",
+    [
+        (_ctrl("HALT;x"), 409, HALT_REFUSED),
+        (_ctrl("HALT;AC-0001"), 409, HALT_REFUSED),
+        (_ctrl("HALT"), 400, {"error": "E302", "mensaje": "aridad inválida"}),
+        (_ctrl("halt"), 400, {"error": "E302", "mensaje": "aridad inválida"}),
+        (_ctrl("HALT;x;y"), 400, {"error": "E302", "mensaje": "aridad inválida"}),
+        ("HALT;x;1", 400, {"error": "E202", "mensaje": "control inválido"}),
+        ("HELP;72", 400, {"error": "E301", "mensaje": "comando desconocido ", "sugerencia": "HALT"}),
+    ],
+)
+def test_halt_command_requires_confirmation(client, message, status, body):
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": message})
+    assert (r.status_code, r.json()) == (status, body)
+    assert client.post("/msg", headers=VALID_AUTH, json={"m": "PING;64"}).status_code == 200
+
+
+def test_fullwidth_digit_is_not_a_control_digit(client):
+    # exp 1196: U+FF11 is skipped by the control, so the ASCII-computed control fails (E202)
+    client.post("/msg", headers=VALID_AUTH, json={"m": _ctrl("ALTA;Probe")})
+    r = client.post("/msg", headers=VALID_AUTH, json={"m": "DEPOSITO;AC-0001;１;28"})
+    assert (r.status_code, r.json()) == (400, {"error": "E202", "mensaje": "control inválido"})

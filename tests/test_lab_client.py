@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import httpx
 
-from lab.client import LabClient, TransportError
+from lab.client import LabClient, LabLockError, TransportError
 
 
 def test_lab_client_success_recording(tmp_path):
@@ -135,3 +135,40 @@ def test_lab_client_bodyless_vs_payload_distinguishable(tmp_path):
     assert len(lines) == 2
     assert lines[0]["request"] == {}  # Bodyless
     assert lines[1]["request"] == {"m": "PING;64"}
+
+
+def _ok_transport():
+    return httpx.MockTransport(lambda request: httpx.Response(200, json={"ok": True}))
+
+
+def test_next_id_is_max_existing_id_plus_one(tmp_path):
+    exp_path = tmp_path / "experimentos.jsonl"
+    # Duplicate and out-of-order ids: line count (3) would give 4, max id gives 11.
+    exp_path.write_text(
+        "\n".join(json.dumps({"id": i, "seq": "s"}) for i in (10, 7, 10)) + "\n",
+        encoding="utf-8",
+    )
+    client = LabClient(base_url="https://fake.url", experiments_path=exp_path,
+                       audit_path=tmp_path / "audit.jsonl", transport=_ok_transport())
+    try:
+        entry = client.send("POST", "/__reset", seq="s", hipotesis="reset")
+    finally:
+        client.close()
+    assert entry["id"] == 11
+
+
+def test_second_client_on_same_log_fails_fast(tmp_path):
+    exp_path = tmp_path / "experimentos.jsonl"
+    kwargs = dict(base_url="https://fake.url", experiments_path=exp_path,
+                  audit_path=tmp_path / "audit.jsonl", transport=_ok_transport())
+    first = LabClient(**kwargs)
+    try:
+        with pytest.raises(LabLockError, match="experimentos.jsonl.lock"):
+            LabClient(**kwargs)
+    finally:
+        first.close()
+    assert not (tmp_path / "experimentos.jsonl.lock").exists()
+    # Lock released: a new writer can start, also via the context manager.
+    with LabClient(**kwargs) as again:
+        again.send("POST", "/__reset", seq="s", hipotesis="reset")
+    assert not (tmp_path / "experimentos.jsonl.lock").exists()
