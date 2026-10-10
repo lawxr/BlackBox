@@ -1,13 +1,13 @@
 # Compatibility evidence baseline
 
 ## Objective
-Make local compatibility checks independent of ambient credentials and align the specification with recorded evidence before further experiments or deployment.
+Make compatibility evidence reproducible: hermetic local checks, evidence-scoped specification, reliable experiment recording and focused differential sequences.
 
 ## Scope and constraints
 - Base: `d246edc`; Gemini has finished and the initial worktree is clean.
-- Authorized: local tests, evidence analysis, specification corrections, work-unit commits.
-- Excluded: protocol/runtime changes, remote calls, reading real tokens, deployment, push and PR creation.
-- Preserve `experimentos.jsonl`, `audit.jsonl` and historical examples unchanged. Never invent experiments or resets.
+- Authorized: local lab improvements, tests, evidence analysis, specification corrections and work-unit commits. User additionally authorized experiments/resets at `https://caja-negra-production-c64f.up.railway.app` using only `USER_TOKEN` from `.env`.
+- Excluded: deployment, other remote destinations/credentials, push and PR creation. Runtime changes require concrete compatibility evidence first.
+- Preserve existing `experimentos.jsonl`, `audit.jsonl` and historical examples. New original observations may be appended only during an explicitly launched campaign; never invent experiments or resets.
 - The replacement must never call the original or another replacement.
 - Existing Spanish specification stays Spanish; new test code and this tracker use English.
 
@@ -24,19 +24,29 @@ Make local compatibility checks independent of ambient credentials and align the
   - Rollback: specification-only changes; original evidence remains untouched.
   - Outcome: 49 evidence-scoped behavior rows across all seven required sections and six command blocks. Financial behavior remains historical/probable; untested replica behavior is explicitly assumed.
   - Verification: own local citation audit resolved 107 experiment IDs and 17 morning-example IDs; observed exact JSON snippets match their cited records. All 354 audit statuses match experiments; 320 ALTA outcomes fit the candidate checksum without claiming a standard or Unicode support.
-  - Commit: pending parent structural review and work-unit commit.
+  - Commit: `f9f72e7`; verification record `58fb39b`.
+- [x] T3 — Preserve experiment intent before sending and retain exact request representation, including uncertain transport outcomes.
+  - Route: delegated; lab source plus new focused tests, with preparation reading owned by the writer.
+  - Acceptance: timeout leaves a durable sanitized attempt; failed pre-send logging prevents network; response records remain compatible; raw JSON and bodyless reset are distinguishable; no automatic retry or fabricated response.
+  - Checks: observed RED then GREEN for new fake-transport tests; one full local suite at closure; `git diff --check`. Existing original behavior is not reprobed.
+  - Rollback: lab logger and its tests/docs only; production runtime and existing experiment records unchanged.
+  - Outcome: `LabClient` supports hermetic transport injection, configurable audit/experiments paths, pre-send directory checks, explicit `TransportError`, durable uncertain recording on timeout/transport failures without blind retries or fabricated data, and distinguishable bodyless vs payload representations.
+- [ ] T4 — Add sequential reset-and-replay comparison for status and exact JSON/text responses, stopping on infrastructure or uncertain outcomes.
+  - Route: delegated; runner and focused tests. Schedule after T3 is verified.
+- [ ] T5 — Run one hypothesis-driven current-version campaign and update only conclusions supported by its new evidence.
+  - Route: delegated execution with exact authorized original URL and USER_TOKEN from `.env`, one client, no blind retries, secrets never printed. Do not repeat established probes without a named uncertainty.
 
 ## Verification
 - Baseline: `env UV_OFFLINE=1 UV_CACHE_DIR=/private/tmp/blackbox-inspect-uv PYTHONDONTWRITEBYTECODE=1 uv run --no-sync pytest -p no:cacheprovider` => 4 passed, 1 dependency deprecation warning.
 - Same baseline with `TEAM_TOKEN=inspection-local-test-token USER_TOKEN= TOKEN=` => 4 failed (401); tests omit authorization.
 - Runner: `uv run pytest` (README).
-- TDD configuration: not explicitly configured; unresolved for future production changes. This slice changes tests and documentation only, not production behavior. Preserve observed failing baseline, then verify corrected tests.
+- TDD: enabled explicitly by the user for further improvements. Source: current conversation. Runner: `uv run pytest`; RED -> GREEN -> REFACTOR for new/changed behavior, reuse prior verified findings, avoid redundant original investigations.
 - Required: both baseline environment variants above pass; `git diff --check`; structural review of evidence citations and command blocks.
 - Runtime harness: in-process FastAPI TestClient, no network or hosting required.
 
 ## Delivery and review
 - Feature branch: `feat/compatibility-evidence`.
-- Forecast: approximately 300 authored changed lines, excluding this recovery record; delivery strategy `ask-on-risk`.
+- Completed baseline: 317 authored changed lines. Next lab task forecast: approximately 150-250 more; delivery strategy `ask-on-risk`. Chain strategy must be resolved before the next commit above the accumulated delivery threshold; do not silently choose one or create a PR.
 - One work-unit commit per task; no push or PR authorized.
 - RDD: on by default (read-only mode status); first review boundary `d246edc`.
 - Record native risk and due outcome after each commit. Review consent remains user-owned.
@@ -56,5 +66,7 @@ Make local compatibility checks independent of ambient credentials and align the
 - T2 work-unit commit: `f9f72e7`; parent read back the complete specification and confirmed the seven sections, six command blocks and explicit evidence limitations.
 - T2 native assessment against `d246edc`: medium, 314 authored changed lines, `review_due=false`, reason `under_budget`. Initial sandbox denial of its temporary Git index was resolved through approved escalation; no review approval is claimed.
 - Engram recovery: discovery saves succeeded (714 and 716); full current tracker is mirrored under `odd/compatibility-evidence/tasks` and must be read back before closing.
-- Remaining: original financial behavior has no current successful experiment coverage; raw logging and reset/sequence gaps remain; public deployment is unverified. Production TDD mode remains unresolved.
-- Next: obtain explicit authorization to use the documented participant token for logged experiments and resets at the supplied original URL. Deployment authorization follows separately. No remote requests, token reads, runtime changes, push or deployment occurred in this slice.
+- Remaining: original financial behavior has no current successful experiment coverage; raw logging and reset/sequence gaps remain; public deployment is unverified.
+- Authorization update: user approved original experiments/resets with USER_TOKEN from `.env`; then approved focused TDD. Prior no-remote statements describe the completed baseline, not current authority.
+- T3 complete locally: `tests/test_lab_client.py` added with 3 tests using `httpx.MockTransport`; observed RED on `TransportError` collection then GREEN after implementation (3 passed in 0.19s). Full suite `uv run pytest` passes (31 passed, 1 warning in 0.34s). `git diff --check` => exit 0.
+- Next: T3 work-unit commit; then T4.
