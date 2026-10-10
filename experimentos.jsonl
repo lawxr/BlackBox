@@ -525,3 +525,30 @@
 {"id": 525, "seq": "autofuzz_1791658721", "x_req": 495, "hipotesis": "Fuzz #23: DEPOSITO;AC-0001;-100;82", "request": {"m": "DEPOSITO;AC-0001;-100;82"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
 {"id": 526, "seq": "autofuzz_1791658721", "x_req": 496, "hipotesis": "Fuzz #24: DEPOSITO;AC-0001;100.5;20", "request": {"m": "DEPOSITO;AC-0001;100.5;20"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
 {"id": 527, "seq": "autofuzz_1791658721", "x_req": 497, "hipotesis": "Fuzz #25: DEPOSITO;AC-0001;abc;13", "request": {"m": "DEPOSITO;AC-0001;abc;13"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 528, "seq": "canary", "x_req": null, "hipotesis": "Canary check at 2026-10-10T19:04:06.530909+00:00", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 529, "seq": "canary", "x_req": 498, "hipotesis": "Canary probe PING;64", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
+{"id": 530, "seq": "canary", "x_req": 499, "hipotesis": "Canary probe ALTA;Canario;30", "request": {"m": "ALTA;Canario;30"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 531, "seq": "canary", "x_req": 500, "hipotesis": "Canary probe CONSULTA;AC-0001;14", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": 0}}
+{"id": 532, "seq": "canary", "x_req": 501, "hipotesis": "Canary probe DEPOSITO;AC-0001;50000;39", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 533, "seq": "canary", "x_req": 502, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-0001;1000;64", "request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
+{"id": 534, "seq": "canary", "x_req": 503, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-9999;1000;69", "request": {"m": "TRANSFER;AC-0001;AC-9999;1000;69"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 535, "seq": "canary", "x_req": 504, "hipotesis": "Canary probe DEPOSITO;AC-0001;0;31", "request": {"m": "DEPOSITO;AC-0001;0;31"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 536, "seq": "canary", "x_req": 505, "hipotesis": "Canary probe ANULA;OP-0001;72", "request": {"m": "ANULA;OP-0001;72"}, "status": 200, "response": {"ok": true, "anulada": "OP-0001"}}
+{"id": 537, "seq": "canary", "x_req": null, "hipotesis": "Canary check at 2026-10-10T19:05:19.101996+00:00", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 538, "seq": "canary", "x_req": 506, "hipotesis": "Canary probe PING;64", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
+{"id": 539, "seq": "canary", "x_req": 507, "hipotesis": "Canary probe ALTA;Canario;30", "request": {"m": "ALTA;Canario;30"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 540, "seq": "canary", "x_req": 508, "hipotesis": "Canary probe CONSULTA;AC-0001;14", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": 0}}
+{"id": 541, "seq": "canary", "x_req": 509, "hipotesis": "Canary probe DEPOSITO;AC-0001;50000;39", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 542, "seq": "canary", "x_req": 510, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-0001;1000;64", "request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
+{"id": 543, "seq": "canary", "x_req": 511, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-9999;1000;69", "request": {"m": "TRANSFER;AC-0001;AC-9999;1000;69"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 544, "seq": "canary", "x_req": 512, "hipotesis": "Canary probe DEPOSITO;AC-0001;0;31", "request": {"m": "DEPOSITO;AC-0001;0;31"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 545, "seq": "canary", "x_req": 513, "hipotesis": "Canary probe ANULA;OP-0001;72", "request": {"m": "ANULA;OP-0001;72"}, "status": 200, "response": {"ok": true, "anulada": "OP-0001"}}
+{"id": 546, "seq": "canary", "x_req": null, "hipotesis": "Canary check at 2026-10-10T19:06:21.268476+00:00", "request": {}, "status": 200, "response": {"ok": true}}
+{"id": 547, "seq": "canary", "x_req": 514, "hipotesis": "Canary probe PING;64", "request": {"m": "PING;64"}, "status": 200, "response": {"pong": true}}
+{"id": 548, "seq": "canary", "x_req": 515, "hipotesis": "Canary probe ALTA;Canario;30", "request": {"m": "ALTA;Canario;30"}, "status": 201, "response": {"cuentaId": "AC-0001"}}
+{"id": 549, "seq": "canary", "x_req": 516, "hipotesis": "Canary probe CONSULTA;AC-0001;14", "request": {"m": "CONSULTA;AC-0001;14"}, "status": 200, "response": {"cuenta_id": "AC-0001", "saldo": 0}}
+{"id": 550, "seq": "canary", "x_req": 517, "hipotesis": "Canary probe DEPOSITO;AC-0001;50000;39", "request": {"m": "DEPOSITO;AC-0001;50000;39"}, "status": 200, "response": {"status": "recieved", "operacionId": "OP-0001"}}
+{"id": 551, "seq": "canary", "x_req": 518, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-0001;1000;64", "request": {"m": "TRANSFER;AC-0001;AC-0001;1000;64"}, "status": 400, "response": {"error": "E304", "mensaje": "origen y destino iguales"}}
+{"id": 552, "seq": "canary", "x_req": 519, "hipotesis": "Canary probe TRANSFER;AC-0001;AC-9999;1000;69", "request": {"m": "TRANSFER;AC-0001;AC-9999;1000;69"}, "status": 404, "response": {"error": "E401", "mensaje": "cuenta inexistente"}}
+{"id": 553, "seq": "canary", "x_req": 520, "hipotesis": "Canary probe DEPOSITO;AC-0001;0;31", "request": {"m": "DEPOSITO;AC-0001;0;31"}, "status": 400, "response": {"error": "E303", "mensaje": "monto inválido"}}
+{"id": 554, "seq": "canary", "x_req": 521, "hipotesis": "Canary probe ANULA;OP-0001;72", "request": {"m": "ANULA;OP-0001;72"}, "status": 200, "response": {"ok": true, "anulada": "OP-0001"}}

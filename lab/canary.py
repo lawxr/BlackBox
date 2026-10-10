@@ -62,12 +62,86 @@ def run_canary_check() -> list[dict]:
     return divergences
 
 
+import argparse
+import sys
+from pathlib import Path
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Autonomous canary probe and contract drift watcher."
+    )
+    parser.add_argument(
+        "--watch",
+        action="store_true",
+        help="Run continuously in background mode until stopped or drift is detected.",
+    )
+    parser.add_argument(
+        "--interval",
+        type=int,
+        default=60,
+        help="Seconds between probe cycles in watch mode (default: 60).",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("lab/incident_report.json"),
+        help="File path to save the structured incident report upon drift detection.",
+    )
+    parser.add_argument(
+        "--stop-on-drift",
+        action="store_true",
+        help="Exit immediately with non-zero code upon detecting contract drift.",
+    )
+    return parser.parse_args()
+
+
+def save_incident_report(diffs: list[dict], output_path: Path) -> None:
+    report = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "total_divergences": len(diffs),
+        "divergences": diffs,
+    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+    print(f"\n🚨 Reporte forense guardado en: {output_path}")
+
+
+def main() -> None:
+    args = parse_args()
+    print(
+        f"Iniciando Canary (Modo: {'WATCH cada ' + str(args.interval) + 's' if args.watch else 'ONE-SHOT'})..."
+    )
+
+    iteration = 0
+    try:
+        while True:
+            iteration += 1
+            now = datetime.now(timezone.utc).strftime("%H:%M:%S")
+            print(f"[{now}] Ronda #{iteration}: verificando contrato...", end=" ", flush=True)
+
+            diffs = run_canary_check()
+
+            if diffs:
+                print(f"⚠️ ¡DERIVA DE CONTRATO DETECTADA! ({len(diffs)} divergencias)")
+                for d in diffs:
+                    print(f"  - Sonda: {d.get('probe')} | Detalle: {d}")
+
+                save_incident_report(diffs, args.output)
+
+                if args.stop_on_drift or not args.watch:
+                    sys.exit(1)
+            else:
+                print("OK (100% paridad)")
+
+            if not args.watch:
+                break
+
+            time.sleep(args.interval)
+    except KeyboardInterrupt:
+        print("\nWatcher detenido por el usuario.")
+
+
 if __name__ == "__main__":
-    print(f"Running canary check at {datetime.now(timezone.utc).isoformat()}...")
-    diffs = run_canary_check()
-    if diffs:
-        print(f"⚠️ DIVERGENCIA DETECTADA ({len(diffs)} diferencias):")
-        for d in diffs:
-            print(json.dumps(d, ensure_ascii=False))
-    else:
-        print("✅ Servicio estable: todas las sondas canario coinciden al 100%.")
+    main()
