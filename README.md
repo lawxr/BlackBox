@@ -76,10 +76,14 @@ graph TD
 
 ---
 
-## Panel Visual de Demostración y Video (`/demo`)
+## Panel Visual de Demostración (`/demo`, fuera del reemplazo)
 
-Para auditorías visuales y grabaciones demostrativas del sistema, la réplica expone un panel interactivo completo en:
-👉 **[https://blackbox.up.railway.app/demo](https://blackbox.up.railway.app/demo)**
+El panel es explicativo y no forma parte del contrato. El reemplazo evaluado (`src.main:app`) responde `404 E404` en `/demo` igual que el original. El panel corre como una app aparte que sirve `/demo` y delega todo lo demás al reemplazo:
+
+```bash
+uv run uvicorn src.demo_app:app --port 8001
+# abrir http://localhost:8001/demo; el panel pide el token del equipo una vez por sesión del navegador
+```
 
 El panel incluye:
 - **Arquitectura Dual-Plane**: Visualización del aislamiento entre el plano de ejecución y el plano de laboratorio.
